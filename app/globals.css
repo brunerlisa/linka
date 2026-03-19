@@ -1,0 +1,137 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-primary: #00aeef;
+  --color-primary-dark: #0099d6;
+  --color-primary-light: #33c1f5;
+  --color-dark: #050a14;
+  --color-dark-card: #0a0f1a;
+  --color-dark-border: #1e293b;
+  --font-sans: var(--font-outfit, 'Outfit', system-ui, sans-serif);
+}
+
+body {
+  @apply bg-dark text-slate-100 font-sans antialiased;
+}
+
+/* Clerk auth form: ensure text is visible on dark background */
+.clerk-auth-wrapper {
+  --clerk-color-foreground: #f8fafc;
+  --clerk-color-muted-foreground: #cbd5e1;
+}
+.clerk-auth-wrapper [data-clerk-component],
+.clerk-auth-wrapper [data-slot] {
+  color: inherit;
+}
+.clerk-auth-wrapper h1,
+.clerk-auth-wrapper h2,
+.clerk-auth-wrapper p,
+.clerk-auth-wrapper label,
+.clerk-auth-wrapper [data-slot='formFieldLabel'] {
+  color: #f8fafc !important;
+}
+.clerk-auth-wrapper [data-slot='formFieldHintText'] {
+  color: #94a3b8 !important;
+}
+
+.bg-grid {
+  background-image:
+    linear-gradient(rgba(0, 174, 239, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 174, 239, 0.03) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+.gradient-text {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary-light;
+}
+
+@keyframes ticker {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.animate-ticker { animation: ticker 40s linear infinite; }
+.animate-ticker:hover { animation-play-state: paused; }
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+@keyframes float-delayed {
+  0%, 100% { transform: translateY(0); }
+  33% { transform: translateY(-6px); }
+  66% { transform: translateY(-10px); }
+}
+.animate-float { animation: float 4s ease-in-out infinite; }
+.animate-float-slow { animation: float-slow 5s ease-in-out infinite; }
+.animate-float-delayed { animation: float-delayed 4.5s ease-in-out infinite; }
+
+@keyframes base-glow {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.45; }
+}
+.animate-base-glow { animation: base-glow 3s ease-in-out infinite; }
+
+@keyframes podium-left {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+@keyframes podium-center {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-14px); }
+}
+@keyframes podium-right {
+  0%, 100% { transform: translateY(0); }
+  35% { transform: translateY(-6px); }
+  70% { transform: translateY(-12px); }
+}
+@keyframes device-float {
+  0%, 100% { transform: translateY(0) rotate(-1deg); }
+  50% { transform: translateY(-11px) rotate(1deg); }
+}
+@keyframes coin-stack {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+@keyframes coin-stack-delayed {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+.animate-podium-left { animation: podium-left 4.6s ease-in-out infinite; }
+.animate-podium-center { animation: podium-center 4.2s ease-in-out infinite; }
+.animate-podium-right { animation: podium-right 5s ease-in-out infinite; }
+.animate-device-float { animation: device-float 3.6s ease-in-out infinite; }
+.animate-coin-stack { animation: coin-stack 2.6s ease-in-out infinite; }
+.animate-coin-stack-delayed { animation: coin-stack-delayed 3s ease-in-out infinite; }
+
+@keyframes oval-pulse {
+  0%, 100% { opacity: 0.15; transform: translate(-50%, -50%) scale(1); }
+  50% { opacity: 0.25; transform: translate(-50%, -50%) scale(1.02); }
+}
+.oval-bg {
+  border: 1px solid rgba(0, 174, 239, 0.35);
+  border-radius: 50%;
+  pointer-events: none;
+  animation: oval-pulse 6s ease-in-out infinite;
+}
+
+@keyframes copy-rotate-1 {
+  0%, 28% { opacity: 1; }
+  33%, 100% { opacity: 0; }
+}
+@keyframes copy-rotate-2 {
+  0%, 28% { opacity: 0; }
+  33%, 61% { opacity: 1; }
+  66%, 100% { opacity: 0; }
+}
+@keyframes copy-rotate-3 {
+  0%, 61% { opacity: 0; }
+  66%, 94% { opacity: 1; }
+  100% { opacity: 0; }
+}
+.copy-line-1 { animation: copy-rotate-1 8s ease-in-out infinite; }
+.copy-line-2 { animation: copy-rotate-2 8s ease-in-out infinite; }
+.copy-line-3 { animation: copy-rotate-3 8s ease-in-out infinite; }
