@@ -13,9 +13,11 @@ create table if not exists public.profiles (
   clerk_user_id text primary key,
   email         text unique not null,
   full_name     text        default '',
-  role          text        not null default 'user',
-  created_at    timestamptz not null default now(),
-  updated_at    timestamptz not null default now()
+  role             text        not null default 'user',
+  has_onboarded  boolean     not null default false,
+  onboarding_json text,
+  created_at       timestamptz not null default now(),
+  updated_at       timestamptz not null default now()
 );
 
 -- traders: managed by admin, readable by all authenticated users
@@ -83,6 +85,7 @@ create table if not exists public.trade_updates (
 -- =====================================================================
 alter table public.profiles      add column if not exists clerk_user_id text;
 alter table public.profiles      add column if not exists has_onboarded boolean not null default false;
+alter table public.profiles      add column if not exists onboarding_json text;
 alter table public.payments      add column if not exists user_clerk_id text not null default '';
 alter table public.payments      add column if not exists payment_type text not null default 'deposit';
 alter table public.user_accounts add column if not exists user_clerk_id text;

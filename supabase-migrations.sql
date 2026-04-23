@@ -8,6 +8,9 @@
 -- 1. Add has_onboarded to profiles (so returning users skip onboarding)
 alter table public.profiles add column if not exists has_onboarded boolean not null default false;
 
+-- 1b. Store full onboarding answers (incl. investment amount)
+alter table public.profiles add column if not exists onboarding_json text;
+
 -- 2. Add payment_type to payments (for Withdrawal section)
 alter table public.payments add column if not exists payment_type text not null default 'deposit';
 

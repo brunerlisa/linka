@@ -53,6 +53,7 @@ export default function AdminLayout({ children }) {
         </div>
         <nav className="flex-1 py-4 text-sm space-y-0.5">
           <Link href="/admin" className="block px-5 py-2.5 text-white bg-[#111827] border-r-2 border-primary">Dashboard</Link>
+          <Link href="/admin/control" className="block px-5 py-2.5 text-slate-300 hover:bg-[#0b1020] hover:text-white">Control Center</Link>
           <Link href="/admin/traders" className="block px-5 py-2.5 text-slate-300 hover:bg-[#0b1020] hover:text-white">Traders</Link>
           <Link href="/admin/deposits" className="block px-5 py-2.5 text-slate-300 hover:bg-[#0b1020] hover:text-white">Deposits</Link>
           <Link href="/admin/accounts" className="block px-5 py-2.5 text-slate-300 hover:bg-[#0b1020] hover:text-white">User Accounts</Link>

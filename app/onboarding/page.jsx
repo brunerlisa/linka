@@ -6,7 +6,7 @@ import { useAuth } from '@/components/AuthProvider'
 import ProtectedRoute from '@/components/ProtectedRoute'
 import { syncProfile, getMyProfile } from '@/lib/tradingAdminApi'
 
-const TOTAL_STEPS = 9
+const TOTAL_STEPS = 8
 
 function OnboardingContent() {
   const { user } = useAuth()
@@ -20,7 +20,6 @@ function OnboardingContent() {
   const [investmentGoal, setInvestmentGoal] = useState('')
   const [riskTolerance, setRiskTolerance] = useState('')
   const [investmentAmount, setInvestmentAmount] = useState('')
-  const [copyStyle, setCopyStyle] = useState('')
   const [marketInterest, setMarketInterest] = useState('')
   const [successDefinition, setSuccessDefinition] = useState('')
   const [country, setCountry] = useState('')
@@ -70,10 +69,9 @@ function OnboardingContent() {
       case 2: return investmentGoal
       case 3: return riskTolerance
       case 4: return investmentAmount
-      case 5: return copyStyle
-      case 6: return marketInterest
-      case 7: return successDefinition
-      case 8: return country && agreed
+      case 5: return marketInterest
+      case 6: return successDefinition
+      case 7: return country && agreed
       default: return true
     }
   }
@@ -87,13 +85,18 @@ function OnboardingContent() {
       return
     }
     setLoading(true)
-    const answers = { userIntent, tradingExperience, investmentGoal, riskTolerance, investmentAmount, copyStyle, marketInterest, successDefinition, country }
+    const answers = { userIntent, tradingExperience, investmentGoal, riskTolerance, investmentAmount, marketInterest, successDefinition, country }
     const investorType = investmentGoal === 'Balanced growth' ? 'Balanced Growth Investor' : investmentGoal === 'Slow and steady growth' ? 'Conservative Growth Investor' : investmentGoal === 'High risk / high return' ? 'Aggressive Growth Investor' : 'Opportunistic Trader'
     const riskLevel = riskTolerance === 'Low risk (stable traders)' ? 'Low' : riskTolerance === 'High risk (aggressive traders)' ? 'High' : 'Medium'
-    const profileSummary = { investorType, riskLevel, preferredMarket: marketInterest, goal: userIntent }
-    const mainGoalSummary = JSON.stringify({ answers, profileSummary })
+    const profileSummary = { investorType, riskLevel, preferredMarket: marketInterest, goal: userIntent, investmentAmount }
+    const mainGoalSummary = JSON.stringify({ answers, profileSummary, completedAt: new Date().toISOString() })
     try {
-      await syncProfile({ email: user.email, full_name: user.fullName || '', has_onboarded: true })
+      await syncProfile({
+        email: user.email,
+        full_name: user.fullName || '',
+        has_onboarded: true,
+        onboarding_json: mainGoalSummary,
+      })
     } catch {}
     localStorage.setItem(storageKey, JSON.stringify({ user_id: user.id, email: user.email, comfort_level: riskLevel, main_goal: mainGoalSummary, has_onboarded: true, updated_at: new Date().toISOString() }))
     setLoading(false)
@@ -111,6 +114,7 @@ function OnboardingContent() {
           <div className="rounded-lg border border-slate-800 bg-[#050816] p-4 space-y-3 text-sm">
             <div className="flex justify-between"><span className="text-slate-400">Investor type</span><span className="font-medium text-slate-100">{investorType}</span></div>
             <div className="flex justify-between"><span className="text-slate-400">Risk level</span><span className="font-medium text-slate-100">{riskLevel}</span></div>
+            <div className="flex justify-between"><span className="text-slate-400">Planned copy-trading amount</span><span className="font-medium text-slate-100">{investmentAmount || '—'}</span></div>
             <div className="flex justify-between"><span className="text-slate-400">Preferred market</span><span className="font-medium text-slate-100">{marketInterest || 'Mixed'}</span></div>
             <div className="flex justify-between"><span className="text-slate-400">Main reason you joined</span><span className="font-medium text-slate-100">{userIntent}</span></div>
           </div>
@@ -145,13 +149,12 @@ function OnboardingContent() {
           {step === 2 && <div className="space-y-3"><p className="text-sm font-medium">What is your main investment goal?</p>{renderCardOptions(['Slow and steady growth', 'Balanced growth', 'High risk / high return', 'Short-term profit'], investmentGoal, setInvestmentGoal)}</div>}
           {step === 3 && <div className="space-y-3"><p className="text-sm font-medium">How much risk are you comfortable taking?</p><div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">{[ 'Low risk (stable traders)', 'Medium risk', 'High risk (aggressive traders)' ].map((label) => (<button key={label} type="button" onClick={() => setRiskTolerance(label)} className={`text-left rounded-lg border px-4 py-3 transition-colors ${riskTolerance === label ? 'border-primary bg-[#111827]' : 'border-slate-700 bg-[#050816] hover:bg-[#0b1020]'}`}><p>{label}</p></button>))}</div></div>}
           {step === 4 && <div className="space-y-3"><p className="text-sm font-medium">How much do you plan to start copy trading with?</p>{renderCardOptions(['$100 – $500','$500 – $2,000','$2,000 – $10,000','$10,000 – $50,000','$50,000 – $100,000+'], investmentAmount, setInvestmentAmount)}</div>}
-          {step === 5 && <div className="space-y-3"><p className="text-sm font-medium">How would you like to copy traders?</p>{renderCardOptions(['I already have who to copy','Automatically copy trades','Still learning — show me recommended traders'], copyStyle, setCopyStyle)}</div>}
-          {step === 6 && <div className="space-y-3"><p className="text-sm font-medium">Which markets interest you the most?</p>{renderCardOptions(['Crypto', 'Forex', 'Stocks', 'Commodities', 'Mixed portfolio'], marketInterest, setMarketInterest)}</div>}
-          {step === 7 && <div className="space-y-3"><p className="text-sm font-medium">What would success look like for you?</p>{renderCardOptions(['Making my first profitable copy trade','Growing my portfolio steadily','Learning trading strategies','Building passive income'], successDefinition, setSuccessDefinition)}</div>}
-          {step === 8 && <div className="space-y-4"><div><p className="text-sm font-medium mb-2">Country of residence</p><select className="w-full rounded-md bg-[#050816] border border-gray-700 px-3 py-2 text-sm" value={country} onChange={(e) => setCountry(e.target.value)} required><option value="">Select your country</option>{countries.map((c) => <option key={c} value={c}>{c}</option>)}</select></div><div className="mt-2 space-y-2 border-t border-gray-800 pt-3"><label className="flex items-center gap-2 text-xs text-gray-300"><input type="checkbox" className="h-3.5 w-3.5 rounded border-gray-600 bg-[#050816]" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} required /><span>I understand and agree.</span></label></div></div>}
+          {step === 5 && <div className="space-y-3"><p className="text-sm font-medium">Which markets interest you the most?</p>{renderCardOptions(['Crypto', 'Forex', 'Stocks', 'Commodities', 'Mixed portfolio'], marketInterest, setMarketInterest)}</div>}
+          {step === 6 && <div className="space-y-3"><p className="text-sm font-medium">What would success look like for you?</p>{renderCardOptions(['Making my first profitable copy trade','Growing my portfolio steadily','Learning trading strategies','Building passive income'], successDefinition, setSuccessDefinition)}</div>}
+          {step === 7 && <div className="space-y-4"><div><p className="text-sm font-medium mb-2">Country of residence</p><select className="w-full rounded-md bg-[#050816] border border-gray-700 px-3 py-2 text-sm" value={country} onChange={(e) => setCountry(e.target.value)} required><option value="">Select your country</option>{countries.map((c) => <option key={c} value={c}>{c}</option>)}</select></div><div className="mt-2 space-y-2 border-t border-gray-800 pt-3"><label className="flex items-center gap-2 text-xs text-gray-300"><input type="checkbox" className="h-3.5 w-3.5 rounded border-gray-600 bg-[#050816]" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} required /><span>I understand and agree.</span></label></div></div>}
           <div className="mt-4 flex items-center justify-between gap-3">
             <button type="button" disabled={!canGoBack} onClick={() => canGoBack && setStep((p) => p - 1)} className={`px-4 py-2 rounded-md text-xs font-medium border ${canGoBack ? 'border-gray-700 text-slate-200 hover:bg-[#111827]' : 'border-gray-800 text-slate-500 cursor-default'}`}>Back</button>
-            <button type="submit" disabled={loading || (step === 8 && (!country || !agreed))} className="px-6 py-2 rounded-md bg-primary hover:bg-primary-dark text-xs font-semibold disabled:opacity-70">{loading ? 'Saving…' : step === 8 ? 'Finish' : 'Next'}</button>
+            <button type="submit" disabled={loading || (step === 7 && (!country || !agreed))} className="px-6 py-2 rounded-md bg-primary hover:bg-primary-dark text-xs font-semibold disabled:opacity-70">{loading ? 'Saving…' : step === 7 ? 'Finish' : 'Next'}</button>
           </div>
         </form>
       </div>

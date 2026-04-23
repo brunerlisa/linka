@@ -65,14 +65,14 @@ export default function AuthPage() {
             signUpUrl="/auth/sign-up"
             routing="path"
             appearance={clerkAppearance}
-            forceRedirectUrl="/onboarding"
+            forceRedirectUrl="/dashboard"
           />
           <SignUp
             path="/auth/sign-up"
             signInUrl="/auth/sign-in"
             routing="path"
             appearance={clerkAppearance}
-            forceRedirectUrl="/onboarding"
+            forceRedirectUrl="/dashboard"
           />
         </div>
       </div>

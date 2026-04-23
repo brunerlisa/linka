@@ -41,6 +41,9 @@ export async function POST(req) {
     if (body.has_onboarded === true || body.has_onboarded === 'true') {
       payload.has_onboarded = true
     }
+    if (body.onboarding_json != null && typeof body.onboarding_json === 'string') {
+      payload.onboarding_json = body.onboarding_json
+    }
     const { data, error } = await supabaseAdmin.from('profiles').upsert(payload, { onConflict: 'clerk_user_id' }).select().single()
     if (error) return Response.json({ error: error.message }, { status: 500 })
     return Response.json(data)

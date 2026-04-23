@@ -16,8 +16,8 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <ClerkProvider
-      signInFallbackRedirectUrl="/onboarding"
-      signUpFallbackRedirectUrl="/onboarding"
+      signInFallbackRedirectUrl="/dashboard"
+      signUpFallbackRedirectUrl="/dashboard"
     >
       <html lang="en" className={outfit.variable}>
         <head>

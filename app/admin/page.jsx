@@ -12,6 +12,13 @@ export default function AdminDashboard() {
         </div>
       </header>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <Link href="/admin/control" className="p-6 rounded-xl bg-[#050712] border border-[#111827] hover:border-primary/40 transition-colors md:col-span-2 lg:col-span-1">
+          <h3 className="text-lg font-semibold text-white">Control Center</h3>
+          <p className="text-sm text-slate-400 mt-1">
+            Full admin hub: traders, payment requests, user accounts, profit updates, and signed-up users.
+          </p>
+          <span className="inline-block mt-3 text-primary text-sm font-medium">Open control center →</span>
+        </Link>
         <Link href="/admin/traders" className="p-6 rounded-xl bg-[#050712] border border-[#111827] hover:border-primary/40 transition-colors">
           <h3 className="text-lg font-semibold text-white">Traders</h3>
           <p className="text-sm text-slate-400 mt-1">Add, edit, and manage traders. Seed demo traders for the platform.</p>

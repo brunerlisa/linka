@@ -7,7 +7,6 @@ import { useAuth } from '@/components/AuthProvider'
 import ProtectedRoute from '@/components/ProtectedRoute'
 import { ChartErrorBoundary } from '@/components/ChartErrorBoundary'
 import {
-  addTradeUpdate,
   createPaymentRequest,
   createWithdrawalRequest,
   deleteTrader,
@@ -16,10 +15,7 @@ import {
   listPayments,
   listTrades,
   listTraders,
-  listUsers,
   seedDemoTraders,
-  updatePaymentStatus,
-  upsertAccount,
   upsertTrader,
 } from '@/lib/tradingAdminApi'
 
@@ -177,7 +173,7 @@ function DashboardContent() {
             {activeSection === 'Trading Courses' && <PlaceholderSection title="Trading Courses" />}
             {activeSection === 'Economic Calendar' && <PlaceholderSection title="Economic Calendar" />}
             {activeSection === 'Loyalty Status' && <PlaceholderSection title="Loyalty Status" />}
-            {activeSection === 'Settings' && <AdminSection />}
+            {activeSection === 'Settings' && <SettingsSection />}
             {activeSection === 'All Notifications' && <PlaceholderSection title="All Notifications" />}
             {activeSection === 'Account Verification' && <KycSection />}
             {activeSection === 'Login History' && <PlaceholderSection title="Login History" />}
@@ -1106,384 +1102,27 @@ function PlaceholderSection({ title }) {
   )
 }
 
-function AdminSection() {
-  const { user, isAdmin } = useAuth()
-  const canAccessAdmin = isAdmin
-
-  const [tab, setTab] = useState('traders')
-  const [traders, setTraders] = useState([])
-  const [payments, setPayments] = useState([])
-  const [accounts, setAccounts] = useState([])
-  const [trades, setTrades] = useState([])
-  const [users, setUsers] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [notice, setNotice] = useState('')
-
-  const [traderForm, setTraderForm] = useState({
-    id: '',
-    name: '',
-    avatar_url: '',
-    risk: 'Low',
-    style: 'Mixed',
-    monthly_profit: 90,
-    yearly_profit: 95,
-    win_rate: 90,
-    experience_years: 8,
-    fee_percent: 10,
-    min_capital: 10000,
-    copiers: 0,
-    status: 'ACTIVE',
-    bio: '',
-  })
-
-  const [accountForm, setAccountForm] = useState({
-    user_email: '',
-    balance: 0,
-    profit: 0,
-    status: 'active',
-  })
-
-  const [tradeForm, setTradeForm] = useState({
-    user_email: '',
-    trader_name: '',
-    pnl: 0,
-    result: 'profit',
-    notes: '',
-  })
-
-  const loadAdminData = async () => {
-    setLoading(true)
-    const [t, p, a, tr, u] = await Promise.all([listTraders(), listPayments(), listAccounts(), listTrades(), listUsers()])
-    setTraders(t || [])
-    setPayments(p || [])
-    setAccounts(a || [])
-    setTrades(tr || [])
-    setUsers(u || [])
-    setLoading(false)
-  }
-
-  useEffect(() => {
-    if (canAccessAdmin) loadAdminData()
-  }, [canAccessAdmin])
-
-  const saveTrader = async () => {
-    if (!traderForm.name.trim()) return
-    await upsertTrader(traderForm)
-    setNotice('Trader saved successfully.')
-    setTraderForm({
-      id: '',
-      name: '',
-      avatar_url: '',
-      risk: 'Low',
-      style: 'Mixed',
-      monthly_profit: 90,
-      yearly_profit: 95,
-      win_rate: 90,
-      experience_years: 8,
-      fee_percent: 10,
-      min_capital: 10000,
-      copiers: 0,
-      status: 'ACTIVE',
-      bio: '',
-    })
-    loadAdminData()
-  }
-
-  const editTrader = (trader) => {
-    setTraderForm({
-      id: trader.id,
-      name: trader.name || '',
-      avatar_url: trader.avatar_url || '',
-      risk: trader.risk || 'Low',
-      style: trader.style || 'Mixed',
-      monthly_profit: Number(trader.monthly_profit ?? 0),
-      yearly_profit: Number(trader.yearly_profit ?? 0),
-      win_rate: Number(trader.win_rate ?? 0),
-      experience_years: Number(trader.experience_years ?? 0),
-      fee_percent: Number(trader.fee_percent ?? 10),
-      min_capital: Number(trader.min_capital ?? 10000),
-      copiers: Number(trader.copiers ?? 0),
-      status: trader.status || 'ACTIVE',
-      bio: trader.bio || '',
-    })
-    setTab('traders')
-  }
-
-  const removeTrader = async (id) => {
-    await deleteTrader(id)
-    setNotice('Trader removed.')
-    loadAdminData()
-  }
-
-  const changePaymentStatus = async (payment, status) => {
-    await updatePaymentStatus(payment.id, status)
-    if (status === 'approved') {
-      const existing = accounts.find(
-        (a) => (a.user_email || '').toLowerCase() === (payment.user_email || '').toLowerCase()
-      )
-      const currentBalance = Number(existing?.balance || 0)
-      const amount = Number(payment.amount_usd || 0)
-      await upsertAccount({
-        ...existing,
-        user_email: payment.user_email,
-        balance: currentBalance + amount,
-        profit: Number(existing?.profit || 0),
-        status: existing?.status || 'active',
-      })
-    }
-    setNotice(`Payment ${status}.`)
-    loadAdminData()
-  }
-
-  const saveAccount = async () => {
-    if (!accountForm.user_email.trim()) return
-    await upsertAccount(accountForm)
-    setNotice('Account updated.')
-    setAccountForm({ user_email: '', balance: 0, profit: 0, status: 'active' })
-    loadAdminData()
-  }
-
-  const saveTradeUpdate = async () => {
-    if (!tradeForm.user_email.trim() || !tradeForm.trader_name.trim()) return
-    await addTradeUpdate(tradeForm)
-    const existing = accounts.find(
-      (a) => (a.user_email || '').toLowerCase() === tradeForm.user_email.toLowerCase()
-    )
-    const pnlValue = Number(tradeForm.pnl || 0)
-    await upsertAccount({
-      ...existing,
-      user_email: tradeForm.user_email,
-      balance: Number(existing?.balance || 0) + pnlValue,
-      profit: Number(existing?.profit || 0) + pnlValue,
-      status: existing?.status || 'active',
-    })
-    setNotice('Trade and profit update saved.')
-    setTradeForm({ user_email: '', trader_name: '', pnl: 0, result: 'profit', notes: '' })
-    loadAdminData()
-  }
-
-  if (!canAccessAdmin) {
-    return (
-      <section className="space-y-3">
-        <h2 className="text-lg font-semibold text-white">Admin Control</h2>
-        <p className="text-sm text-slate-300">
-          This area is restricted. Set your Clerk `public_metadata.role` to `admin`.
-        </p>
-      </section>
-    )
-  }
-
+function SettingsSection() {
+  const { isAdmin } = useAuth()
   return (
     <section className="space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h2 className="text-xl font-semibold text-white">Admin Control Center</h2>
-          <p className="text-sm text-slate-400">Manage traders, payments, user balances, and profit updates.</p>
-        </div>
-        <button
-          type="button"
-          onClick={loadAdminData}
-          className="px-3 py-2 rounded-lg text-sm border border-[#1f2937] bg-[#0a1328] hover:bg-[#0f1a33]"
-        >
-          Refresh Data
-        </button>
-      </div>
-      {notice && <p className="text-xs text-emerald-300">{notice}</p>}
-
-      <div className="flex flex-wrap gap-2">
-        {[
-          ['traders', 'Traders'],
-          ['payments', 'Payments'],
-          ['accounts', 'Accounts & Profits'],
-          ['users', 'Users'],
-        ].map(([id, label]) => (
-          <button
-            key={id}
-            type="button"
-            onClick={() => setTab(id)}
-            className={`px-3 py-1.5 rounded-lg text-sm ${
-              tab === id ? 'bg-primary text-white' : 'bg-[#0a1328] text-slate-300 border border-[#1f2937]'
-            }`}
+      <h2 className="text-lg font-semibold text-white">Settings</h2>
+      {isAdmin && (
+        <Panel title="Admin tools">
+          <p className="text-sm text-slate-300 mb-3">
+            Manage traders, payment approvals, user balances, and profit updates in the admin Control Center.
+          </p>
+          <Link
+            href="/admin/control"
+            className="inline-flex px-4 py-2 rounded-lg bg-primary hover:bg-primary-dark text-sm font-semibold text-white"
           >
-            {label}
-          </button>
-        ))}
-      </div>
-
-      {loading ? (
-        <Panel title="Loading admin data">
-          <EmptyState label="Loading..." />
+            Open Control Center
+          </Link>
         </Panel>
-      ) : (
-        <>
-          {tab === 'traders' && (
-            <div className="grid xl:grid-cols-[360px_1fr] gap-4">
-              <div className="bg-[#050712] border border-[#111827] rounded-xl p-4 space-y-2">
-                <h3 className="text-sm font-semibold text-white">{traderForm.id ? 'Edit Trader' : 'Add Trader'}</h3>
-                <input value={traderForm.name} onChange={(e) => setTraderForm((p) => ({ ...p, name: e.target.value }))} placeholder="Trader name" className="w-full rounded-md bg-[#020617] border border-[#1f2937] px-3 py-2 text-xs" />
-                <input value={traderForm.avatar_url} onChange={(e) => setTraderForm((p) => ({ ...p, avatar_url: e.target.value }))} placeholder="Avatar URL" className="w-full rounded-md bg-[#020617] border border-[#1f2937] px-3 py-2 text-xs" />
-                <div className="grid grid-cols-2 gap-2">
-                  <select value={traderForm.risk} onChange={(e) => setTraderForm((p) => ({ ...p, risk: e.target.value }))} className="rounded-md bg-[#020617] border border-[#1f2937] px-2 py-2 text-xs"><option>Low</option><option>Medium</option><option>High</option></select>
-                  <input value={traderForm.style} onChange={(e) => setTraderForm((p) => ({ ...p, style: e.target.value }))} placeholder="Style e.g Mixed" className="rounded-md bg-[#020617] border border-[#1f2937] px-3 py-2 text-xs" />
-                </div>
-                <div className="grid grid-cols-3 gap-2">
-                  <input type="number" value={traderForm.monthly_profit} onChange={(e) => setTraderForm((p) => ({ ...p, monthly_profit: Number(e.target.value) }))} placeholder="Monthly %" className="rounded-md bg-[#020617] border border-[#1f2937] px-2 py-2 text-xs" />
-                  <input type="number" value={traderForm.yearly_profit} onChange={(e) => setTraderForm((p) => ({ ...p, yearly_profit: Number(e.target.value) }))} placeholder="Yearly %" className="rounded-md bg-[#020617] border border-[#1f2937] px-2 py-2 text-xs" />
-                  <input type="number" value={traderForm.win_rate} onChange={(e) => setTraderForm((p) => ({ ...p, win_rate: Number(e.target.value) }))} placeholder="Win %" className="rounded-md bg-[#020617] border border-[#1f2937] px-2 py-2 text-xs" />
-                </div>
-                <div className="grid grid-cols-3 gap-2">
-                  <input type="number" value={traderForm.experience_years} onChange={(e) => setTraderForm((p) => ({ ...p, experience_years: Number(e.target.value) }))} placeholder="Exp yrs" className="rounded-md bg-[#020617] border border-[#1f2937] px-2 py-2 text-xs" />
-                  <input type="number" value={traderForm.fee_percent} onChange={(e) => setTraderForm((p) => ({ ...p, fee_percent: Number(e.target.value) }))} placeholder="Fee %" className="rounded-md bg-[#020617] border border-[#1f2937] px-2 py-2 text-xs" />
-                  <input type="number" value={traderForm.copiers} onChange={(e) => setTraderForm((p) => ({ ...p, copiers: Number(e.target.value) }))} placeholder="Copiers" className="rounded-md bg-[#020617] border border-[#1f2937] px-2 py-2 text-xs" />
-                </div>
-                <input type="number" value={traderForm.min_capital} onChange={(e) => setTraderForm((p) => ({ ...p, min_capital: Number(e.target.value) }))} placeholder="Min capital USD" className="w-full rounded-md bg-[#020617] border border-[#1f2937] px-3 py-2 text-xs" />
-                <textarea value={traderForm.bio} onChange={(e) => setTraderForm((p) => ({ ...p, bio: e.target.value }))} placeholder="Short bio" rows={3} className="w-full rounded-md bg-[#020617] border border-[#1f2937] px-3 py-2 text-xs" />
-                <button type="button" onClick={saveTrader} className="w-full py-2 rounded-md bg-primary hover:bg-primary-dark text-xs font-semibold text-white">
-                  {traderForm.id ? 'Update Trader' : 'Add Trader'}
-                </button>
-              </div>
-
-              <div className="bg-[#050712] border border-[#111827] rounded-xl p-4">
-                <h3 className="text-sm font-semibold text-white mb-3">Trader Inventory ({traders.length})</h3>
-                <div className="space-y-2 max-h-[560px] overflow-y-auto pr-1">
-                  {traders.map((t) => (
-                    <div key={t.id} className="p-3 rounded-lg border border-[#1f2937] bg-[#060d1f] flex items-center justify-between gap-3">
-                      <div>
-                        <p className="text-sm text-white font-medium">{t.name}</p>
-                        <p className="text-xs text-slate-400">
-                          +{Number(t.monthly_profit || 0)}% monthly • {t.risk || 'Low'} • {t.style || 'Mixed'}
-                        </p>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <button type="button" onClick={() => editTrader(t)} className="px-3 py-1.5 rounded bg-[#1e293b] text-xs">Edit</button>
-                        <button type="button" onClick={() => removeTrader(t.id)} className="px-3 py-1.5 rounded bg-red-500/20 text-red-300 text-xs">Delete</button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          )}
-
-          {tab === 'payments' && (
-            <div className="bg-[#050712] border border-[#111827] rounded-xl p-4">
-              <h3 className="text-sm font-semibold text-white mb-3">User Payment Requests</h3>
-              <div className="space-y-2 max-h-[560px] overflow-y-auto pr-1">
-                {payments.length === 0 && <p className="text-xs text-slate-400">No payment requests yet.</p>}
-                {payments.map((p) => (
-                  <div key={p.id} className="p-3 rounded-lg border border-[#1f2937] bg-[#060d1f] flex flex-wrap items-center justify-between gap-3">
-                    <div>
-                      <p className="text-sm text-white">{p.user_email || 'Unknown user'}</p>
-                      <p className="text-xs text-slate-400">
-                        ${Number(p.amount_usd || 0).toLocaleString()} • {p.method || '-'} • {p.status}
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <button type="button" onClick={() => changePaymentStatus(p, 'approved')} className="px-3 py-1.5 rounded bg-emerald-500/20 text-emerald-300 text-xs">Approve</button>
-                      <button type="button" onClick={() => changePaymentStatus(p, 'rejected')} className="px-3 py-1.5 rounded bg-red-500/20 text-red-300 text-xs">Reject</button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {tab === 'accounts' && (
-            <div className="grid xl:grid-cols-2 gap-4">
-              <div className="bg-[#050712] border border-[#111827] rounded-xl p-4 space-y-3">
-                <h3 className="text-sm font-semibold text-white">Update User Account</h3>
-                <input value={accountForm.user_email} onChange={(e) => setAccountForm((p) => ({ ...p, user_email: e.target.value }))} placeholder="User email" className="w-full rounded-md bg-[#020617] border border-[#1f2937] px-3 py-2 text-xs" />
-                <div className="grid grid-cols-2 gap-2">
-                  <input type="number" value={accountForm.balance} onChange={(e) => setAccountForm((p) => ({ ...p, balance: Number(e.target.value) }))} placeholder="Balance USD" className="rounded-md bg-[#020617] border border-[#1f2937] px-3 py-2 text-xs" />
-                  <input type="number" value={accountForm.profit} onChange={(e) => setAccountForm((p) => ({ ...p, profit: Number(e.target.value) }))} placeholder="Profit USD" className="rounded-md bg-[#020617] border border-[#1f2937] px-3 py-2 text-xs" />
-                </div>
-                <select value={accountForm.status} onChange={(e) => setAccountForm((p) => ({ ...p, status: e.target.value }))} className="w-full rounded-md bg-[#020617] border border-[#1f2937] px-3 py-2 text-xs">
-                  <option value="active">active</option>
-                  <option value="suspended">suspended</option>
-                  <option value="pending">pending</option>
-                </select>
-                <button type="button" onClick={saveAccount} className="w-full py-2 rounded-md bg-primary hover:bg-primary-dark text-xs font-semibold text-white">
-                  Save Account
-                </button>
-
-                <h3 className="text-sm font-semibold text-white pt-2">Post Trade/Profit Update</h3>
-                <input value={tradeForm.user_email} onChange={(e) => setTradeForm((p) => ({ ...p, user_email: e.target.value }))} placeholder="User email" className="w-full rounded-md bg-[#020617] border border-[#1f2937] px-3 py-2 text-xs" />
-                <input value={tradeForm.trader_name} onChange={(e) => setTradeForm((p) => ({ ...p, trader_name: e.target.value }))} placeholder="Trader name" className="w-full rounded-md bg-[#020617] border border-[#1f2937] px-3 py-2 text-xs" />
-                <div className="grid grid-cols-2 gap-2">
-                  <input type="number" value={tradeForm.pnl} onChange={(e) => setTradeForm((p) => ({ ...p, pnl: Number(e.target.value) }))} placeholder="PnL USD (+/-)" className="rounded-md bg-[#020617] border border-[#1f2937] px-3 py-2 text-xs" />
-                  <select value={tradeForm.result} onChange={(e) => setTradeForm((p) => ({ ...p, result: e.target.value }))} className="rounded-md bg-[#020617] border border-[#1f2937] px-3 py-2 text-xs">
-                    <option value="profit">profit</option>
-                    <option value="loss">loss</option>
-                  </select>
-                </div>
-                <textarea value={tradeForm.notes} onChange={(e) => setTradeForm((p) => ({ ...p, notes: e.target.value }))} placeholder="Trade notes" rows={2} className="w-full rounded-md bg-[#020617] border border-[#1f2937] px-3 py-2 text-xs" />
-                <button type="button" onClick={saveTradeUpdate} className="w-full py-2 rounded-md bg-emerald-600 hover:bg-emerald-500 text-xs font-semibold text-white">
-                  Save Trade Update
-                </button>
-              </div>
-
-              <div className="space-y-4">
-                <div className="bg-[#050712] border border-[#111827] rounded-xl p-4">
-                  <h3 className="text-sm font-semibold text-white mb-2">User Accounts</h3>
-                  <div className="space-y-2 max-h-[250px] overflow-y-auto pr-1">
-                    {accounts.length === 0 && <p className="text-xs text-slate-400">No accounts yet.</p>}
-                    {accounts.map((a) => (
-                      <div key={a.id || a.user_email} className="p-2 rounded border border-[#1f2937] bg-[#060d1f]">
-                        <p className="text-xs text-white">{a.user_email}</p>
-                        <p className="text-[11px] text-slate-400">
-                          Balance: ${Number(a.balance || 0).toLocaleString()} • Profit: ${Number(a.profit || 0).toLocaleString()} • {a.status}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="bg-[#050712] border border-[#111827] rounded-xl p-4">
-                  <h3 className="text-sm font-semibold text-white mb-2">Recent Trade Updates</h3>
-                  <div className="space-y-2 max-h-[250px] overflow-y-auto pr-1">
-                    {trades.length === 0 && <p className="text-xs text-slate-400">No trade updates yet.</p>}
-                    {trades.map((t) => (
-                      <div key={t.id} className="p-2 rounded border border-[#1f2937] bg-[#060d1f]">
-                        <p className="text-xs text-white">{t.user_email} • {t.trader_name}</p>
-                        <p className="text-[11px] text-slate-400">
-                          PnL: ${Number(t.pnl || 0).toLocaleString()} • {t.result}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {tab === 'users' && (
-            <div className="bg-[#050712] border border-[#111827] rounded-xl p-4">
-              <h3 className="text-sm font-semibold text-white mb-2">Signed-up Users</h3>
-              <p className="text-xs text-slate-400 mb-3">
-              Users come from the `profiles` table (auto-created when a user signs in with Clerk after running the SQL schema).
-              </p>
-              <div className="space-y-2 max-h-[560px] overflow-y-auto pr-1">
-                {users.length === 0 && (
-                  <div className="p-3 rounded border border-[#1f2937] bg-[#060d1f]">
-                    <p className="text-xs text-slate-400">
-                      No users found yet. Run the updated SQL and create at least one signup.
-                    </p>
-                  </div>
-                )}
-                {users.map((u) => (
-                  <div key={u.id || u.email} className="p-3 rounded border border-[#1f2937] bg-[#060d1f]">
-                    <p className="text-sm text-white">{u.full_name || 'User'}</p>
-                    <p className="text-xs text-slate-400">{u.email || 'No email'}</p>
-                    <p className="text-[11px] text-slate-500 mt-1">
-                      Role: {u.role || 'user'} • Joined: {u.created_at ? new Date(u.created_at).toLocaleString() : '-'}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-        </>
       )}
+      <Panel title="Account">
+        <EmptyState label="Account preferences and notifications will appear here." />
+      </Panel>
     </section>
   )
 }
