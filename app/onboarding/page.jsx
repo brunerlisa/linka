@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useUser } from '@clerk/nextjs'
 import { useAuth } from '@/components/AuthProvider'
 import ProtectedRoute from '@/components/ProtectedRoute'
 import { syncProfile, getMyProfile } from '@/lib/tradingAdminApi'
@@ -10,6 +11,7 @@ const TOTAL_STEPS = 8
 
 function OnboardingContent() {
   const { user } = useAuth()
+  const { user: clerkUser } = useUser()
   const router = useRouter()
   const storageKey = `onboarding:${user?.email || user?.id || 'guest'}`
 
@@ -31,6 +33,10 @@ function OnboardingContent() {
     if (!user) return
     let mounted = true
     async function check() {
+      if (user?.hasOnboarded) {
+        router.replace('/dashboard')
+        return
+      }
       try {
         const profile = await getMyProfile()
         if (mounted && profile?.has_onboarded) {
@@ -96,6 +102,14 @@ function OnboardingContent() {
         full_name: user.fullName || '',
         has_onboarded: true,
         onboarding_json: mainGoalSummary,
+      })
+    } catch {}
+    try {
+      await clerkUser?.update({
+        unsafeMetadata: {
+          ...(clerkUser?.unsafeMetadata || {}),
+          has_onboarded: true,
+        },
       })
     } catch {}
     localStorage.setItem(storageKey, JSON.stringify({ user_id: user.id, email: user.email, comfort_level: riskLevel, main_goal: mainGoalSummary, has_onboarded: true, updated_at: new Date().toISOString() }))

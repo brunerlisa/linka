@@ -31,6 +31,7 @@ export function AuthProvider({ children }) {
         email: user.primaryEmailAddress?.emailAddress || '',
         fullName: user.fullName || user.username || '',
         role: (user.publicMetadata?.role || 'user').toString().toLowerCase(),
+        hasOnboarded: user.unsafeMetadata?.has_onboarded === true,
       }
     : null
 

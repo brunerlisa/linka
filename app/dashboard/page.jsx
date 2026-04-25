@@ -23,6 +23,7 @@ function DashboardContent() {
   const { user, signOut } = useAuth()
   const router = useRouter()
   const onboardingKey = `onboarding:${user?.email || user?.id || 'guest'}`
+  const [checkingOnboarding, setCheckingOnboarding] = useState(true)
   const [activeSection, setActiveSection] = useState('Dashboard')
   const [expandedMenus, setExpandedMenus] = useState({
     Payments: true,
@@ -41,21 +42,63 @@ function DashboardContent() {
   useEffect(() => {
     if (!user) return
     let mounted = true
-    async function check() {
+    const hasLocalOnboarding = () => {
       try {
-        const profile = await getMyProfile()
-        if (mounted && profile?.has_onboarded) return
         const saved = localStorage.getItem(onboardingKey)
         const parsed = saved ? JSON.parse(saved) : null
-        if (parsed?.has_onboarded) return
+        return Boolean(parsed?.has_onboarded)
+      } catch {
+        return false
+      }
+    }
+
+    async function check() {
+      if (user?.hasOnboarded) {
+        if (mounted) setCheckingOnboarding(false)
+        return
+      }
+
+      if (hasLocalOnboarding()) {
+        if (mounted) setCheckingOnboarding(false)
+        return
+      }
+
+      try {
+        const profile = await getMyProfile()
+        if (mounted && profile?.has_onboarded) {
+          localStorage.setItem(
+            onboardingKey,
+            JSON.stringify({
+              user_id: user.id,
+              email: user.email,
+              has_onboarded: true,
+              updated_at: new Date().toISOString(),
+            })
+          )
+          setCheckingOnboarding(false)
+          return
+        }
         if (mounted) router.replace('/onboarding')
       } catch {
+        // If profile check fails, keep users who already completed onboarding out of a redirect loop.
+        if (mounted && hasLocalOnboarding()) {
+          setCheckingOnboarding(false)
+          return
+        }
         if (mounted) router.replace('/onboarding')
       }
     }
     check()
     return () => { mounted = false }
   }, [user, onboardingKey, router])
+
+  if (checkingOnboarding) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#050816] text-white">
+        <p className="text-sm text-slate-400">Loading...</p>
+      </div>
+    )
+  }
 
   const sidebarItems = [
     { label: 'Dashboard' },
