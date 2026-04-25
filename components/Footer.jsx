@@ -1,5 +1,6 @@
 'use client'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useState } from 'react'
 
 const products = [
@@ -30,9 +31,18 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12">
           {/* Brand */}
           <div>
-            <p className="text-lg font-bold tracking-tight mb-3">
-              <span className="text-primary">Noble Mirror Capital</span>
-            </p>
+            <div className="flex items-center gap-2 mb-3">
+              <Image
+                src="/noblemirrorcapital logo.png"
+                alt="Noble Mirror Capital logo"
+                width={36}
+                height={36}
+                className="rounded-md"
+              />
+              <p className="text-lg font-bold tracking-tight">
+                <span className="text-primary">Noble Mirror Capital</span>
+              </p>
+            </div>
             <p className="text-slate-400 text-sm leading-relaxed">
               The most advanced AI-powered trading platform for both beginners and professionals.
             </p>

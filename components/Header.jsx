@@ -1,6 +1,7 @@
 'use client'
 import { useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { useAuth } from '@/components/AuthProvider'
 
@@ -20,8 +21,16 @@ export default function Header() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-14 md:h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-1 shrink-0">
-            <span className="text-lg font-bold tracking-tight">
+          <Link href="/" className="flex items-center gap-2 shrink-0">
+            <Image
+              src="/noblemirrorcapital logo.png"
+              alt="Noble Mirror Capital logo"
+              width={34}
+              height={34}
+              className="rounded-md"
+              priority
+            />
+            <span className="text-lg font-bold tracking-tight leading-none">
               <span className="text-primary">Noble Mirror Capital</span>
             </span>
           </Link>
