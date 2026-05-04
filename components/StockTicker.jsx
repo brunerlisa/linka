@@ -11,13 +11,18 @@ const tickerSymbols = [
   { proName: 'NASDAQ:NVDA', title: 'Nvidia' },
 ]
 
+/**
+ * One strip; layout responds to breakpoint:
+ * - &lt;lg: relative bar under hero row (mini-desktop phone layout)
+ * - lg+: anchored to bottom of a `relative` hero (classic desktop hero)
+ */
 export default function StockTicker() {
   const containerRef = useRef(null)
   const [widgetError, setWidgetError] = useState(false)
 
   useEffect(() => {
     const container = containerRef.current
-    if (!container) return
+    if (!container) return undefined
 
     setWidgetError(false)
     container.innerHTML = ''
@@ -26,11 +31,16 @@ export default function StockTicker() {
     widgetHost.className = 'tradingview-widget-container'
     widgetHost.style.height = '100%'
     widgetHost.style.width = '100%'
+    widgetHost.style.maxWidth = '100%'
+    widgetHost.style.overflow = 'hidden'
+    widgetHost.style.boxSizing = 'border-box'
 
     const widgetNode = document.createElement('div')
     widgetNode.className = 'tradingview-widget-container__widget'
     widgetNode.style.height = '100%'
     widgetNode.style.width = '100%'
+    widgetNode.style.maxWidth = '100%'
+    widgetNode.style.boxSizing = 'border-box'
     widgetHost.appendChild(widgetNode)
 
     const script = document.createElement('script')
@@ -51,17 +61,26 @@ export default function StockTicker() {
     const healthCheck = window.setTimeout(() => {
       const iframeExists = !!container.querySelector('iframe')
       if (!iframeExists) setWidgetError(true)
-    }, 5000)
+    }, 8000)
 
-    return () => window.clearTimeout(healthCheck)
+    return () => {
+      window.clearTimeout(healthCheck)
+      container.innerHTML = ''
+      setWidgetError(false)
+    }
   }, [])
 
   return (
-    <div className="absolute bottom-0 left-0 right-0 border-t border-dark-border bg-dark/80 h-[56px]">
-      <div ref={containerRef} className="h-full w-full" />
+    <div
+      className="relative lg:absolute lg:bottom-0 lg:left-0 lg:right-0 z-[5] min-w-0 max-w-full
+        h-[52px] lg:h-[56px] w-full overflow-hidden
+        border-y lg:border-y-0 border-dark-border lg:border-t
+        bg-dark/90 lg:bg-dark/80"
+    >
+      <div ref={containerRef} className="h-full w-full min-w-0 max-w-full overflow-hidden [&_iframe]:max-w-full" />
       {widgetError && (
-        <div className="absolute inset-0 flex items-center px-4 text-xs text-slate-400">
-          Live ticker blocked in this browser session. Disable strict script blockers or open in a regular browser tab.
+        <div className="absolute inset-0 flex items-center px-2 text-[10px] sm:text-xs text-slate-400 bg-dark/95">
+          Live ticker blocked or slow to load. Try a regular browser tab or disable strict blockers.
         </div>
       )}
     </div>

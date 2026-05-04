@@ -72,7 +72,7 @@ export default function RootLayout({ children }) {
       signInFallbackRedirectUrl="/dashboard"
       signUpFallbackRedirectUrl="/dashboard"
     >
-      <html lang="en" className={outfit.variable}>
+      <html lang="en" className={`${outfit.variable} overflow-x-hidden`}>
         <head>
           <link rel="preconnect" href="https://fonts.googleapis.com" />
           <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -81,7 +81,10 @@ export default function RootLayout({ children }) {
             dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
           />
         </head>
-        <body className="min-h-screen bg-dark text-slate-100 font-sans antialiased" suppressHydrationWarning>
+        <body
+          className="min-h-screen bg-dark text-slate-100 font-sans antialiased overflow-x-hidden"
+          suppressHydrationWarning
+        >
           <AuthProvider>{children}</AuthProvider>
         </body>
       </html>

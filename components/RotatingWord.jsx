@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 
 const words = ['everyone', 'experts', 'investor']
 
-export default function RotatingWord() {
+export default function RotatingWord({ className = '' }) {
   const [index, setIndex] = useState(0)
 
   useEffect(() => {
@@ -14,7 +14,7 @@ export default function RotatingWord() {
   }, [])
 
   return (
-    <span className="relative inline-block min-w-[8ch] h-[1.2em] align-middle text-amber-400">
+    <span className={`relative inline-block min-w-[6ch] sm:min-w-[7ch] h-[1.2em] align-middle text-amber-400 ${className}`}>
       {words.map((word, i) => (
         <span
           key={word}

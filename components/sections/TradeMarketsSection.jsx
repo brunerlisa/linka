@@ -7,7 +7,7 @@ export default function TradeMarketsSection() {
 
   useEffect(() => {
     const container = containerRef.current
-    if (!container) return
+    if (!container) return undefined
 
     setWidgetError(false)
     container.innerHTML = ''
@@ -16,11 +16,16 @@ export default function TradeMarketsSection() {
     widgetHost.className = 'tradingview-widget-container'
     widgetHost.style.height = '100%'
     widgetHost.style.width = '100%'
+    widgetHost.style.maxWidth = '100%'
+    widgetHost.style.overflow = 'hidden'
+    widgetHost.style.boxSizing = 'border-box'
 
     const widgetNode = document.createElement('div')
     widgetNode.className = 'tradingview-widget-container__widget'
     widgetNode.style.height = '100%'
     widgetNode.style.width = '100%'
+    widgetNode.style.maxWidth = '100%'
+    widgetNode.style.boxSizing = 'border-box'
     widgetHost.appendChild(widgetNode)
 
     const script = document.createElement('script')
@@ -102,24 +107,28 @@ export default function TradeMarketsSection() {
     const healthCheck = window.setTimeout(() => {
       const iframeExists = !!container.querySelector('iframe')
       if (!iframeExists) setWidgetError(true)
-    }, 5000)
+    }, 8000)
 
-    return () => window.clearTimeout(healthCheck)
+    return () => {
+      window.clearTimeout(healthCheck)
+      container.innerHTML = ''
+      setWidgetError(false)
+    }
   }, [])
 
   return (
-    <section className="py-20 border-t border-dark-border">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+    <section className="py-6 lg:py-20 border-t border-dark-border">
+      <div className="max-w-[1180px] lg:max-w-5xl mx-auto px-2 sm:px-2.5 lg:px-8 min-w-0">
+        <h2 className="text-[clamp(0.85rem,2.5vw,1.35rem)] lg:text-3xl xl:text-4xl font-bold text-white mb-2 lg:mb-4">
           Trade Global Markets at the Lowest Costs!
         </h2>
-        <p className="text-slate-400 mb-8">
+        <p className="text-slate-500 mb-3 lg:mb-8 text-[9px] sm:text-[10px] lg:text-base leading-snug">
           Gain fast and easy access to 1000+ of the most liquid Currencies, Indices, Commodities, Share CFDs, ETFs and more with{' '}
           <span className="text-primary font-medium">PRIME ECN</span> spreads from <span className="text-primary font-medium">0.0 pips!</span>
         </p>
 
-        <div className="relative h-[420px] rounded-xl bg-dark-card border border-dark-border overflow-hidden">
-          <div ref={containerRef} className="h-full w-full" />
+        <div className="relative h-[260px] sm:h-[320px] md:h-[380px] lg:h-[420px] rounded-lg lg:rounded-xl bg-dark-card border border-dark-border overflow-hidden min-w-0">
+          <div ref={containerRef} className="h-full w-full min-w-0 max-w-full overflow-hidden [&_iframe]:max-w-full" />
           {widgetError && (
             <div className="absolute inset-0 flex items-center justify-center px-6 text-center text-sm text-slate-400 bg-[#050816]">
               Live market widget is blocked in this browser session. Disable strict script blockers or open in a normal

@@ -29,7 +29,6 @@ export default function Footer() {
     <footer className="bg-dark-card border-t border-dark-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12">
-          {/* Brand */}
           <div>
             <div className="flex items-center gap-2 mb-3">
               <Image
@@ -48,7 +47,6 @@ export default function Footer() {
             </p>
           </div>
 
-          {/* Products */}
           <div>
             <h4 className="text-white font-bold mb-4">Products</h4>
             <ul className="space-y-2">
@@ -62,7 +60,6 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Company */}
           <div>
             <h4 className="text-white font-bold mb-4">Company</h4>
             <ul className="space-y-2">
@@ -76,7 +73,6 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Legal */}
           <div>
             <h4 className="text-white font-bold mb-4">Legal</h4>
             <ul className="space-y-2">
@@ -90,12 +86,9 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Subscribe */}
           <div>
             <h4 className="text-white font-bold mb-4">Subscribe</h4>
-            <p className="text-slate-400 text-sm mb-4">
-              Stay updated with the latest trading insights and platform news.
-            </p>
+            <p className="text-slate-400 text-sm mb-4">Stay updated with the latest trading insights and platform news.</p>
             <form
               className="flex gap-2"
               onSubmit={(e) => {
@@ -122,13 +115,23 @@ export default function Footer() {
 
         <p className="mt-12 pt-8 border-t border-dark-border text-center text-sm text-slate-500">
           © {new Date().getFullYear()} Noble Mirror Capital. Innovative Finance Technologies. &nbsp;|&nbsp;
-          <Link href="/faq" className="text-slate-400 hover:text-primary">FAQ</Link> &nbsp;·&nbsp;
-          <Link href="/terms" className="text-slate-400 hover:text-primary">Terms</Link> &nbsp;·&nbsp;
-          <Link href="/refund" className="text-slate-400 hover:text-primary">Refund</Link> &nbsp;·&nbsp;
-          <Link href="/privacy" className="text-slate-400 hover:text-primary">Privacy</Link>
+          <Link href="/faq" className="text-slate-400 hover:text-primary">
+            FAQ
+          </Link>{' '}
+          ·{' '}
+          <Link href="/terms" className="text-slate-400 hover:text-primary">
+            Terms
+          </Link>{' '}
+          ·{' '}
+          <Link href="/refund" className="text-slate-400 hover:text-primary">
+            Refund
+          </Link>{' '}
+          ·{' '}
+          <Link href="/privacy" className="text-slate-400 hover:text-primary">
+            Privacy
+          </Link>
         </p>
       </div>
     </footer>
   )
 }
-
