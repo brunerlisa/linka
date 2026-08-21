@@ -9,12 +9,12 @@ export default function manifest() {
     theme_color: '#02052D',
     icons: [
       {
-        src: '/noblemirrorcapital%20logo.png',
+        src: '/noblemirrorcapital.png',
         sizes: '192x192',
         type: 'image/png',
       },
       {
-        src: '/noblemirrorcapital%20logo.png',
+        src: '/noblemirrorcapital.png',
         sizes: '512x512',
         type: 'image/png',
       },

@@ -32,11 +32,11 @@ export default function Footer() {
           <div>
             <div className="flex items-center gap-2 mb-3">
               <Image
-                src="/noblemirrorcapital logo.png"
-                alt="Noble Mirror Capital logo"
-                width={36}
-                height={36}
-                className="rounded-md"
+                src="/noblemirrorcapital.png"
+                alt="Noble Mirror Capital"
+                width={48}
+                height={48}
+                className="rounded-full"
               />
               <p className="text-lg font-bold tracking-tight">
                 <span className="text-primary">Noble Mirror Capital</span>

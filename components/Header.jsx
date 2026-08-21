@@ -22,11 +22,11 @@ export default function Header() {
         <div className="flex items-center justify-between h-14 md:h-16 gap-2">
           <Link href="/" className="flex items-center gap-2 shrink-0 min-w-0">
             <Image
-              src="/noblemirrorcapital logo.png"
-              alt="Noble Mirror Capital logo"
-              width={34}
-              height={34}
-              className="rounded-md shrink-0 w-8 h-8 md:w-[34px] md:h-[34px]"
+              src="/noblemirrorcapital.png"
+              alt="Noble Mirror Capital"
+              width={44}
+              height={44}
+              className="rounded-full shrink-0 w-10 h-10 md:w-11 md:h-11"
               priority
             />
             <span className="font-bold tracking-tight leading-none truncate">

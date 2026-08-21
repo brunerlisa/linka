@@ -25,6 +25,14 @@ export async function proxy(request) {
 async function updateSession(request) {
   let response = NextResponse.next({ request })
   const pathname = request.nextUrl.pathname
+  if (
+    pathname === '/sitemap.xml' ||
+    pathname === '/robots.txt' ||
+    pathname === '/manifest.webmanifest' ||
+    pathname.startsWith('/google')
+  ) {
+    return NextResponse.next({ request })
+  }
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.VITE_SUPABASE_URL
   const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY
 
@@ -68,5 +76,7 @@ async function updateSession(request) {
 }
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|html)$).*)'],
+  matcher: [
+    '/((?!_next/static|_next/image|favicon.ico|sitemap\\.xml|robots\\.txt|manifest\\.webmanifest|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|html|txt)$).*)',
+  ],
 }

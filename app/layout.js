@@ -7,12 +7,17 @@ const outfit = Outfit({
   variable: '--font-outfit',
 })
 
+const LOGO_SRC = '/noblemirrorcapital.png'
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.noblemirrorcapital.com'
+const googleVerification =
+  process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || 'na68QqLqQW7fBIsd8O_JQ1ooZwZURbpH6FdXhb6Uydk'
+
 const organizationJsonLd = {
   '@context': 'https://schema.org',
   '@type': 'Organization',
   name: 'Noble Mirror Capital',
-  url: process.env.NEXT_PUBLIC_SITE_URL || 'https://www.noblemirrorcapital.com',
-  logo: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://www.noblemirrorcapital.com'}/noblemirrorcapital%20logo.png`,
+  url: siteUrl,
+  logo: `${siteUrl}${LOGO_SRC}`,
 }
 
 export const viewport = {
@@ -23,7 +28,7 @@ export const viewport = {
 }
 
 export const metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://www.noblemirrorcapital.com'),
+  metadataBase: new URL(siteUrl),
   title: {
     default: 'Noble Mirror Capital - Innovative Copy Trading',
     template: '%s | Noble Mirror Capital',
@@ -49,7 +54,7 @@ export const metadata = {
     description: 'A platform with endless possibilities. When experts trade, you trade.',
     images: [
       {
-        url: '/noblemirrorcapital%20logo.png',
+        url: LOGO_SRC,
         width: 1024,
         height: 1024,
         alt: 'Noble Mirror Capital logo',
@@ -60,15 +65,15 @@ export const metadata = {
     card: 'summary_large_image',
     title: 'Noble Mirror Capital - Innovative Copy Trading',
     description: 'A platform with endless possibilities. When experts trade, you trade.',
-    images: ['/noblemirrorcapital%20logo.png'],
+    images: [LOGO_SRC],
   },
   icons: {
-    icon: '/noblemirrorcapital%20logo.png',
-    shortcut: '/noblemirrorcapital%20logo.png',
-    apple: '/noblemirrorcapital%20logo.png',
+    icon: LOGO_SRC,
+    shortcut: LOGO_SRC,
+    apple: LOGO_SRC,
   },
   verification: {
-    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
+    google: googleVerification,
   },
 }
 
