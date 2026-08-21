@@ -1,21 +1,20 @@
 'use client'
 
 import { useEffect } from 'react'
-import { useUser } from '@clerk/nextjs'
+import { useAuth } from '@/components/AuthProvider'
 import { syncProfile } from '@/lib/tradingAdminApi'
 
-/** Syncs Clerk user to profiles table on mount. Call from protected pages. */
+/** Syncs the signed-in user to the profiles table on mount. */
 export default function ProfileSync() {
-  const { user, isLoaded } = useUser()
+  const { user, loading } = useAuth()
 
   useEffect(() => {
-    if (!isLoaded || !user) return
+    if (loading || !user) return
     syncProfile({
-      email: user.primaryEmailAddress?.emailAddress || '',
-      full_name: user.fullName || user.username || '',
-      role: (user.publicMetadata?.role || 'user').toString().toLowerCase(),
+      email: user.email || '',
+      full_name: user.fullName || '',
     }).catch(() => {})
-  }, [isLoaded, user])
+  }, [loading, user])
 
   return null
 }

@@ -1,41 +1,41 @@
 # Noble Mirror Capital - Copy Trading Platform
 
-Next.js app with Clerk (auth) and Supabase (database). Auth is enforced in API routes; Supabase uses service role.
+Next.js app with **Supabase Auth** and Supabase database. Auth is enforced in `proxy.js` and API routes. Database writes use the service role.
 
-## Env vars (`.env.local`)
+## Env vars (Vercel + `.env.local`)
 
 ```bash
-# Clerk
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_...
-CLERK_SECRET_KEY=sk_...
-
 # Supabase
 NEXT_PUBLIC_SUPABASE_URL=https://xxx.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJ...
 SUPABASE_SERVICE_ROLE_KEY=eyJ...
+
+# Optional: comma-separated emails that always get admin access
+ADMIN_EMAILS=you@email.com
 ```
 
-**Migration from Vite:** Rename `VITE_CLERK_PUBLISHABLE_KEY` → `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`, `VITE_SUPABASE_URL` → `NEXT_PUBLIC_SUPABASE_URL`. Add `CLERK_SECRET_KEY` and `SUPABASE_SERVICE_ROLE_KEY` (from Supabase Project Settings → API).
+Get the URL, **anon** key, and **service_role** key from Supabase → Project Settings → API.
 
-## Clerk dashboard
+Remove any old Clerk keys (`NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`, `CLERK_SECRET_KEY`). They are no longer used.
 
-1. Users → select user → **publicMetadata** → `{ "role": "admin" }` for admins.
-2. No JWT template needed (backend uses Clerk session cookies).
+## Auth
 
-## Supabase
+Sign-in and sign-up use Supabase email/password.
 
-1. Run `supabase-admin-schema.sql` in SQL editor.
-2. Project Settings → API → copy **service_role** key → `SUPABASE_SERVICE_ROLE_KEY`.
+1. In Supabase → Authentication → URL Configuration, set:
+   - Site URL: `https://noblemirrorcapital.com`
+   - Redirect URLs: `https://noblemirrorcapital.com/auth/callback` and `https://www.noblemirrorcapital.com/auth/callback`
+2. Make yourself admin either with `ADMIN_EMAILS` or in the SQL editor:
+
+```sql
+update public.profiles set role = 'admin' where email = 'you@email.com';
+```
+
+3. Run `supabase-auth-migration.sql` once so Row Level Security uses Supabase Auth instead of Clerk JWTs.
 
 ## Run
 
 ```bash
 npm install
 npm run dev
-```
-
-## Build
-
-```bash
-npm run build
-npm start
 ```

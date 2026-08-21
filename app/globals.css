@@ -62,26 +62,6 @@ main iframe,
   display: none;
 }
 
-/* Clerk auth form: ensure text is visible on dark background */
-.clerk-auth-wrapper {
-  --clerk-color-foreground: #f8fafc;
-  --clerk-color-muted-foreground: #cbd5e1;
-}
-.clerk-auth-wrapper [data-clerk-component],
-.clerk-auth-wrapper [data-slot] {
-  color: inherit;
-}
-.clerk-auth-wrapper h1,
-.clerk-auth-wrapper h2,
-.clerk-auth-wrapper p,
-.clerk-auth-wrapper label,
-.clerk-auth-wrapper [data-slot='formFieldLabel'] {
-  color: #f8fafc !important;
-}
-.clerk-auth-wrapper [data-slot='formFieldHintText'] {
-  color: #94a3b8 !important;
-}
-
 .bg-grid {
   background-image:
     linear-gradient(rgba(0, 174, 239, 0.03) 1px, transparent 1px),

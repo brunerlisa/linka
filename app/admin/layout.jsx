@@ -29,7 +29,9 @@ export default function AdminLayout({ children }) {
             <>
               <p className="text-amber-400 font-medium mb-2">Admin access required</p>
               <p className="text-slate-400 text-sm mb-4">
-                Your account needs the admin role. In Clerk Dashboard, set your user&apos;s Public metadata to: <code className="text-primary">{`{"role": "admin"}`}</code>. Then sign out and sign back in.
+                Your account needs the admin role. In Supabase, run{' '}
+                <code className="text-primary">update profiles set role = &apos;admin&apos; where email = &apos;you@email.com&apos;;</code>
+                {' '}Then sign out and sign back in.
               </p>
               <p className="text-slate-500 text-xs">Redirecting to dashboard in a few seconds...</p>
               <Link href="/dashboard" className="mt-4 inline-block text-sm text-primary hover:underline">Go to Dashboard now</Link>

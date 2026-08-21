@@ -109,7 +109,7 @@ export default function AdminAccountsPage() {
           <input
             value={form.user_clerk_id}
             onChange={(e) => setForm((p) => ({ ...p, user_clerk_id: e.target.value }))}
-            placeholder="Clerk user ID (optional)"
+            placeholder="User ID (optional)"
             className="w-full rounded-md bg-[#020617] border border-[#1f2937] px-3 py-2 text-sm text-white placeholder:text-slate-500"
           />
           <div className="grid grid-cols-2 gap-2">

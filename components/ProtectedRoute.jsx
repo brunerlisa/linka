@@ -1,19 +1,19 @@
 'use client'
 
-import { useUser } from '@clerk/nextjs'
+import { useAuth } from '@/components/AuthProvider'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 
 export default function ProtectedRoute({ children }) {
-  const { user, isLoaded } = useUser()
+  const { user, loading } = useAuth()
   const router = useRouter()
 
   useEffect(() => {
-    if (!isLoaded) return
+    if (loading) return
     if (!user) router.replace('/auth/sign-in')
-  }, [user, isLoaded, router])
+  }, [user, loading, router])
 
-  if (!isLoaded) return null
+  if (loading) return null
   if (!user) return null
 
   return children

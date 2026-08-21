@@ -1,4 +1,3 @@
-import { ClerkProvider } from '@clerk/nextjs'
 import { Outfit } from 'next/font/google'
 import { AuthProvider } from '@/components/AuthProvider'
 import './globals.css'
@@ -68,26 +67,21 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <ClerkProvider
-      signInFallbackRedirectUrl="/dashboard"
-      signUpFallbackRedirectUrl="/dashboard"
-    >
-      <html lang="en" className={`${outfit.variable} overflow-x-hidden`}>
-        <head>
-          <link rel="preconnect" href="https://fonts.googleapis.com" />
-          <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-          <script
-            type="application/ld+json"
-            dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
-          />
-        </head>
-        <body
-          className="min-h-screen bg-dark text-slate-100 font-sans antialiased overflow-x-hidden"
-          suppressHydrationWarning
-        >
-          <AuthProvider>{children}</AuthProvider>
-        </body>
-      </html>
-    </ClerkProvider>
+    <html lang="en" className={`${outfit.variable} overflow-x-hidden`}>
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+        />
+      </head>
+      <body
+        className="min-h-screen bg-dark text-slate-100 font-sans antialiased overflow-x-hidden"
+        suppressHydrationWarning
+      >
+        <AuthProvider>{children}</AuthProvider>
+      </body>
+    </html>
   )
 }

@@ -1,4 +1,4 @@
-import { requireAuth, getAuthUser } from '@/lib/auth'
+import { requireAuth, requireAdmin, ownsRecord } from '@/lib/auth'
 import { supabaseAdmin } from '@/lib/supabase-server'
 
 const nowIso = () => new Date().toISOString()
@@ -11,7 +11,7 @@ export async function GET() {
     if (error) return Response.json({ error: error.message }, { status: 500 })
     const list = data || []
     if (!user.isAdmin) {
-      return Response.json(list.filter((t) => t.user_clerk_id === user.userId))
+      return Response.json(list.filter((t) => ownsRecord(t, user)))
     }
     return Response.json(list)
   } catch (e) {
