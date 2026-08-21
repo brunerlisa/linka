@@ -17,20 +17,23 @@ export default function Header() {
   const { user, isAdmin } = useAuth()
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-dark/95 backdrop-blur-md border-b border-dark-border min-w-0 max-w-full overflow-x-clip">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-dark/95 backdrop-blur-md border-b border-dark-border min-w-0 max-w-full overflow-x-clip pt-[env(safe-area-inset-top)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-14 md:h-16">
+        <div className="flex items-center justify-between h-14 md:h-16 gap-2">
           <Link href="/" className="flex items-center gap-2 shrink-0 min-w-0">
             <Image
               src="/noblemirrorcapital logo.png"
               alt="Noble Mirror Capital logo"
               width={34}
               height={34}
-              className="rounded-md shrink-0"
+              className="rounded-md shrink-0 w-8 h-8 md:w-[34px] md:h-[34px]"
               priority
             />
-            <span className="text-sm sm:text-lg font-bold tracking-tight leading-none truncate">
-              <span className="text-primary">Noble Mirror Capital</span>
+            <span className="font-bold tracking-tight leading-none truncate">
+              <span className="text-primary text-[15px] sm:text-base md:text-lg">
+                <span className="sm:hidden">Noble Mirror</span>
+                <span className="hidden sm:inline">Noble Mirror Capital</span>
+              </span>
             </span>
           </Link>
 
@@ -78,30 +81,41 @@ export default function Header() {
             )}
           </div>
 
-          <button
-            type="button"
-            className="md:hidden p-2 text-slate-400 hover:text-white"
-            onClick={() => setMobileOpen(!mobileOpen)}
-            aria-label="Toggle menu"
-          >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              {mobileOpen ? (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              ) : (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              )}
-            </svg>
-          </button>
+          <div className="flex md:hidden items-center gap-2 shrink-0">
+            {!user && (
+              <Link
+                href="/auth/sign-up"
+                className="px-3 py-2 rounded-lg bg-primary text-white text-sm font-semibold"
+              >
+                Sign up
+              </Link>
+            )}
+            <button
+              type="button"
+              className="p-2.5 -mr-1 text-slate-300 hover:text-white"
+              onClick={() => setMobileOpen(!mobileOpen)}
+              aria-label="Toggle menu"
+              aria-expanded={mobileOpen}
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                {mobileOpen ? (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                ) : (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                )}
+              </svg>
+            </button>
+          </div>
         </div>
 
         {mobileOpen && (
-          <div className="md:hidden py-4 border-t border-dark-border">
+          <div className="md:hidden py-4 border-t border-dark-border pb-[max(1rem,env(safe-area-inset-bottom))]">
             <nav className="flex flex-col gap-1">
               {navLinks.map(({ to, label }) => (
                 <Link
                   key={label}
                   href={to}
-                  className={`px-4 py-2.5 rounded-lg text-sm font-medium ${
+                  className={`px-4 py-3 rounded-lg text-base font-medium ${
                     pathname === (to === '/#leaders' ? '/' : to.replace(/#.*/, '')) ? 'text-primary bg-primary/10' : 'text-slate-300'
                   }`}
                   onClick={() => setMobileOpen(false)}
@@ -109,12 +123,12 @@ export default function Header() {
                   {label}
                 </Link>
               ))}
-              <div className="mt-3 pt-3 border-t border-dark-border flex gap-2 px-4 flex-wrap">
+              <div className="mt-3 pt-3 border-t border-dark-border flex flex-col gap-2">
                 {user ? (
                   <>
                     <Link
                       href="/dashboard"
-                      className="flex-1 py-2.5 text-center text-slate-300 rounded-lg text-sm"
+                      className="w-full py-3 text-center text-slate-200 rounded-lg text-base bg-dark-card border border-dark-border"
                       onClick={() => setMobileOpen(false)}
                     >
                       Dashboard
@@ -122,7 +136,7 @@ export default function Header() {
                     {isAdmin && (
                       <Link
                         href="/admin"
-                        className="flex-1 py-2.5 text-center bg-amber-500/20 text-amber-400 rounded-lg text-sm font-medium"
+                        className="w-full py-3 text-center bg-amber-500/20 text-amber-400 rounded-lg text-base font-medium"
                         onClick={() => setMobileOpen(false)}
                       >
                         Admin
@@ -130,22 +144,13 @@ export default function Header() {
                     )}
                   </>
                 ) : (
-                  <>
-                    <Link
-                      href="/auth/sign-in"
-                      className="flex-1 py-2.5 text-center text-slate-300 rounded-lg text-sm"
-                      onClick={() => setMobileOpen(false)}
-                    >
-                      Login
-                    </Link>
-                    <Link
-                      href="/auth/sign-up"
-                      className="flex-1 py-2.5 text-center bg-primary text-white rounded-lg text-sm font-medium"
-                      onClick={() => setMobileOpen(false)}
-                    >
-                      Sign up
-                    </Link>
-                  </>
+                  <Link
+                    href="/auth/sign-in"
+                    className="w-full py-3 text-center text-slate-200 rounded-lg text-base bg-dark-card border border-dark-border"
+                    onClick={() => setMobileOpen(false)}
+                  >
+                    Login
+                  </Link>
                 )}
               </div>
             </nav>

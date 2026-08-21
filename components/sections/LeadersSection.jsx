@@ -14,48 +14,48 @@ const leaders = [
 
 export default function LeadersSection() {
   return (
-    <section id="leaders" className="py-6 lg:py-20 border-t border-dark-border bg-[#0a1429]/80">
-      <div className="max-w-[1180px] lg:max-w-7xl mx-auto px-2 sm:px-2.5 lg:px-8 min-w-0">
-        <h2 className="text-[clamp(0.85rem,2.6vw,1.35rem)] lg:text-3xl xl:text-4xl font-bold text-white text-center mb-0.5 lg:mb-2">
+    <section id="leaders" className="py-12 lg:py-20 border-t border-dark-border bg-[#0a1429]/80">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 min-w-0">
+        <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white text-center mb-2">
           More than 1000 leaders
         </h2>
-        <p className="text-slate-500 text-[9px] sm:text-[10px] lg:text-base text-center mb-4 lg:mb-12">
+        <p className="text-slate-400 text-[15px] lg:text-base text-center mb-8 lg:mb-12">
           to choose from in Interactive Copyelite Copy
         </p>
-        <div className="grid grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-2.5 lg:gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
           {leaders.map((leader) => (
             <div
               key={leader.name}
-              className="p-2 sm:p-2.5 lg:p-5 rounded-lg lg:rounded-xl bg-[#f8fafc] border border-[#dbe4f2] shadow-sm lg:shadow-[0_4px_14px_rgba(15,23,42,0.15)] relative overflow-hidden min-w-0"
+              className="p-5 rounded-xl bg-[#f8fafc] border border-[#dbe4f2] shadow-sm relative overflow-hidden min-w-0"
             >
-              <div className="absolute bottom-0 right-0 w-24 h-16 lg:w-40 lg:h-24 opacity-20 lg:opacity-25 pointer-events-none">
+              <div className="absolute bottom-0 right-0 w-32 h-20 lg:w-40 lg:h-24 opacity-20 pointer-events-none">
                 <MiniChart className="w-full h-full text-[#8fb9f4]" points={[0.6, 0.4, 0.5, 0.7, 0.55, 0.8]} up />
               </div>
-              <div className="flex items-start justify-between gap-1 mb-2 relative">
-                <div className="flex items-center gap-1.5 min-w-0 flex-1">
+              <div className="flex items-start justify-between gap-3 mb-3 relative">
+                <div className="flex items-center gap-3 min-w-0 flex-1">
                   <Avatar
                     seed={leader.seed}
                     name={leader.name}
                     src={leader.photo}
-                    className="w-8 h-8 rounded-full object-cover shrink-0 border border-[#d1d9e6]"
+                    className="w-11 h-11 rounded-full object-cover shrink-0 border border-[#d1d9e6]"
                   />
                   <div className="min-w-0">
-                    <p className="text-[#1e293b] font-medium text-[10px] sm:text-[11px] truncate">{leader.name}</p>
-                    {leader.tag && <p className="text-slate-500 text-[9px] leading-tight line-clamp-2">{leader.tag}</p>}
+                    <p className="text-[#1e293b] font-medium text-sm truncate">{leader.name}</p>
+                    {leader.tag && <p className="text-slate-500 text-xs leading-tight">{leader.tag}</p>}
                   </div>
                 </div>
-                <Link href="/platform" className="shrink-0 px-1.5 py-1 lg:px-4 lg:py-2 rounded-lg xl:rounded-xl bg-[#5ea1e8] text-white text-[9px] lg:text-sm font-semibold hover:bg-[#4a93e4] whitespace-nowrap">
+                <Link href="/platform" className="shrink-0 px-4 py-2 rounded-xl bg-[#5ea1e8] text-white text-sm font-semibold hover:bg-[#4a93e4]">
                   COPY
                 </Link>
               </div>
-              <div className="mb-1.5 lg:mb-3 relative">
-                <p className="text-[22px] sm:text-[26px] lg:text-[38px] leading-none font-bold text-[#2f7cdf]">{leader.gain}</p>
-                <p className="text-slate-600 text-[10px] lg:text-sm">Gain</p>
-                <p className="text-slate-500 text-[9px] lg:text-sm leading-tight">{leader.allTime} All time gain</p>
+              <div className="mb-3 relative">
+                <p className="text-[38px] leading-none font-bold text-[#2f7cdf]">{leader.gain}</p>
+                <p className="text-slate-600 text-sm mt-1">Gain</p>
+                <p className="text-slate-500 text-sm">{leader.allTime} All time gain</p>
               </div>
-              <div className="flex items-center justify-between relative gap-1">
-                <span className="px-1 py-0.5 rounded-full bg-[#fcefc9] text-[#a67c00] text-[8px] sm:text-[9px] shrink max-w-[50%] truncate">{leader.risk}</span>
-                <div className="text-right text-[8px] sm:text-[9px] lg:text-sm text-slate-500 leading-tight min-w-0">
+              <div className="flex items-center justify-between relative gap-2">
+                <span className="px-2 py-1 rounded-full bg-[#fcefc9] text-[#a67c00] text-xs">{leader.risk}</span>
+                <div className="text-right text-sm text-slate-500 leading-tight min-w-0">
                   <p>{leader.followers} Followers</p>
                   <p>{leader.last7} last 7d</p>
                 </div>

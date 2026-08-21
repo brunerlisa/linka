@@ -12,9 +12,7 @@ const tickerSymbols = [
 ]
 
 /**
- * One strip; layout responds to breakpoint:
- * - &lt;lg: relative bar under hero row (mini-desktop phone layout)
- * - lg+: anchored to bottom of a `relative` hero (classic desktop hero)
+ * Market ticker under the hero. Full-width on phones; pinned to the hero bottom on desktop.
  */
 export default function StockTicker() {
   const containerRef = useRef(null)
@@ -73,7 +71,7 @@ export default function StockTicker() {
   return (
     <div
       className="relative lg:absolute lg:bottom-0 lg:left-0 lg:right-0 z-[5] min-w-0 max-w-full
-        h-10 sm:h-11 lg:h-[56px] w-full overflow-hidden
+        h-12 lg:h-[56px] w-full overflow-hidden
         border-y lg:border-y-0 border-dark-border lg:border-t
         bg-dark/90 lg:bg-dark/80"
     >

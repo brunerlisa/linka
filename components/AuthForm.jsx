@@ -6,9 +6,9 @@ import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 
 const inputClass =
-  'w-full rounded-md bg-[#0f172a] border border-slate-700 px-3 py-2.5 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-primary'
+  'w-full min-h-12 rounded-md bg-[#0f172a] border border-slate-700 px-3 py-3 text-base text-white placeholder:text-slate-500 focus:outline-none focus:border-primary'
 const buttonClass =
-  'w-full py-2.5 rounded-md bg-primary hover:bg-primary-dark text-sm font-semibold disabled:opacity-70'
+  'w-full min-h-12 py-3 rounded-md bg-primary hover:bg-primary-dark text-base font-semibold disabled:opacity-70'
 
 export default function AuthForm({ mode }) {
   const isSignUp = mode === 'sign-up'
@@ -68,7 +68,7 @@ export default function AuthForm({ mode }) {
         </div>
 
         <div className="w-full flex items-center justify-center">
-          <div className="w-full max-w-md bg-[#070a1b] border border-slate-800 rounded-xl p-8 shadow-xl">
+          <div className="w-full max-w-md bg-[#070a1b] border border-slate-800 rounded-xl p-6 sm:p-8 shadow-xl">
             <h2 className="text-xl font-semibold text-white mb-1">{isSignUp ? 'Create your account' : 'Welcome back'}</h2>
             <p className="text-sm text-slate-400 mb-6">
               {isSignUp ? 'Start copy trading in a few minutes.' : 'Sign in to continue to your dashboard.'}

@@ -35,19 +35,16 @@ const featuresGrid = [
 export default function Home() {
   return (
     <div className="min-h-screen bg-grid min-w-0 max-w-full overflow-x-clip">
-      <section className="relative flex flex-col min-h-0 lg:min-h-[90vh] pt-11 lg:pt-28 pb-0 lg:pb-36 overflow-x-clip lg:overflow-hidden">
+      <section className="relative flex flex-col min-h-0 lg:min-h-[90vh] pt-[4.75rem] lg:pt-28 pb-0 lg:pb-36 overflow-x-clip lg:overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent pointer-events-none hidden lg:block" />
         <div className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-primary/6 to-transparent lg:hidden" />
 
-        {/* Mobile: copy left, trading card right (narrow). lg+: same row, copy left card right */}
-        <div
-          className={`relative z-[1] grid max-lg:grid-cols-[minmax(0,1fr)_minmax(104px,min(38vw,172px))] max-lg:gap-x-2.5 sm:max-lg:gap-x-3 max-lg:gap-y-0 max-lg:items-start gap-y-6 items-start lg:flex lg:flex-row lg:items-center lg:gap-10 w-full max-w-[1280px] xl:max-w-[1400px] mx-auto px-3 sm:px-2.5 xl:px-10 pt-3 lg:pt-0 pb-2 lg:pb-0 flex-1 min-w-0`}
-        >
+        <div className="relative z-[1] flex flex-col lg:flex-row lg:items-center gap-8 lg:gap-10 w-full max-w-[1280px] xl:max-w-[1400px] mx-auto px-4 sm:px-6 xl:px-10 pt-6 lg:pt-0 pb-6 lg:pb-0 flex-1 min-w-0">
           <div className="min-w-0 lg:flex-1 lg:basis-[58%] w-full">
             <h1
               className="
               font-bold tracking-[-0.03em] text-white
-              text-[clamp(1.375rem,7.2vw,2.375rem)] leading-[1.05] sm:text-[clamp(1.5rem,6vw,2.5rem)]
+              text-[2rem] leading-[1.12] sm:text-4xl sm:leading-[1.1]
               lg:text-[76px] xl:text-[82px] lg:tracking-[-0.025em] lg:leading-[0.92]
             "
             >
@@ -55,47 +52,40 @@ export default function Home() {
               <span className="block xl:whitespace-nowrap">Trading Platform</span>
               <span className="block xl:whitespace-nowrap">
                 for{' '}
-                <RotatingWord className="max-lg:min-w-[5.5ch] max-lg:text-[1.05em] sm:max-lg:text-[1.08em]" />
+                <RotatingWord />
               </span>
             </h1>
 
-            <div className="mt-2 lg:mt-6 flex flex-wrap gap-x-3 gap-y-1.5 lg:gap-6">
-              <div className="flex items-center gap-1.5 lg:gap-2">
-                <span className="flex items-center justify-center w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 rounded-full bg-primary/20 text-primary shrink-0" aria-hidden>
-                  <PeopleIcon className="w-3 h-3 sm:w-3.5 sm:h-3.5 lg:w-4 lg:h-4" />
+            <div className="mt-5 lg:mt-6 flex flex-wrap gap-x-4 gap-y-3 lg:gap-6">
+              <div className="flex items-center gap-2">
+                <span className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/20 text-primary shrink-0" aria-hidden>
+                  <PeopleIcon className="w-4 h-4" />
                 </span>
-                <span className="text-white font-medium lg:font-semibold text-[11px] sm:text-sm lg:text-base xl:text-lg max-lg:whitespace-nowrap">
-                  <span className="lg:hidden">1,007,000+ Users</span>
-                  <span className="hidden lg:inline">1,007,000+ Active Users</span>
+                <span className="text-white font-semibold text-sm lg:text-base xl:text-lg">
+                  1,007,000+ Active Users
                 </span>
               </div>
-              <div className="flex items-center gap-1.5 lg:gap-2">
-                <span className="flex items-center justify-center w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 rounded-full bg-amber-500/20 text-amber-400 shrink-0" aria-hidden>
-                  <StarIcon className="w-3 h-3 sm:w-3.5 sm:h-3.5 lg:w-4 lg:h-4" />
+              <div className="flex items-center gap-2">
+                <span className="flex items-center justify-center w-8 h-8 rounded-full bg-amber-500/20 text-amber-400 shrink-0" aria-hidden>
+                  <StarIcon className="w-4 h-4" />
                 </span>
-                <span className="text-white font-medium lg:font-semibold text-[11px] sm:text-sm lg:text-base xl:text-lg max-lg:whitespace-nowrap">
-                  <span className="lg:hidden">4.5 Google</span>
-                  <span className="hidden lg:inline">4.5 Google Rating</span>
+                <span className="text-white font-semibold text-sm lg:text-base xl:text-lg">
+                  4.5 Google Rating
                 </span>
               </div>
             </div>
 
-            <p className="mt-2.5 lg:mt-6 text-slate-400 lg:text-slate-300 text-[12px] sm:text-[13px] md:text-sm lg:text-lg leading-relaxed lg:max-w-[680px]">
-              <span className="lg:hidden">
-                A Platform With Endless Possibilities. When Experts trade, you trade. Open your account in minutes!
-              </span>
-              <span className="hidden lg:inline">
-                A Platform With Endless Possibilities. When Experts trade, you trade. If they profit, you profit too. Open your account in minutes!
-              </span>
+            <p className="mt-5 lg:mt-6 text-slate-300 text-[15px] sm:text-base lg:text-lg leading-relaxed max-w-[680px]">
+              A Platform With Endless Possibilities. When Experts trade, you trade. If they profit, you profit too. Open your account in minutes!
             </p>
 
-            <div className="mt-4 lg:mt-7">
+            <div className="mt-6 lg:mt-7">
               <Link
                 href="/auth/sign-up"
                 className="
-                  inline-flex items-center justify-center rounded-lg lg:rounded-lg font-semibold
+                  inline-flex items-center justify-center rounded-xl font-semibold
                   bg-primary hover:bg-primary-dark text-white transition-colors
-                  px-5 py-2.5 text-sm sm:text-base
+                  w-full sm:w-auto min-h-12 px-6 py-3.5 text-base
                   lg:px-6 lg:py-3.5 lg:text-lg
                 "
               >
@@ -104,7 +94,7 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="min-w-0 w-full lg:flex-1 lg:basis-[42%] flex justify-center lg:justify-end xl:justify-center xl:pr-4 max-lg:justify-end max-lg:self-start">
+          <div className="min-w-0 w-full lg:flex-1 lg:basis-[42%] flex justify-center lg:justify-end xl:justify-center xl:pr-4">
             <HeroPhone responsiveDensity />
           </div>
         </div>
@@ -112,35 +102,34 @@ export default function Home() {
         <StockTicker />
       </section>
 
-      <section className="py-6 lg:py-20 border-y border-dark-border bg-dark-card/30">
-        <div className="w-full max-w-[1180px] lg:max-w-7xl mx-auto px-2 sm:px-2.5 lg:px-8 min-w-0">
-          <div className="text-center mb-3 lg:mb-10">
-            <h2 className="text-[clamp(0.95rem,3vw,1.5rem)] lg:text-3xl font-bold text-white">Everything you need to copy trade</h2>
-            <p className="mt-1 lg:mt-2 text-slate-500 lg:text-slate-400 text-[9px] sm:text-[10px] lg:text-base max-w-2xl mx-auto">
+      <section className="py-12 lg:py-20 border-y border-dark-border bg-dark-card/30">
+        <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 min-w-0">
+          <div className="text-center mb-8 lg:mb-10">
+            <h2 className="text-2xl sm:text-3xl font-bold text-white">Everything you need to copy trade</h2>
+            <p className="mt-3 text-slate-400 text-[15px] lg:text-base max-w-2xl mx-auto">
               Calendar, signals, automation, and rewards — in one dark-fintech workspace.
             </p>
           </div>
-          <div className="grid grid-cols-3 gap-1 sm:gap-1.5 lg:grid-cols-2 lg:gap-6 xl:grid-cols-3 min-w-0">
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 lg:gap-6 min-w-0">
             {featuresGrid.map(({ title, description, Icon }) => (
               <div
                 key={title}
-                className="p-1.5 sm:p-2 lg:p-6 rounded-md lg:rounded-xl bg-dark-card border border-dark-border hover:border-primary/30 transition-colors text-left min-w-0"
+                className="p-5 lg:p-6 rounded-xl bg-dark-card border border-dark-border hover:border-primary/30 transition-colors text-left min-w-0"
               >
-                <div className="w-7 h-7 sm:w-8 sm:h-8 lg:w-12 lg:h-12 rounded-md lg:rounded-lg border lg:border-2 border-primary flex items-center justify-center mb-1 lg:mb-4 text-primary shrink-0">
-                  <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4 lg:w-6 lg:h-6" />
+                <div className="w-12 h-12 rounded-lg border-2 border-primary flex items-center justify-center mb-4 text-primary shrink-0">
+                  <Icon className="w-6 h-6" />
                 </div>
-                <h3 className="text-[9px] sm:text-[10px] lg:text-lg font-bold text-white mb-0.5 lg:mb-2 leading-tight max-lg:line-clamp-3">
+                <h3 className="text-lg font-bold text-white mb-2 leading-tight">
                   {title}
                 </h3>
-                <p className="text-slate-500 lg:text-slate-400 text-[8px] sm:text-[9px] lg:text-sm leading-snug lg:leading-relaxed mb-1 lg:mb-4 max-lg:line-clamp-4">
+                <p className="text-slate-400 text-sm leading-relaxed mb-4">
                   {description}
                 </p>
                 <Link
                   href="/auth/sign-up"
-                  className="inline-flex items-center gap-0.5 lg:gap-1 text-[8px] sm:text-[9px] lg:text-sm font-medium text-primary hover:text-primary-light transition-colors"
+                  className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:text-primary-light transition-colors"
                 >
-                  <span className="lg:hidden">more →</span>
-                  <span className="hidden lg:inline">Find out more →</span>
+                  Find out more →
                 </Link>
               </div>
             ))}
@@ -161,15 +150,15 @@ export default function Home() {
       <SimpleStepsSection />
       <RegulationPartnersSection />
 
-      <section className="py-8 lg:py-20 border-t border-dark-border">
-        <div className="w-full max-w-[1180px] lg:max-w-4xl mx-auto px-2 sm:px-2.5 lg:px-6 min-w-0 text-center">
-          <h2 className="text-base sm:text-lg lg:text-3xl font-bold text-white mb-1 lg:mb-4">Ready to copy the best?</h2>
-          <p className="text-slate-500 lg:text-slate-400 text-[10px] sm:text-[11px] lg:text-base mb-4 lg:mb-8">
+      <section className="py-14 lg:py-20 border-t border-dark-border">
+        <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 min-w-0 text-center">
+          <h2 className="text-2xl sm:text-3xl font-bold text-white mb-3 lg:mb-4">Ready to copy the best?</h2>
+          <p className="text-slate-400 text-[15px] lg:text-base mb-6 lg:mb-8">
             Join thousands of investors who trade smarter with Noble Mirror Capital.
           </p>
           <Link
             href="/auth/sign-up"
-            className="inline-flex items-center justify-center px-4 py-2 text-[11px] lg:px-8 lg:py-4 lg:text-base font-medium rounded-md lg:rounded-lg bg-primary hover:bg-primary-dark text-white transition-colors"
+            className="inline-flex items-center justify-center w-full sm:w-auto min-h-12 px-8 py-3.5 text-base font-medium rounded-xl bg-primary hover:bg-primary-dark text-white transition-colors"
           >
             Get Started on the Platform
           </Link>

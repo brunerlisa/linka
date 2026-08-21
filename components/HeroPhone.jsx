@@ -88,31 +88,31 @@ export default function HeroPhone({ dense = false, responsiveDensity = false }) 
   const useResponsive = responsiveDensity
 
   const box = useResponsive
-    ? 'p-1 max-lg:p-1.5 sm:p-2 lg:p-5 lg:p-6 rounded-md lg:rounded-2xl w-full max-lg:max-w-full max-lg:mx-0 mx-auto max-w-[min(264px,92vw)] lg:max-w-[560px] lg:mx-0'
+    ? 'p-4 sm:p-5 lg:p-6 rounded-2xl w-full mx-auto max-w-none lg:max-w-[560px] lg:mx-0'
     : denseOnly
       ? 'p-2 sm:p-2.5 rounded-lg'
       : 'p-5 md:p-6 rounded-2xl'
 
   const title = useResponsive
-    ? 'text-[9px] max-lg:leading-tight sm:text-[11px] lg:text-base'
+    ? 'text-sm lg:text-base'
     : denseOnly
       ? 'text-[10px] sm:text-[11px]'
       : 'text-sm md:text-base'
 
   const widgetH = useResponsive
-    ? 'h-[56px] sm:max-lg:h-[82px] lg:h-44 lg:md:h-48'
+    ? 'h-[200px] sm:h-[220px] lg:h-44 xl:h-48'
     : denseOnly
       ? 'h-[142px] sm:h-[150px]'
       : 'h-44 md:h-48'
 
   const wrap = useResponsive
-    ? 'min-h-0 max-lg:max-w-full lg:min-h-[390px] lg:md:min-h-[440px]'
+    ? 'min-h-0 w-full lg:min-h-[390px]'
     : denseOnly
       ? 'min-h-0'
       : 'min-h-[390px] md:min-h-[440px]'
 
   const badge = useResponsive
-    ? 'text-[8px] max-lg:px-1 max-lg:py-0.5 sm:text-[10px] lg:text-[11px]'
+    ? 'text-xs px-2 py-1 lg:text-[11px]'
     : denseOnly
       ? 'text-[9px] sm:text-[10px]'
       : 'text-[11px]'
@@ -122,37 +122,34 @@ export default function HeroPhone({ dense = false, responsiveDensity = false }) 
       <div className="absolute inset-0 pointer-events-none bg-gradient-to-r from-transparent via-primary/10 to-transparent blur-3xl" />
 
       <div className={`relative w-full min-w-0 border border-slate-700/50 bg-gradient-to-b from-[#0f172a] to-[#0b1220] shadow-xl lg:shadow-2xl ${box}`}>
-        <div className="flex items-center justify-between gap-0.5 max-lg:gap-1 sm:gap-1 mb-1 max-lg:mb-1 sm:mb-2 lg:mb-4">
-          <p className={`text-slate-200 font-semibold ${title} min-w-0 max-lg:truncate`}>
-            <span className="lg:hidden">Live snapshot</span>
-            <span className="hidden lg:inline">Live Portfolio Snapshot</span>
+        <div className="flex items-center justify-between gap-2 mb-3 lg:mb-4">
+          <p className={`text-slate-200 font-semibold ${title} min-w-0`}>
+            Live Portfolio Snapshot
           </p>
           <span
-            className={`text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-1.5 py-0.5 lg:px-2 lg:py-1 rounded-full shrink-0 ${badge}`}
+            className={`text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-1 rounded-full shrink-0 ${badge}`}
           >
-            <span className="max-lg:hidden">+4.83% Today</span>
-            <span className="lg:hidden">+4.83%</span>
+            +4.83% Today
           </span>
         </div>
 
-        <div className={`${widgetH} mb-1 max-lg:mb-1 sm:mb-2 lg:mb-4 min-w-0`}>
+        <div className={`${widgetH} mb-3 lg:mb-4 min-w-0`}>
           <LiveMarketWidget />
         </div>
 
-        <div className="grid grid-cols-2 gap-0.5 max-lg:gap-1 sm:gap-1.5 lg:gap-3">
-          <div className="rounded sm:rounded-md lg:rounded-lg border border-slate-700/40 bg-[#0a162d] p-1 max-lg:p-1.5 sm:p-2 lg:p-3">
-            <p className="text-[7px] max-lg:text-[8px] lg:text-[11px] text-slate-400 leading-tight">Copied Traders</p>
-            <p className="text-white text-[10px] max-lg:text-xs sm:text-sm lg:text-xl font-semibold mt-0 max-lg:mt-0.5 lg:mt-1 leading-none max-lg:leading-tight">24</p>
+        <div className="grid grid-cols-2 gap-3">
+          <div className="rounded-lg border border-slate-700/40 bg-[#0a162d] p-3">
+            <p className="text-xs text-slate-400 leading-tight">Copied Traders</p>
+            <p className="text-white text-xl font-semibold mt-1 leading-none">24</p>
           </div>
-          <div className="rounded sm:rounded-md lg:rounded-lg border border-slate-700/40 bg-[#0a162d] p-1 max-lg:p-1.5 sm:p-2 lg:p-3">
-            <p className="text-[7px] max-lg:text-[8px] lg:text-[11px] text-slate-400 leading-tight">Win Rate</p>
-            <p className="text-emerald-400 text-[10px] max-lg:text-xs sm:text-sm lg:text-xl font-semibold mt-0 max-lg:mt-0.5 lg:mt-1 leading-none max-lg:leading-tight">71%</p>
+          <div className="rounded-lg border border-slate-700/40 bg-[#0a162d] p-3">
+            <p className="text-xs text-slate-400 leading-tight">Win Rate</p>
+            <p className="text-emerald-400 text-xl font-semibold mt-1 leading-none">71%</p>
           </div>
         </div>
 
-        <p className="mt-0.5 max-lg:mt-0.5 sm:mt-1 lg:mt-3 text-[7px] max-lg:text-[7px] sm:text-[9px] lg:text-[10px] text-slate-500 text-right max-lg:leading-tight">
-          <span className="lg:hidden">TradingView</span>
-          <span className="hidden lg:inline">Live data powered by TradingView</span>
+        <p className="mt-3 text-[11px] text-slate-500 text-right">
+          Live data powered by TradingView
         </p>
       </div>
     </div>

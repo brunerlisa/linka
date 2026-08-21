@@ -21,25 +21,25 @@ const benefits = [
 
 export default function BenefitsSection() {
   return (
-    <section className="py-6 lg:py-20 border-t border-dark-border bg-slate-900/50">
-      <div className="max-w-[1180px] lg:max-w-6xl mx-auto px-2 sm:px-2.5 lg:px-8 min-w-0">
-        <h2 className="text-[clamp(0.85rem,2.6vw,1.35rem)] lg:text-3xl xl:text-4xl font-bold text-white text-center mb-4 lg:mb-16">
+    <section className="py-12 lg:py-20 border-t border-dark-border bg-slate-900/50">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 min-w-0">
+        <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white text-center mb-8 lg:mb-16">
           How you can benefit from Copy Trading?
         </h2>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 sm:gap-2 lg:gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-8">
           {benefits.map(({ title, icon: Icon }) => (
-            <div key={title} className="p-2 lg:p-6 rounded-md lg:rounded-xl bg-dark-card border border-dark-border text-center min-w-0 shadow-lg">
-              <div className="w-8 h-8 lg:w-14 lg:h-14 rounded-md lg:rounded-lg border lg:border-2 border-primary flex items-center justify-center mx-auto mb-1 lg:mb-4 text-primary">
-                <Icon className="w-4 h-4 lg:w-7 lg:h-7" />
+            <div key={title} className="p-5 lg:p-6 rounded-xl bg-dark-card border border-dark-border text-center min-w-0 shadow-lg">
+              <div className="w-14 h-14 rounded-lg border-2 border-primary flex items-center justify-center mx-auto mb-4 text-primary">
+                <Icon className="w-7 h-7" />
               </div>
-              <p className="text-slate-400 text-[8px] sm:text-[9px] lg:text-sm leading-snug whitespace-pre-line">{title}</p>
+              <p className="text-slate-300 text-sm leading-relaxed whitespace-pre-line">{title}</p>
             </div>
           ))}
         </div>
-        <div className="mt-4 lg:mt-12 text-center">
+        <div className="mt-8 lg:mt-12 text-center">
           <Link
             href="/platform"
-            className="inline-flex items-center justify-center px-3 py-1.5 text-[10px] lg:px-8 lg:py-4 lg:text-base font-medium rounded-md lg:rounded-lg bg-primary hover:bg-primary-dark text-white transition-colors"
+            className="inline-flex items-center justify-center w-full sm:w-auto min-h-12 px-8 py-3.5 text-base font-medium rounded-xl bg-primary hover:bg-primary-dark text-white transition-colors"
           >
             Start Copying
           </Link>

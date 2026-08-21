@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useAuth } from '@/components/AuthProvider'
@@ -8,6 +8,7 @@ import { useAuth } from '@/components/AuthProvider'
 export default function AdminLayout({ children }) {
   const { user, isAdmin, loading, signOut } = useAuth()
   const router = useRouter()
+  const [mobileNavOpen, setMobileNavOpen] = useState(false)
 
   useEffect(() => {
     if (loading) return
@@ -46,7 +47,19 @@ export default function AdminLayout({ children }) {
 
   return (
     <div className="min-h-screen bg-[#050816] text-slate-100 flex">
-      <aside className="w-60 bg-[#050712] border-r border-[#111827] flex flex-col">
+      {mobileNavOpen ? (
+        <button
+          type="button"
+          className="fixed inset-0 z-40 bg-black/60 lg:hidden"
+          aria-label="Close menu"
+          onClick={() => setMobileNavOpen(false)}
+        />
+      ) : null}
+      <aside
+        className={`fixed lg:static inset-y-0 left-0 z-50 w-[min(16.5rem,88vw)] bg-[#050712] border-r border-[#111827] flex flex-col transform transition-transform duration-200 ${
+          mobileNavOpen ? 'translate-x-0' : '-translate-x-full'
+        } lg:translate-x-0`}
+      >
         <div className="h-14 px-5 flex items-center justify-between border-b border-[#111827]">
           <Link href="/admin" className="text-sm font-semibold tracking-wide">
             <span className="text-primary">Noble Mirror Capital</span>
@@ -54,11 +67,11 @@ export default function AdminLayout({ children }) {
           <span className="text-[10px] px-2 py-0.5 rounded bg-amber-500/20 text-amber-400">ADMIN</span>
         </div>
         <nav className="flex-1 py-4 text-sm space-y-0.5">
-          <Link href="/admin" className="block px-5 py-2.5 text-white bg-[#111827] border-r-2 border-primary">Dashboard</Link>
-          <Link href="/admin/control" className="block px-5 py-2.5 text-slate-300 hover:bg-[#0b1020] hover:text-white">Control Center</Link>
-          <Link href="/admin/traders" className="block px-5 py-2.5 text-slate-300 hover:bg-[#0b1020] hover:text-white">Traders</Link>
-          <Link href="/admin/deposits" className="block px-5 py-2.5 text-slate-300 hover:bg-[#0b1020] hover:text-white">Deposits</Link>
-          <Link href="/admin/accounts" className="block px-5 py-2.5 text-slate-300 hover:bg-[#0b1020] hover:text-white">User Accounts</Link>
+          <Link href="/admin" onClick={() => setMobileNavOpen(false)} className="block px-5 py-2.5 text-white bg-[#111827] border-r-2 border-primary">Dashboard</Link>
+          <Link href="/admin/control" onClick={() => setMobileNavOpen(false)} className="block px-5 py-2.5 text-slate-300 hover:bg-[#0b1020] hover:text-white">Control Center</Link>
+          <Link href="/admin/traders" onClick={() => setMobileNavOpen(false)} className="block px-5 py-2.5 text-slate-300 hover:bg-[#0b1020] hover:text-white">Traders</Link>
+          <Link href="/admin/deposits" onClick={() => setMobileNavOpen(false)} className="block px-5 py-2.5 text-slate-300 hover:bg-[#0b1020] hover:text-white">Deposits</Link>
+          <Link href="/admin/accounts" onClick={() => setMobileNavOpen(false)} className="block px-5 py-2.5 text-slate-300 hover:bg-[#0b1020] hover:text-white">User Accounts</Link>
         </nav>
         <div className="border-t border-[#111827] py-3 text-sm space-y-0.5">
           <Link href="/dashboard" className="block px-5 py-2 text-slate-300 hover:bg-[#0b1020]">← User Dashboard</Link>
@@ -73,7 +86,20 @@ export default function AdminLayout({ children }) {
           </button>
         </div>
       </aside>
-      <main className="flex-1 overflow-y-auto">
+      <main className="flex-1 overflow-y-auto min-w-0">
+        <div className="lg:hidden h-14 border-b border-[#111827] flex items-center px-4">
+          <button
+            type="button"
+            className="p-2 -ml-1 rounded-lg text-slate-300 hover:bg-[#111827]"
+            aria-label="Open menu"
+            onClick={() => setMobileNavOpen(true)}
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+          <span className="ml-2 text-sm font-semibold text-primary">Admin</span>
+        </div>
         {children}
       </main>
     </div>

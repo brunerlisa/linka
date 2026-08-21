@@ -15,6 +15,13 @@ const organizationJsonLd = {
   logo: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://www.noblemirrorcapital.com'}/noblemirrorcapital%20logo.png`,
 }
 
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  viewportFit: 'cover',
+}
+
 export const metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://www.noblemirrorcapital.com'),
   title: {

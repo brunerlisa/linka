@@ -27,7 +27,7 @@ export default function Footer() {
 
   return (
     <footer className="bg-dark-card border-t border-dark-border">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12">
           <div>
             <div className="flex items-center gap-2 mb-3">
@@ -90,7 +90,7 @@ export default function Footer() {
             <h4 className="text-white font-bold mb-4">Subscribe</h4>
             <p className="text-slate-400 text-sm mb-4">Stay updated with the latest trading insights and platform news.</p>
             <form
-              className="flex gap-2"
+              className="flex flex-col sm:flex-row gap-2"
               onSubmit={(e) => {
                 e.preventDefault()
                 setEmail('')
@@ -101,11 +101,11 @@ export default function Footer() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Your email"
-                className="flex-1 px-4 py-2.5 rounded-lg bg-dark border border-dark-border text-white placeholder-slate-500 text-sm focus:outline-none focus:border-primary"
+                className="flex-1 min-h-12 px-4 py-3 rounded-lg bg-dark border border-dark-border text-white placeholder-slate-500 text-base focus:outline-none focus:border-primary"
               />
               <button
                 type="submit"
-                className="px-4 py-2.5 rounded-lg bg-primary hover:bg-primary-dark text-white text-sm font-medium transition-colors shrink-0"
+                className="min-h-12 px-4 py-3 rounded-lg bg-primary hover:bg-primary-dark text-white text-sm font-medium transition-colors shrink-0"
               >
                 Subscribe
               </button>
@@ -113,7 +113,7 @@ export default function Footer() {
           </div>
         </div>
 
-        <p className="mt-12 pt-8 border-t border-dark-border text-center text-sm text-slate-500">
+        <p className="mt-12 pt-8 border-t border-dark-border text-center text-sm text-slate-500 leading-relaxed px-2">
           © {new Date().getFullYear()} Noble Mirror Capital. Innovative Finance Technologies. &nbsp;|&nbsp;
           <Link href="/faq" className="text-slate-400 hover:text-primary">
             FAQ

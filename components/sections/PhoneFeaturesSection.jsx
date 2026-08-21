@@ -161,36 +161,19 @@ export default function PhoneFeaturesSection() {
   }, [])
 
   return (
-    <section className="py-6 lg:py-24 border-t border-dark-border relative overflow-x-clip lg:overflow-hidden bg-[#050d1f]">
+    <section className="py-12 lg:py-24 border-t border-dark-border relative overflow-x-clip lg:overflow-hidden bg-[#050d1f]">
       <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[min(100%,240px)] max-w-full h-[280px] lg:w-[min(100%,300px)] lg:h-[360px] bg-primary/30 lg:bg-primary/35 rounded-full blur-[70px] lg:blur-[95px] pointer-events-none" />
 
-      <div className="max-w-[1180px] lg:max-w-7xl mx-auto px-2 sm:px-2.5 lg:px-4 xl:px-8 min-w-0 relative">
-        <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] lg:grid-cols-3 gap-x-1 sm:gap-x-2 lg:gap-x-10 gap-y-1 lg:gap-y-0 items-start lg:items-center min-w-0">
-          {/* Left column */}
-          <div className="col-start-1 row-start-1 flex flex-col gap-3 lg:gap-16 justify-center min-w-0 pt-1 lg:pt-0">
-            {features
-              .filter((f) => f.position === 'left')
-              .map(({ title, description }) => (
-                <div key={title} className="min-w-0 lg:max-w-[360px]">
-                  <h3 className="text-[clamp(0.72rem,2.9vw,1.35rem)] lg:text-4xl xl:text-5xl leading-[1.05] lg:leading-[0.95] font-semibold tracking-tight text-white mb-0.5 lg:mb-2.5 line-clamp-4 lg:line-clamp-none">
-                    {title}
-                  </h3>
-                  <p className="text-slate-400 text-[8px] sm:text-[9px] lg:text-sm xl:text-base leading-snug lg:leading-relaxed line-clamp-5 lg:line-clamp-none">
-                    {description}
-                  </p>
-                </div>
-              ))}
-          </div>
-
-          {/* Center — phone (fixed to column 2 so side copy is never dropped by reordering) */}
-          <div className="col-start-2 row-start-1 flex justify-center shrink-0 px-0.5">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 min-w-0 relative">
+        <div className="flex flex-col lg:grid lg:grid-cols-3 gap-10 lg:gap-x-10 items-center min-w-0">
+          <div className="order-1 lg:order-2 lg:col-start-2 flex justify-center">
             <div className="relative lg:animate-float">
               <div
-                className="relative w-[112px] sm:w-[128px] h-[230px] sm:h-[250px] lg:w-[180px] xl:w-[210px] lg:h-[370px] xl:h-[430px] rounded-[1.4rem] lg:rounded-[2.2rem]
-                bg-[#030407] shadow-[0_14px_32px_rgba(0,0,0,0.65)] lg:shadow-[0_28px_58px_rgba(0,0,0,0.72)]
-                border-[3px] lg:border-[5px] border-black overflow-hidden"
+                className="relative w-[240px] h-[490px] sm:w-[260px] sm:h-[530px] lg:w-[180px] xl:w-[210px] lg:h-[370px] xl:h-[430px] rounded-[2rem] lg:rounded-[2.2rem]
+                bg-[#030407] shadow-[0_20px_48px_rgba(0,0,0,0.65)]
+                border-[5px] border-black overflow-hidden"
               >
-                <div className="absolute top-1.5 lg:top-2 left-1/2 -translate-x-1/2 w-10 lg:w-16 h-3 lg:h-4 rounded-full bg-black border border-[#121418] z-10" />
+                <div className="absolute top-2 left-1/2 -translate-x-1/2 w-16 h-4 rounded-full bg-black border border-[#121418] z-10" />
                 <div
                   className="h-full flex transition-transform duration-700 ease-in-out will-change-transform"
                   style={{ transform: `translateX(-${activeScreen * 100}%)` }}
@@ -205,12 +188,12 @@ export default function PhoneFeaturesSection() {
                     <PhoneScreenPortfolio />
                   </div>
                 </div>
-                <div className="absolute inset-0 pointer-events-none rounded-[1.35rem] lg:rounded-[2rem] border border-white/[0.06]" />
-                <div className="absolute bottom-9 lg:bottom-14 left-1/2 -translate-x-1/2 flex gap-1 lg:gap-1.5 z-20">
+                <div className="absolute inset-0 pointer-events-none rounded-[1.7rem] lg:rounded-[2rem] border border-white/[0.06]" />
+                <div className="absolute bottom-14 left-1/2 -translate-x-1/2 flex gap-1.5 z-20">
                   {[0, 1, 2].map((dot) => (
                     <span
                       key={dot}
-                      className={`h-1 lg:h-1.5 rounded-full transition-all duration-300 ${activeScreen === dot ? 'w-3 lg:w-4 bg-primary' : 'w-1 lg:w-1.5 bg-slate-500/70'}`}
+                      className={`h-1.5 rounded-full transition-all duration-300 ${activeScreen === dot ? 'w-4 bg-primary' : 'w-1.5 bg-slate-500/70'}`}
                     />
                   ))}
                 </div>
@@ -218,16 +201,30 @@ export default function PhoneFeaturesSection() {
             </div>
           </div>
 
-          {/* Right column */}
-          <div className="col-start-3 row-start-1 flex flex-col gap-3 lg:gap-16 justify-center items-start lg:items-end min-w-0 pt-1 lg:pt-0 text-right">
+          <div className="order-2 lg:order-1 lg:col-start-1 flex flex-col gap-8 lg:gap-16 justify-center min-w-0 w-full">
+            {features
+              .filter((f) => f.position === 'left')
+              .map(({ title, description }) => (
+                <div key={title} className="min-w-0 lg:max-w-[360px] text-center lg:text-left">
+                  <h3 className="text-2xl lg:text-4xl xl:text-5xl leading-tight lg:leading-[0.95] font-semibold tracking-tight text-white mb-2">
+                    {title}
+                  </h3>
+                  <p className="text-slate-400 text-[15px] lg:text-sm xl:text-base leading-relaxed">
+                    {description}
+                  </p>
+                </div>
+              ))}
+          </div>
+
+          <div className="order-3 lg:col-start-3 flex flex-col gap-8 lg:gap-16 justify-center items-center lg:items-end min-w-0 w-full">
             {features
               .filter((f) => f.position === 'right')
               .map(({ title, description }) => (
-                <div key={title} className="min-w-0 lg:max-w-[360px] text-left lg:text-right">
-                  <h3 className="text-[clamp(0.72rem,2.9vw,1.35rem)] lg:text-4xl xl:text-5xl leading-[1.05] lg:leading-[0.95] font-semibold tracking-tight text-white mb-0.5 lg:mb-2.5 line-clamp-4 lg:line-clamp-none">
+                <div key={title} className="min-w-0 lg:max-w-[360px] text-center lg:text-right">
+                  <h3 className="text-2xl lg:text-4xl xl:text-5xl leading-tight lg:leading-[0.95] font-semibold tracking-tight text-white mb-2">
                     {title}
                   </h3>
-                  <p className="text-slate-400 text-[8px] sm:text-[9px] lg:text-sm xl:text-base leading-snug lg:leading-relaxed line-clamp-5 lg:line-clamp-none">
+                  <p className="text-slate-400 text-[15px] lg:text-sm xl:text-base leading-relaxed">
                     {description}
                   </p>
                 </div>

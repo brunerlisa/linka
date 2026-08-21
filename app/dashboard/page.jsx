@@ -24,6 +24,7 @@ function DashboardContent() {
   const router = useRouter()
   const onboardingKey = `onboarding:${user?.email || user?.id || 'guest'}`
   const [checkingOnboarding, setCheckingOnboarding] = useState(true)
+  const [mobileNavOpen, setMobileNavOpen] = useState(false)
   const [activeSection, setActiveSection] = useState('Dashboard')
   const [expandedMenus, setExpandedMenus] = useState({
     Payments: true,
@@ -131,8 +132,19 @@ function DashboardContent() {
 
   return (
     <div className="min-h-screen bg-[#050816] text-slate-100 flex">
-      {/* Sidebar */}
-      <aside className="w-60 bg-[#050712] border-r border-[#111827] flex flex-col">
+      {mobileNavOpen ? (
+        <button
+          type="button"
+          className="fixed inset-0 z-40 bg-black/60 lg:hidden"
+          aria-label="Close menu"
+          onClick={() => setMobileNavOpen(false)}
+        />
+      ) : null}
+      <aside
+        className={`fixed lg:static inset-y-0 left-0 z-50 w-[min(16.5rem,88vw)] bg-[#050712] border-r border-[#111827] flex flex-col transform transition-transform duration-200 ${
+          mobileNavOpen ? 'translate-x-0' : '-translate-x-full'
+        } lg:translate-x-0`}
+      >
         <div className="h-14 px-5 flex items-center border-b border-[#111827]">
           <div className="flex flex-col">
             <span className="text-sm font-semibold tracking-wide">
@@ -147,7 +159,10 @@ function DashboardContent() {
             active={activeSection}
             expanded={expandedMenus}
             onToggle={toggleMenu}
-            onSelect={setActiveSection}
+            onSelect={(label) => {
+              setActiveSection(label)
+              setMobileNavOpen(false)
+            }}
           />
         </nav>
 
@@ -168,10 +183,19 @@ function DashboardContent() {
       </aside>
 
       {/* Main area */}
-      <div className="flex-1 flex flex-col">
-        {/* Dashboard header with profile */}
-        <header className="h-14 border-b border-[#111827] flex items-center justify-between px-6 bg-[#050816]">
-          <div className="flex items-center gap-3">
+      <div className="flex-1 flex flex-col min-w-0">
+        <header className="h-14 border-b border-[#111827] flex items-center justify-between px-4 sm:px-6 bg-[#050816]">
+          <div className="flex items-center gap-3 min-w-0">
+            <button
+              type="button"
+              className="lg:hidden p-2 -ml-1 rounded-lg text-slate-300 hover:bg-[#111827]"
+              aria-label="Open menu"
+              onClick={() => setMobileNavOpen(true)}
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
             <button className="px-3 py-1.5 text-xs rounded-full bg-[#111827] text-slate-200 border border-[#1f2937]">
               Copy referral link
             </button>
