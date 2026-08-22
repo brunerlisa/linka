@@ -10,6 +10,7 @@ import {
   listTrades,
   listTraders,
   listUsers,
+  updateKycStatus,
   updatePaymentStatus,
   upsertAccount,
   upsertTrader,
@@ -48,6 +49,7 @@ export default function AdminControlCenter() {
   const [notice, setNotice] = useState('')
   const [noticeError, setNoticeError] = useState(false)
   const [uploadingAvatar, setUploadingAvatar] = useState(false)
+  const [updatingKycId, setUpdatingKycId] = useState('')
   const avatarFileRef = useRef(null)
 
   const [traderForm, setTraderForm] = useState({
@@ -118,7 +120,7 @@ export default function AdminControlCenter() {
     setLoading(true)
     const [t, p, a, tr, u] = await Promise.all([listTraders(), listPayments(), listAccounts(), listTrades(), listUsers()])
     setTraders(t || [])
-    setPayments(p || [])
+    setPayments((p || []).filter((row) => row.payment_type !== 'bonus'))
     setAccounts(a || [])
     setTrades(tr || [])
     setUsers(u || [])
@@ -199,6 +201,28 @@ export default function AdminControlCenter() {
     setNotice(`Payment ${status}.`)
     setNoticeError(false)
     loadAdminData()
+  }
+
+  const updateKyc = async (u, nextStatus) => {
+    const key = u?.clerk_user_id || u?.email || ''
+    if (!key) return
+    setUpdatingKycId(key)
+    setNotice('')
+    setNoticeError(false)
+    try {
+      await updateKycStatus({
+        clerk_user_id: u?.clerk_user_id || '',
+        email: u?.email || '',
+        kyc_status: nextStatus,
+      })
+      setNotice(`KYC ${nextStatus} for ${u.email || 'user'}.`)
+      await loadAdminData()
+    } catch (e) {
+      setNotice(e?.message || 'Could not update KYC.')
+      setNoticeError(true)
+    } finally {
+      setUpdatingKycId('')
+    }
   }
 
   const saveAccount = async () => {
@@ -453,26 +477,64 @@ export default function AdminControlCenter() {
           )}
 
           {tab === 'users' && (
-            <div className="bg-[#050712] border border-[#111827] rounded-xl p-4">
-              <h3 className="text-sm font-semibold text-white mb-2">Signed-up Users</h3>
-              <p className="text-xs text-slate-400 mb-3">
-                Users come from the profiles table (auto-created when a user signs in after running the SQL schema).
-              </p>
-              <div className="space-y-2 max-h-[560px] overflow-y-auto pr-1">
-                {users.length === 0 && (
-                  <div className="p-3 rounded border border-[#1f2937] bg-[#060d1f]">
-                    <p className="text-xs text-slate-400">No users found yet. Run the updated SQL and create at least one signup.</p>
-                  </div>
-                )}
-                {users.map((u) => (
-                  <div key={u.id || u.email} className="p-3 rounded border border-[#1f2937] bg-[#060d1f]">
-                    <p className="text-sm text-white">{u.full_name || 'User'}</p>
-                    <p className="text-xs text-slate-400">{u.email || 'No email'}</p>
-                    <p className="text-[11px] text-slate-500 mt-1">
-                      Role: {u.role || 'user'} • Joined: {u.created_at ? new Date(u.created_at).toLocaleString() : '-'}
-                    </p>
-                  </div>
-                ))}
+            <div className="grid xl:grid-cols-2 gap-4">
+              <div className="bg-[#050712] border border-[#111827] rounded-xl p-4">
+                <h3 className="text-sm font-semibold text-white mb-2">Signed-up Users</h3>
+                <p className="text-xs text-slate-400 mb-3">
+                  Users come from the profiles table (auto-created when a user signs in after running the SQL schema).
+                </p>
+                <div className="space-y-2 max-h-[560px] overflow-y-auto pr-1">
+                  {users.length === 0 && (
+                    <div className="p-3 rounded border border-[#1f2937] bg-[#060d1f]">
+                      <p className="text-xs text-slate-400">No users found yet. Run the updated SQL and create at least one signup.</p>
+                    </div>
+                  )}
+                  {users.map((u) => (
+                    <div key={u.id || u.email} className="p-3 rounded border border-[#1f2937] bg-[#060d1f]">
+                      <p className="text-sm text-white">{u.full_name || 'User'}</p>
+                      <p className="text-xs text-slate-400">{u.email || 'No email'}</p>
+                      <p className="text-[11px] text-slate-500 mt-1">
+                        Role: {u.role || 'user'} • KYC: {u.kyc_status || 'not_submitted'} • Joined: {u.created_at ? new Date(u.created_at).toLocaleString() : '-'}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="bg-[#050712] border border-[#111827] rounded-xl p-4">
+                <h3 className="text-sm font-semibold text-white mb-2">KYC Submissions</h3>
+                <p className="text-xs text-slate-400 mb-3">Review documents and approve or reject identity checks.</p>
+                <div className="space-y-2 max-h-[560px] overflow-y-auto pr-1">
+                  {users.filter((u) => u.kyc_status && u.kyc_status !== 'not_submitted').length === 0 && (
+                    <p className="text-xs text-slate-400">No KYC submissions yet.</p>
+                  )}
+                  {users.filter((u) => u.kyc_status && u.kyc_status !== 'not_submitted').map((u) => {
+                    let kyc = {}
+                    try {
+                      kyc = u.kyc_json ? JSON.parse(u.kyc_json) : {}
+                    } catch {
+                      kyc = {}
+                    }
+                    const key = u.clerk_user_id || u.email
+                    const busy = updatingKycId === key
+                    const status = String(u.kyc_status || '').toLowerCase()
+                    return (
+                      <div key={key} className="p-3 rounded border border-[#1f2937] bg-[#060d1f]">
+                        <p className="text-sm text-white">{kyc.fullName || u.full_name || 'User'}</p>
+                        <p className="text-xs text-slate-400">{u.email}</p>
+                        <p className="text-[11px] text-slate-500 mt-1 capitalize">{status.replace('_', ' ')} • {kyc.documentType || 'No document type'}</p>
+                        <div className="mt-2 flex flex-wrap gap-2 text-[11px]">
+                          {kyc.idDocumentFrontUrl ? <a href={kyc.idDocumentFrontUrl} target="_blank" rel="noreferrer" className="text-primary hover:underline">Front</a> : null}
+                          {kyc.idDocumentBackUrl ? <a href={kyc.idDocumentBackUrl} target="_blank" rel="noreferrer" className="text-primary hover:underline">Back</a> : null}
+                        </div>
+                        <div className="mt-2 flex flex-wrap gap-2">
+                          <button type="button" disabled={busy || status === 'approved'} onClick={() => updateKyc(u, 'approved')} className="px-2 py-1 rounded bg-emerald-500/20 text-emerald-300 text-[11px] disabled:opacity-40">Approve</button>
+                          <button type="button" disabled={busy || status === 'rejected'} onClick={() => updateKyc(u, 'rejected')} className="px-2 py-1 rounded bg-red-500/20 text-red-300 text-[11px] disabled:opacity-40">Reject</button>
+                          <button type="button" disabled={busy || status === 'pending'} onClick={() => updateKyc(u, 'pending')} className="px-2 py-1 rounded bg-amber-500/20 text-amber-300 text-[11px] disabled:opacity-40">Mark pending</button>
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
               </div>
             </div>
           )}

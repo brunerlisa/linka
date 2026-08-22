@@ -50,7 +50,9 @@ export default function UserDashboardHome({ onNavigate }) {
 
   const balance = Number(account?.balance || 0)
   const profit = Number(account?.profit || 0)
-  const bonus = Number(account?.bonus || 0)
+  const bonus = (payments || [])
+    .filter((row) => row.payment_type === 'bonus' && String(row.status || '').toLowerCase() === 'claimed')
+    .reduce((sum, row) => sum + Number(row.amount_usd || 0), 0)
   const pendingWithdrawal = (payments || [])
     .filter((row) => row.payment_type === 'withdrawal' && String(row.status || '').toLowerCase() === 'pending')
     .reduce((sum, row) => sum + Number(row.amount_usd || 0), 0)
@@ -58,7 +60,7 @@ export default function UserDashboardHome({ onNavigate }) {
   const dayLoss = profit < 0 ? Math.abs(profit) : 0
 
   const deposits = useMemo(
-    () => (payments || []).filter((row) => row.payment_type !== 'withdrawal'),
+    () => (payments || []).filter((row) => row.payment_type !== 'withdrawal' && row.payment_type !== 'bonus'),
     [payments]
   )
   const withdrawals = useMemo(
@@ -182,7 +184,7 @@ export default function UserDashboardHome({ onNavigate }) {
           headers={['Type', 'Amount', 'Date', 'Status']}
           empty="No recent activity"
           rows={activity.map((row) => [
-            row.payment_type === 'withdrawal' ? 'Withdrawal' : 'Deposit',
+            paymentTypeLabel(row.payment_type),
             money(row.amount_usd),
             formatDate(row.created_at),
             statusLabel(row.status),
@@ -221,6 +223,12 @@ export default function UserDashboardHome({ onNavigate }) {
       </section>
     </div>
   )
+}
+
+function paymentTypeLabel(type) {
+  if (type === 'withdrawal') return 'Withdrawal'
+  if (type === 'bonus') return 'Bonus'
+  return 'Deposit'
 }
 
 function statusLabel(status) {

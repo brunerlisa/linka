@@ -71,6 +71,9 @@ export default function AdminLayout({ children }) {
           <Link href="/admin/control" onClick={() => setMobileNavOpen(false)} className="block px-5 py-2.5 text-slate-300 hover:bg-[#0b1020] hover:text-white">Control Center</Link>
           <Link href="/admin/traders" onClick={() => setMobileNavOpen(false)} className="block px-5 py-2.5 text-slate-300 hover:bg-[#0b1020] hover:text-white">Traders</Link>
           <Link href="/admin/deposits" onClick={() => setMobileNavOpen(false)} className="block px-5 py-2.5 text-slate-300 hover:bg-[#0b1020] hover:text-white">Deposits</Link>
+          <Link href="/admin/wallets" onClick={() => setMobileNavOpen(false)} className="block px-5 py-2.5 text-slate-300 hover:bg-[#0b1020] hover:text-white">Wallets</Link>
+          <Link href="/admin/bonuses" onClick={() => setMobileNavOpen(false)} className="block px-5 py-2.5 text-slate-300 hover:bg-[#0b1020] hover:text-white">Bonuses</Link>
+          <Link href="/admin/kyc" onClick={() => setMobileNavOpen(false)} className="block px-5 py-2.5 text-slate-300 hover:bg-[#0b1020] hover:text-white">KYC</Link>
           <Link href="/admin/accounts" onClick={() => setMobileNavOpen(false)} className="block px-5 py-2.5 text-slate-300 hover:bg-[#0b1020] hover:text-white">User Accounts</Link>
         </nav>
         <div className="border-t border-[#111827] py-3 text-sm space-y-0.5">

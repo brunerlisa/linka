@@ -24,6 +24,59 @@ export async function POST(req) {
   try {
     const user = await requireAuth()
     const body = await req.json()
+    if (body.kind === 'copy_subscription') {
+      const traderName = String(body.trader_name || '').trim()
+      const traderId = String(body.trader_id || '').trim()
+      if (!traderName) return Response.json({ error: 'Select a trader to copy' }, { status: 400 })
+
+      const { data: existing } = await supabaseAdmin
+        .from('trade_updates')
+        .select('*')
+        .eq('user_email', normalizeEmail(user.email))
+        .eq('trader_name', traderName)
+      const alreadyCopying = (existing || []).some((row) => {
+        try {
+          const notes = JSON.parse(row.notes || '{}')
+          return notes.kind === 'copy_subscription' && notes.status === 'active'
+        } catch {
+          return false
+        }
+      })
+      if (alreadyCopying) {
+        return Response.json({ error: 'You are already copying this trader.' }, { status: 400 })
+      }
+
+      const payload = {
+        user_email: normalizeEmail(user.email),
+        user_clerk_id: user.userId,
+        trader_name: traderName,
+        pnl: 0,
+        result: 'copy',
+        notes: JSON.stringify({
+          kind: 'copy_subscription',
+          trader_id: traderId,
+          trader_name: traderName,
+          fee: Number(body.fee || 0),
+          monthly_profit: Number(body.monthly_profit || 0),
+          status: 'active',
+        }),
+        created_at: nowIso(),
+        updated_at: nowIso(),
+      }
+      const { data, error } = await supabaseAdmin.from('trade_updates').insert(payload).select().single()
+      if (error) return Response.json({ error: error.message }, { status: 500 })
+      if (traderId) {
+        const { data: trader } = await supabaseAdmin.from('traders').select('copiers').eq('id', traderId).maybeSingle()
+        if (trader) {
+          await supabaseAdmin
+            .from('traders')
+            .update({ copiers: Number(trader.copiers || 0) + 1, updated_at: nowIso() })
+            .eq('id', traderId)
+        }
+      }
+      return Response.json(data)
+    }
+
     const side = String(body.side || body.result || '').toLowerCase()
     const isUserTrade = body.kind === 'user_trade' || side === 'buy' || side === 'sell'
 

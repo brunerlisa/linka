@@ -8,13 +8,19 @@ import ProtectedRoute from '@/components/ProtectedRoute'
 import { NavIcon } from '@/components/dashboard/icons'
 import UserDashboardHome, { UserAvatar } from '@/components/dashboard/UserDashboardHome'
 import PlaceTradeSection from '@/components/dashboard/PlaceTradeSection'
+import MarketsSection from '@/components/dashboard/MarketsSection'
+import CommoditiesSection from '@/components/dashboard/CommoditiesSection'
+import MyTradesSection from '@/components/dashboard/MyTradesSection'
+import CopyTraderSection from '@/components/dashboard/CopyTraderSection'
+import TransactionsSection from '@/components/dashboard/TransactionsSection'
+import ClaimBonusSection from '@/components/dashboard/ClaimBonusSection'
+import KycSection from '@/components/dashboard/KycSection'
+import DepositSection from '@/components/dashboard/DepositSection'
+import WithdrawSection from '@/components/dashboard/WithdrawSection'
 import { displayName, usernameHandle } from '@/components/dashboard/userDisplay'
 import {
-  createPaymentRequest,
-  createWithdrawalRequest,
   deleteTrader,
   getMyProfile,
-  listAccounts,
   listPayments,
   listTrades,
   listTraders,
@@ -214,325 +220,21 @@ function DashboardContent() {
           <div className="px-4 sm:px-6 lg:px-8 pt-6 pb-12">
             {activeSection === 'Home' && <UserDashboardHome onNavigate={goTo} />}
             {activeSection === 'Place Trade' && <PlaceTradeSection />}
-            {activeSection === 'Markets' && <PlaceholderSection title="Markets" />}
-            {activeSection === 'Commodities' && <PlaceholderSection title="Commodities" />}
-            {activeSection === 'My Trades' && <TradeHistorySection type="copy" />}
-            {activeSection === 'Copy Trader' && <TradersSection />}
-            {activeSection === 'Deposit' && <PaymentsSection />}
-            {activeSection === 'Withdraw' && <WithdrawalSection />}
+            {activeSection === 'Markets' && <MarketsSection />}
+            {activeSection === 'Commodities' && <CommoditiesSection />}
+            {activeSection === 'My Trades' && <MyTradesSection />}
+            {activeSection === 'Copy Trader' && <CopyTraderSection />}
+            {activeSection === 'Deposit' && <DepositSection />}
+            {activeSection === 'Withdraw' && <WithdrawSection />}
             {activeSection === 'KYC' && <KycSection />}
-            {activeSection === 'Claim Bonus' && <PlaceholderSection title="Claim Bonus" />}
-            {activeSection === 'All Transactions' && <AllTransactionsSection />}
+            {activeSection === 'Claim Bonus' && <ClaimBonusSection />}
+            {activeSection === 'All Transactions' && <TransactionsSection />}
             {activeSection === 'Upgrade Plan' && <PlaceholderSection title="Upgrade Plan" />}
             {activeSection === 'Settings' && <SettingsSection />}
           </div>
         </main>
       </div>
     </div>
-  )
-}
-
-function PaymentsSection() {
-  const { user } = useAuth()
-  const methodOptions = [
-    'Bitcoin BTC',
-    'Usdt ERC20',
-    'Ethereum ETH',
-    'Usdt TRC20',
-    'Solana SOL',
-    'Xrp XRP',
-    'Shiba INU',
-    'USDC ERC20',
-    'ETH Arbitrum',
-    'Dogecoin DOGE',
-  ]
-  const [selectedMethod, setSelectedMethod] = useState(methodOptions[0])
-  const [showMethodOptions, setShowMethodOptions] = useState(false)
-  const [amountUsd, setAmountUsd] = useState('$0.00')
-  const [amountCrypto, setAmountCrypto] = useState('0')
-  const [minimumDeposit, setMinimumDeposit] = useState('1')
-  const [submitting, setSubmitting] = useState(false)
-  const [notice, setNotice] = useState('')
-
-  const parseMoney = (value) => Number(String(value).replace(/[^0-9.-]/g, '')) || 0
-
-  const submitDepositRequest = async () => {
-    setSubmitting(true)
-    setNotice('')
-    try {
-      await createPaymentRequest({
-        user_email: user?.email || 'unknown@user',
-        user_clerk_id: user?.id || '',
-        amount_usd: parseMoney(amountUsd),
-        amount_crypto: parseMoney(amountCrypto),
-        method: selectedMethod,
-        status: 'pending',
-        notes: `Minimum deposit shown: ${minimumDeposit}`,
-      })
-      setNotice('Deposit request submitted. Admin will review and credit your account.')
-    } catch {
-      setNotice('Could not submit deposit request right now. Please try again.')
-    } finally {
-      setSubmitting(false)
-    }
-  }
-
-  return (
-    <section className="min-h-[70vh] flex items-center justify-center py-4">
-      <div className="w-full max-w-[380px] rounded-md border border-[#111b2f] bg-[#040b1b]/95 shadow-[0_0_0_1px_rgba(16,32,61,0.35)] p-4">
-        <h2 className="text-[22px] font-semibold text-white mb-4 leading-none">Start Deposit</h2>
-
-        <div className="grid grid-cols-2 gap-2 mb-3">
-          <div className="relative">
-            <label className="block text-xs text-slate-200 mb-1.5">Select Method</label>
-            <button
-              type="button"
-              onClick={() => setShowMethodOptions((prev) => !prev)}
-              className="w-full h-10 rounded-md border border-[#253a66] bg-[#0d1a34] text-left px-3 text-base text-white flex items-center justify-between"
-            >
-              <span>{selectedMethod}</span>
-              <span className="text-slate-300 text-xs">{showMethodOptions ? 'v' : '>'}</span>
-            </button>
-
-            {showMethodOptions && (
-              <ul className="absolute z-20 mt-1 w-full rounded-md border border-[#2e4778] bg-[#0d1a34] max-h-52 overflow-y-auto shadow-lg">
-                {methodOptions.map((method) => {
-                  const isSelected = method === selectedMethod
-                  return (
-                    <li key={method}>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setSelectedMethod(method)
-                          setShowMethodOptions(false)
-                        }}
-                        className={`w-full px-3 py-1.5 text-left text-sm ${
-                          isSelected
-                            ? 'bg-[#11a8ff] text-[#03132a] font-semibold'
-                            : 'text-slate-100 hover:bg-[#11254a]'
-                        }`}
-                      >
-                        {method}
-                      </button>
-                    </li>
-                  )
-                })}
-              </ul>
-            )}
-          </div>
-
-          <div>
-            <label className="block text-xs text-slate-200 mb-1.5">Amount in USD</label>
-            <input
-              value={amountUsd}
-              onChange={(e) => setAmountUsd(e.target.value)}
-              className="w-full h-10 rounded-md border border-[#253a66] bg-[#0d1a34] px-3 text-base text-white placeholder:text-slate-400"
-            />
-          </div>
-        </div>
-
-        <div className="mb-3">
-          <label className="block text-xs text-slate-200 mb-1.5">Amount in Bitcoin</label>
-          <input
-            value={amountCrypto}
-            onChange={(e) => setAmountCrypto(e.target.value)}
-            className="w-full h-10 rounded-md border border-[#253a66] bg-[#0d1a34] px-3 text-base text-white placeholder:text-slate-400"
-          />
-        </div>
-
-        <div className="mb-4">
-          <label className="block text-xs text-slate-200 mb-1.5">Minimum Deposit</label>
-          <input
-            value={minimumDeposit}
-            onChange={(e) => setMinimumDeposit(e.target.value)}
-            className="w-full h-10 rounded-md border border-[#253a66] bg-[#0d1a34] px-3 text-base text-white placeholder:text-slate-400"
-          />
-        </div>
-
-        <button
-          type="button"
-          onClick={submitDepositRequest}
-          disabled={submitting}
-          className="w-full h-10 rounded-md bg-primary hover:bg-primary-dark disabled:opacity-60 text-white text-lg font-medium"
-        >
-          {submitting ? 'Submitting...' : 'Deposit'}
-        </button>
-        {notice && <p className="mt-3 text-xs text-slate-300">{notice}</p>}
-      </div>
-    </section>
-  )
-}
-
-function WithdrawalSection() {
-  const { user } = useAuth()
-  const methodOptions = [
-    'Bitcoin BTC',
-    'Usdt ERC20',
-    'Ethereum ETH',
-    'Usdt TRC20',
-    'Solana SOL',
-    'Xrp XRP',
-    'USDC ERC20',
-    'Bank Transfer',
-  ]
-  const [selectedMethod, setSelectedMethod] = useState(methodOptions[0])
-  const [showMethodOptions, setShowMethodOptions] = useState(false)
-  const [amountUsd, setAmountUsd] = useState('')
-  const [destinationAddress, setDestinationAddress] = useState('')
-  const [submitting, setSubmitting] = useState(false)
-  const [notice, setNotice] = useState('')
-  const [accounts, setAccounts] = useState([])
-  const [withdrawals, setWithdrawals] = useState([])
-
-  useEffect(() => {
-    let mounted = true
-    async function load() {
-      const [accts, payments] = await Promise.all([listAccounts(), listPayments()])
-      if (mounted) {
-        setAccounts(accts || [])
-        setWithdrawals((payments || []).filter((p) => p.payment_type === 'withdrawal'))
-      }
-    }
-    load()
-    return () => { mounted = false }
-  }, [])
-
-  const myAccount = accounts.find((a) => a.user_clerk_id === user?.id || a.user_email === user?.email)
-  const balance = Number(myAccount?.balance ?? 0)
-  const parseMoney = (v) => Number(String(v).replace(/[^0-9.-]/g, '')) || 0
-
-  const submitWithdrawal = async () => {
-    const amount = parseMoney(amountUsd)
-    if (amount <= 0) {
-      setNotice('Please enter a valid amount.')
-      return
-    }
-    if (amount > balance) {
-      setNotice('Amount exceeds your available balance.')
-      return
-    }
-    if (!destinationAddress.trim()) {
-      setNotice('Please enter your wallet address or destination.')
-      return
-    }
-    setSubmitting(true)
-    setNotice('')
-    try {
-      await createWithdrawalRequest({
-        user_email: user?.email || 'unknown@user',
-        user_clerk_id: user?.id || '',
-        amount_usd: amount,
-        amount_crypto: 0,
-        method: selectedMethod,
-        status: 'pending',
-        notes: `Withdrawal to ${destinationAddress.trim()}`,
-      })
-      setNotice('Withdrawal request submitted. Processing typically takes 1-5 business days.')
-      setAmountUsd('')
-      setDestinationAddress('')
-      const payments = await listPayments()
-      setWithdrawals((payments || []).filter((p) => p.payment_type === 'withdrawal'))
-    } catch {
-      setNotice('Could not submit withdrawal. Please try again.')
-    } finally {
-      setSubmitting(false)
-    }
-  }
-
-  return (
-    <section className="space-y-6">
-      <h2 className="text-lg font-semibold text-white">Withdrawal</h2>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2">
-          <div className="bg-[#050712] border border-[#111827] rounded-xl p-6">
-            <h3 className="text-base font-medium text-white mb-4">Request Withdrawal</h3>
-            <p className="text-sm text-slate-400 mb-4">
-              Available balance: <span className="text-emerald-400 font-semibold">${balance.toLocaleString()}</span>
-            </p>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-              <div className="relative">
-                <label className="block text-xs text-slate-400 mb-1.5">Withdrawal Method</label>
-                <button
-                  type="button"
-                  onClick={() => setShowMethodOptions((prev) => !prev)}
-                  className="w-full h-10 rounded-md border border-[#253a66] bg-[#0d1a34] text-left px-3 text-sm text-white flex items-center justify-between"
-                >
-                  <span>{selectedMethod}</span>
-                  <span className="text-slate-300 text-xs">{showMethodOptions ? 'v' : '>'}</span>
-                </button>
-                {showMethodOptions && (
-                  <ul className="absolute z-20 mt-1 w-full rounded-md border border-[#2e4778] bg-[#0d1a34] max-h-52 overflow-y-auto shadow-lg">
-                    {methodOptions.map((m) => (
-                      <li key={m}>
-                        <button
-                          type="button"
-                          onClick={() => { setSelectedMethod(m); setShowMethodOptions(false) }}
-                          className={`w-full px-3 py-2 text-left text-sm ${m === selectedMethod ? 'bg-primary/20 text-primary' : 'text-slate-200 hover:bg-[#11254a]'}`}
-                        >
-                          {m}
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-              <div>
-                <label className="block text-xs text-slate-400 mb-1.5">Amount (USD)</label>
-                <input
-                  type="text"
-                  value={amountUsd}
-                  onChange={(e) => setAmountUsd(e.target.value)}
-                  placeholder="0.00"
-                  className="w-full h-10 rounded-md border border-[#253a66] bg-[#0d1a34] px-3 text-sm text-white placeholder:text-slate-500"
-                />
-              </div>
-            </div>
-
-            <div className="mb-4">
-              <label className="block text-xs text-slate-400 mb-1.5">Wallet Address / Destination</label>
-              <input
-                type="text"
-                value={destinationAddress}
-                onChange={(e) => setDestinationAddress(e.target.value)}
-                placeholder="Enter your wallet address"
-                className="w-full h-10 rounded-md border border-[#253a66] bg-[#0d1a34] px-3 text-sm text-white placeholder:text-slate-500"
-              />
-            </div>
-
-            <button
-              type="button"
-              onClick={submitWithdrawal}
-              disabled={submitting || balance <= 0}
-              className="w-full h-10 rounded-md bg-primary hover:bg-primary-dark disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium"
-            >
-              {submitting ? 'Submitting...' : 'Submit Withdrawal Request'}
-            </button>
-            {notice && <p className="mt-3 text-sm text-slate-300">{notice}</p>}
-          </div>
-        </div>
-
-        <div>
-          <Panel title="Recent Withdrawals">
-            {withdrawals.length === 0 ? (
-              <EmptyState label="No withdrawal requests yet." />
-            ) : (
-              <div className="space-y-2 max-h-[280px] overflow-y-auto">
-                {withdrawals.slice(0, 10).map((w) => (
-                  <div key={w.id} className="p-3 rounded-lg border border-[#1f2937] bg-[#060d1f] text-sm">
-                    <p className="text-white">${Number(w.amount_usd || 0).toLocaleString()} - {w.method}</p>
-                    <p className="text-xs text-slate-400 mt-1">
-                      {w.status} - {w.created_at ? new Date(w.created_at).toLocaleDateString() : '-'}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            )}
-          </Panel>
-        </div>
-      </div>
-    </section>
   )
 }
 
@@ -652,58 +354,6 @@ function AllTransactionsSection() {
           </div>
         )}
       </Panel>
-    </section>
-  )
-}
-
-function KycSection() {
-  return (
-    <section className="space-y-4">
-      <h2 className="text-lg font-semibold text-white">KYC verification</h2>
-      <p className="text-sm text-slate-300">
-        To comply with regulations and keep your account secure, we&apos;ll collect a few personal details and a
-        government-issued ID.
-      </p>
-
-      <div className="bg-[#050712] border border-[#111827] rounded-xl p-4 space-y-4 text-sm">
-        <div className="grid md:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-xs mb-1 text-slate-400">Full name</label>
-            <input className="w-full rounded-md bg-[#020617] border border-[#1f2937] px-3 py-2 text-xs" />
-          </div>
-          <div>
-            <label className="block text-xs mb-1 text-slate-400">Date of birth</label>
-            <input type="date" className="w-full rounded-md bg-[#020617] border border-[#1f2937] px-3 py-2 text-xs" />
-          </div>
-          <div>
-            <label className="block text-xs mb-1 text-slate-400">Document type</label>
-            <select className="w-full rounded-md bg-[#020617] border border-[#1f2937] px-3 py-2 text-xs">
-              <option>National ID</option>
-              <option>Driver&apos;s license</option>
-              <option>Passport</option>
-            </select>
-          </div>
-          <div>
-            <label className="block text-xs mb-1 text-slate-400">Country of issue</label>
-            <input className="w-full rounded-md bg-[#020617] border border-[#1f2937] px-3 py-2 text-xs" />
-          </div>
-        </div>
-
-        <div className="grid md:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-xs mb-1 text-slate-400">Front of document</label>
-            <input type="file" className="w-full text-xs text-slate-300" />
-          </div>
-          <div>
-            <label className="block text-xs mb-1 text-slate-400">Back of document</label>
-            <input type="file" className="w-full text-xs text-slate-300" />
-          </div>
-        </div>
-
-        <button className="mt-2 inline-flex items-center justify-center px-4 py-2 rounded-md bg-primary hover:bg-primary-dark text-xs font-semibold text-white">
-          Submit KYC for review
-        </button>
-      </div>
     </section>
   )
 }

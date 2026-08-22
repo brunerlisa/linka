@@ -16,7 +16,7 @@ export default function AdminDepositsPage() {
 
   const load = async () => {
     const [p, a] = await Promise.all([listPayments(), listAccounts()])
-    setPayments(p || [])
+    setPayments((p || []).filter((row) => (row.payment_type || 'deposit') === 'deposit'))
     setAccounts(a || [])
     setLoading(false)
   }

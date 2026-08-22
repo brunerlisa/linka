@@ -29,6 +29,21 @@ export default function AdminDashboard() {
           <p className="text-sm text-slate-400 mt-1">View deposit requests, approve or reject, and credit user accounts.</p>
           <span className="inline-block mt-3 text-primary text-sm font-medium">View deposits →</span>
         </Link>
+        <Link href="/admin/wallets" className="p-6 rounded-xl bg-[#050712] border border-[#111827] hover:border-primary/40 transition-colors">
+          <h3 className="text-lg font-semibold text-white">Wallets</h3>
+          <p className="text-sm text-slate-400 mt-1">Set BTC, ETH, USDT, USDC, and bank addresses plus the QR codes users see.</p>
+          <span className="inline-block mt-3 text-primary text-sm font-medium">Manage wallets →</span>
+        </Link>
+        <Link href="/admin/bonuses" className="p-6 rounded-xl bg-[#050712] border border-[#111827] hover:border-primary/40 transition-colors">
+          <h3 className="text-lg font-semibold text-white">Bonuses</h3>
+          <p className="text-sm text-slate-400 mt-1">Assign claimable bonuses to users and cancel unused ones.</p>
+          <span className="inline-block mt-3 text-primary text-sm font-medium">Manage bonuses →</span>
+        </Link>
+        <Link href="/admin/kyc" className="p-6 rounded-xl bg-[#050712] border border-[#111827] hover:border-primary/40 transition-colors">
+          <h3 className="text-lg font-semibold text-white">KYC</h3>
+          <p className="text-sm text-slate-400 mt-1">Review identity submissions, open documents, and approve or reject them.</p>
+          <span className="inline-block mt-3 text-primary text-sm font-medium">Review KYC →</span>
+        </Link>
         <Link href="/admin/accounts" className="p-6 rounded-xl bg-[#050712] border border-[#111827] hover:border-primary/40 transition-colors">
           <h3 className="text-lg font-semibold text-white">User Accounts</h3>
           <p className="text-sm text-slate-400 mt-1">Add funds to users manually and manage balances.</p>

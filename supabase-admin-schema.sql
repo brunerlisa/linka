@@ -16,6 +16,10 @@ create table if not exists public.profiles (
   role             text        not null default 'user',
   has_onboarded  boolean     not null default false,
   onboarding_json text,
+  kyc_status         text        not null default 'not_submitted',
+  kyc_submitted_at  timestamptz,
+  kyc_json           text,
+  preferences_json  text,
   created_at       timestamptz not null default now(),
   updated_at       timestamptz not null default now()
 );
@@ -80,12 +84,30 @@ create table if not exists public.trade_updates (
   updated_at     timestamptz not null default now()
 );
 
+-- deposit_wallets: admin-managed payment addresses and QR codes
+create table if not exists public.deposit_wallets (
+  id             uuid        primary key default uuid_generate_v4(),
+  method         text        not null unique,
+  network        text        default '',
+  wallet_address text        not null default '',
+  qr_code_url    text        default '',
+  instructions   text        default '',
+  confirmations  integer     not null default 2,
+  is_active      boolean     not null default true,
+  created_at     timestamptz not null default now(),
+  updated_at     timestamptz not null default now()
+);
+
 -- =====================================================================
 -- MIGRATION: add user id columns to legacy tables if not already present
 -- =====================================================================
 alter table public.profiles      add column if not exists clerk_user_id text;
 alter table public.profiles      add column if not exists has_onboarded boolean not null default false;
 alter table public.profiles      add column if not exists onboarding_json text;
+alter table public.profiles      add column if not exists kyc_status text not null default 'not_submitted';
+alter table public.profiles      add column if not exists kyc_submitted_at timestamptz;
+alter table public.profiles      add column if not exists kyc_json text;
+alter table public.profiles      add column if not exists preferences_json text;
 alter table public.payments      add column if not exists user_clerk_id text not null default '';
 alter table public.payments      add column if not exists payment_type text not null default 'deposit';
 alter table public.user_accounts add column if not exists user_clerk_id text;

@@ -10,7 +10,7 @@ export async function PATCH(req, { params }) {
     const { id } = await params
     const body = await req.json()
     const action = String(body.action || body.status || '').toLowerCase()
-    if (action !== 'cancel' && action !== 'cancelled') {
+    if (!['cancel', 'cancelled', 'stop', 'stopped'].includes(action)) {
       return Response.json({ error: 'Unsupported action' }, { status: 400 })
     }
 
@@ -25,6 +25,29 @@ export async function PATCH(req, { params }) {
     }
 
     const notes = parseTradeNotes(trade.notes)
+    if (notes.kind === 'copy_subscription') {
+      if (notes.status && notes.status !== 'active') {
+        return Response.json({ error: 'This copy is already stopped' }, { status: 400 })
+      }
+      const nextNotes = JSON.stringify({ ...notes, kind: 'copy_subscription', status: 'stopped' })
+      const { data, error } = await supabaseAdmin
+        .from('trade_updates')
+        .update({ notes: nextNotes, updated_at: nowIso() })
+        .eq('id', id)
+        .select()
+        .single()
+      if (error) return Response.json({ error: error.message }, { status: 500 })
+      if (notes.trader_id) {
+        const { data: trader } = await supabaseAdmin.from('traders').select('copiers').eq('id', notes.trader_id).maybeSingle()
+        if (trader) {
+          await supabaseAdmin
+            .from('traders')
+            .update({ copiers: Math.max(0, Number(trader.copiers || 0) - 1), updated_at: nowIso() })
+            .eq('id', notes.trader_id)
+        }
+      }
+      return Response.json(data)
+    }
     if (notes.kind === 'user_trade' && notes.status && notes.status !== 'open') {
       return Response.json({ error: 'Only open trades can be cancelled' }, { status: 400 })
     }
