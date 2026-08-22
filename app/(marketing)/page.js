@@ -14,6 +14,7 @@ import SimpleStepsSection from '@/components/sections/SimpleStepsSection'
 import PlatformCapabilitiesSection from '@/components/sections/PlatformCapabilitiesSection'
 import OtherFeaturesBentoSection from '@/components/sections/OtherFeaturesBentoSection'
 import RegulationPartnersSection from '@/components/sections/RegulationPartnersSection'
+import SmartsuppChat from '@/components/SmartsuppChat'
 import {
   CalendarIcon,
   CheckSquareIcon,
@@ -164,6 +165,7 @@ export default function Home() {
           </Link>
         </div>
       </section>
+      <SmartsuppChat />
     </div>
   )
 }
