@@ -48,11 +48,7 @@ export default function DepositSection() {
   const address = wallet?.wallet_address || ''
   const qrUrl = walletQrUrl(wallet)
   const confirmations = Number(wallet?.confirmations || method?.confirmations || 0)
-  const instructions =
-    wallet?.instructions ||
-    (method?.kind === 'manual'
-      ? 'Please contact our support team for wire transfer instructions. You will receive bank details and a reference number via email.'
-      : '')
+  const instructions = displayInstructions(wallet?.instructions, method?.kind)
 
   function goAmount() {
     setError('')
@@ -190,7 +186,6 @@ export default function DepositSection() {
                 <span className="mt-3 inline-flex rounded-full border border-dark-border px-2.5 py-0.5 text-[11px] text-slate-300">
                   {item.badge}
                 </span>
-                <p className="mt-3 text-xs text-slate-500">Min: {formatUsd(MIN_DEPOSIT_USD)}</p>
               </button>
             ))}
           </div>
@@ -253,13 +248,8 @@ export default function DepositSection() {
                   Only send <span className="text-white font-semibold">{method.symbol}</span> on the{' '}
                   <span className="text-white font-semibold">{wallet?.network || method.network}</span> network
                 </p>
-                <p>Minimum deposit: <span className="text-white font-semibold">{formatUsd(MIN_DEPOSIT_USD)}</span></p>
                 <p>Minimum {confirmations} network confirmation(s) required</p>
                 <p>Funds will be credited after admin confirmation</p>
-                <p className="pt-2 text-amber-50">
-                  {instructions ||
-                    `Extra note: send only ${method.symbol} on ${wallet?.network || method.network}. Do not send another coin to this address.`}
-                </p>
               </div>
             </>
           ) : (
@@ -310,6 +300,19 @@ export default function DepositSection() {
       ) : null}
     </div>
   )
+}
+
+function displayInstructions(raw, kind) {
+  let text = String(raw || '')
+    .replace(/^extra note:\s*/i, '')
+    .replace(/\s*minimum deposit is \$?50\.?\s*/gi, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+  if (text) return text
+  if (kind === 'manual') {
+    return 'Please contact our support team for wire transfer instructions. You will receive bank details and a reference number via email.'
+  }
+  return ''
 }
 
 function Stepper({ step }) {

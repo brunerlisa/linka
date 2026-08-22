@@ -50,48 +50,16 @@ grant all on public.deposit_wallets to service_role;
 insert into public.deposit_wallets
   (method, network, wallet_address, qr_code_url, instructions, confirmations, is_active)
 values
-  (
-    'btc',
-    'Bitcoin',
-    '',
-    '',
-    'Extra note: send only BTC on the Bitcoin network. Do not send another coin to this address. Funds credit after admin confirmation.',
-    2,
-    true
-  ),
-  (
-    'eth',
-    'Ethereum',
-    '',
-    '',
-    'Extra note: send only ETH on the Ethereum network. Do not send tokens to this address unless this is an ERC20 deposit wallet.',
-    12,
-    true
-  ),
-  (
-    'usdt',
-    'Tron (TRC20)',
-    '',
-    '',
-    'Extra note: send only USDT on TRC20. Sending USDT on another network can result in lost funds.',
-    19,
-    true
-  ),
-  (
-    'usdc',
-    'Ethereum (ERC20)',
-    '',
-    '',
-    'Extra note: send only USDC on ERC20. Do not send USDT or USDC on another chain to this address.',
-    12,
-    true
-  ),
+  ('btc', 'Bitcoin', '', '', '', 2, true),
+  ('eth', 'Ethereum', '', '', '', 12, true),
+  ('usdt', 'Tron (TRC20)', '', '', '', 19, true),
+  ('usdc', 'Ethereum (ERC20)', '', '', '', 12, true),
   (
     'manual',
     'Wire Transfer',
     '',
     '',
-    'Extra note: contact support for wire details. You will receive bank information and a reference number. Minimum deposit is $50.',
+    'Please contact our support team for wire transfer instructions. You will receive bank details and a reference number via email.',
     0,
     true
   )

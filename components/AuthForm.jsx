@@ -100,7 +100,14 @@ export default function AuthForm({ mode }) {
                 />
               </div>
               <div>
-                <label className="block text-sm text-slate-200 mb-1.5">Password</label>
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="block text-sm text-slate-200">Password</label>
+                  {!isSignUp ? (
+                    <Link href="/auth/forgot-password" className="text-xs text-primary hover:text-primary-light">
+                      Forgot password?
+                    </Link>
+                  ) : null}
+                </div>
                 <input
                   type="password"
                   className={inputClass}
