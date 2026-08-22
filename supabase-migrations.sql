@@ -50,3 +50,7 @@ alter table public.deposit_wallets add column if not exists is_active boolean no
 
 -- 4b. Create Storage bucket for deposit QR images
 --    Storage > New bucket > Name: "wallets" > Public bucket: ON > Create
+
+-- 5. Account plan for Upgrade Plan (Bronze / Silver / Gold)
+alter table public.user_accounts add column if not exists plan text not null default 'basic';
+alter table public.user_accounts add column if not exists plan_status text not null default 'active';

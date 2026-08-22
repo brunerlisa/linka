@@ -1,5 +1,6 @@
 import { requireAuth, requireAdmin, ownsRecord } from '@/lib/auth'
 import { supabaseAdmin } from '@/lib/supabase-server'
+import { saveUserPlan, readStoredPlan } from '@/lib/userPlan'
 
 const nowIso = () => new Date().toISOString()
 const normalizeEmail = (v) => String(v || '').trim().toLowerCase()
@@ -9,7 +10,16 @@ export async function GET() {
     const user = await requireAuth()
     const { data, error } = await supabaseAdmin.from('user_accounts').select('*').order('created_at', { ascending: false })
     if (error) return Response.json({ error: error.message }, { status: 500 })
-    const list = data || []
+    const { data: profiles } = await supabaseAdmin.from('profiles').select('email, clerk_user_id, preferences_json')
+    const list = (data || []).map((account) => {
+      const profile = (profiles || []).find(
+        (row) =>
+          (row.clerk_user_id && row.clerk_user_id === account.user_clerk_id) ||
+          (row.email && row.email.toLowerCase() === String(account.user_email || '').toLowerCase())
+      )
+      const stored = readStoredPlan(account, profile)
+      return { ...account, plan: stored.plan, plan_status: stored.status }
+    })
     if (!user.isAdmin) {
       return Response.json(list.filter((a) => ownsRecord(a, user)))
     }
@@ -38,8 +48,27 @@ export async function POST(req) {
       status: body.status || 'active',
       updated_at: nowIso(),
     }
-    const { data, error } = await supabaseAdmin.from('user_accounts').upsert(payload, { onConflict: 'user_email' }).select().single()
+    if (body.plan != null) payload.plan = String(body.plan || 'basic').toLowerCase()
+    if (body.plan_status != null) payload.plan_status = String(body.plan_status || 'active').toLowerCase()
+    delete payload.addAmount
+    let { data, error } = await supabaseAdmin.from('user_accounts').upsert(payload, { onConflict: 'user_email' }).select().single()
+    if (error && /plan/i.test(error.message || '')) {
+      const fallback = { ...payload }
+      delete fallback.plan
+      delete fallback.plan_status
+      const retry = await supabaseAdmin.from('user_accounts').upsert(fallback, { onConflict: 'user_email' }).select().single()
+      data = retry.data
+      error = retry.error
+    }
     if (error) return Response.json({ error: error.message }, { status: 500 })
+    if (body.plan != null) {
+      await saveUserPlan(supabaseAdmin, {
+        email: payload.user_email,
+        clerkId: userClerkId,
+        planId: payload.plan,
+        status: payload.plan_status || 'active',
+      })
+    }
     return Response.json(data)
   } catch (e) {
     if (e.status === 401) return Response.json({ error: 'Unauthorized' }, { status: 401 })

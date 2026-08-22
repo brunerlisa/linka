@@ -2,130 +2,7 @@
 
 import Link from 'next/link'
 import { useMemo, useState } from 'react'
-
-const TABS = [
-  { id: 'standard', label: 'Standard' },
-  { id: 'advanced', label: 'Advanced' },
-  { id: 'nfp', label: 'NFP' },
-  { id: 'btc', label: 'BTC' },
-]
-
-const PLANS = {
-  standard: [
-    {
-      title: 'STANDARD PLAN',
-      pips: '20% - 25% PIPS',
-      min: '$3,000.00',
-      max: '$4,999.00',
-    },
-    {
-      title: 'MASTER PLAN',
-      pips: '25% - 30% PIPS',
-      min: '$5,000.00',
-      max: '$9,999.00',
-      recommended: true,
-    },
-    {
-      title: 'PREMIUM PLAN',
-      pips: '30% - 35% PIPS',
-      min: '$10,000.00',
-      max: '$19,999.00',
-    },
-    {
-      title: 'ULTIMATE PLAN',
-      pips: '35% - 40% PIPS',
-      min: '$20,000.00',
-      max: '$49,999.00',
-    },
-    {
-      title: 'CORPORATE PLAN',
-      pips: '40% - 45% PIPS',
-      min: '$50,000.00',
-      max: '$100,000,000.00',
-    },
-  ],
-  advanced: [
-    {
-      title: 'STANDARD PLAN',
-      pips: '30% - 40% PIPS',
-      min: '$1,000.00',
-      max: '$9,999.00',
-    },
-    {
-      title: 'MASTER PLUS PLAN',
-      pips: '40% - 45% PIPS',
-      min: '$10,000.00',
-      max: '$19,999.00',
-      recommended: true,
-    },
-    {
-      title: 'PREMIUM PLAN',
-      pips: '50% - 60% PIPS',
-      min: '$20,000.00',
-      max: '$49,999.00',
-    },
-    {
-      title: 'ULTIMATE PLAN',
-      pips: '60% - 70% PIPS',
-      min: '$50,000.00',
-      max: '$99,999.00',
-    },
-    {
-      title: 'CORPORATE PLAN',
-      pips: '40% - 45% PIPS',
-      min: '$50,000.00',
-      max: '$100,000,000.00',
-    },
-  ],
-  nfp: [
-    {
-      title: 'PREMIUM PLAN',
-      pips: '150% PIPS',
-      min: '$100,000.00',
-      max: '$149,999.00',
-    },
-    {
-      title: 'STARTER PLAN',
-      pips: '100% - 124% PIPS',
-      min: '$50,000.00',
-      max: '$99,999.00',
-      recommended: true,
-    },
-    {
-      title: 'ULTIMATE PLAN',
-      pips: '200% PIPS',
-      min: '$150,000.00',
-      max: '$10,000,000.00',
-    },
-  ],
-  btc: [
-    {
-      title: 'STANDARD CRYPTO',
-      pips: '70% - 75% PIPS',
-      min: '5.00 BTC',
-      max: '14.90 BTC',
-    },
-    {
-      title: 'PREMIUM CRYPTO',
-      pips: '80% - 85% PIPS',
-      min: '15.00 BTC',
-      max: '29.90 BTC',
-    },
-    {
-      title: 'PRO CRYPTO',
-      pips: '90% - 95% PIPS',
-      min: '30.00 BTC',
-      max: '500.00 BTC',
-      recommended: true,
-    },
-    {
-      title: 'BASIC CRYPTO',
-      pips: '65% - 70% PIPS',
-      min: '1.00 BTC',
-      max: '1.50 BTC',
-    },
-  ],
-}
+import { MARKETING_PLANS, MARKETING_TABS } from '@/lib/pricingPlans'
 
 function CheckRow({ children }) {
   return (
@@ -183,7 +60,7 @@ function PlanCard({ title, pips, min, max, recommended }) {
 /** Category tabs swap plans in place only — no URL changes. Cards are not links (CTA only). */
 export default function PricingPlansSection() {
   const [tab, setTab] = useState('standard')
-  const plans = useMemo(() => PLANS[tab] ?? PLANS.standard, [tab])
+  const plans = useMemo(() => MARKETING_PLANS[tab] ?? MARKETING_PLANS.standard, [tab])
 
   return (
     <section id="pricing-plans" className="relative border-t border-dark-border bg-dark py-10 lg:py-20 px-4 sm:px-6 lg:px-8 scroll-mt-28">
@@ -199,7 +76,7 @@ export default function PricingPlansSection() {
             aria-label="Pricing categories"
             className="inline-flex flex-wrap justify-center gap-2 p-1.5 rounded-full bg-dark-card border border-dark-border shadow-lg"
           >
-            {TABS.map(({ id, label }) => (
+            {MARKETING_TABS.map(({ id, label }) => (
               <button
                 key={id}
                 type="button"

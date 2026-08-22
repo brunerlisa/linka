@@ -67,6 +67,8 @@ create table if not exists public.user_accounts (
   balance        numeric     not null default 0,
   profit         numeric     not null default 0,
   status         text        not null default 'active',
+  plan           text        not null default 'basic',
+  plan_status    text        not null default 'active',
   created_at     timestamptz not null default now(),
   updated_at     timestamptz not null default now()
 );
@@ -111,6 +113,8 @@ alter table public.profiles      add column if not exists preferences_json text;
 alter table public.payments      add column if not exists user_clerk_id text not null default '';
 alter table public.payments      add column if not exists payment_type text not null default 'deposit';
 alter table public.user_accounts add column if not exists user_clerk_id text;
+alter table public.user_accounts add column if not exists plan text not null default 'basic';
+alter table public.user_accounts add column if not exists plan_status text not null default 'active';
 alter table public.trade_updates add column if not exists user_clerk_id text not null default '';
 
 -- =====================================================================

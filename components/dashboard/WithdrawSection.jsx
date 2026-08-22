@@ -27,7 +27,33 @@ const WALLETS = [
   { id: 'tokenpocket', name: 'TokenPocket', color: 'bg-cyan-500/20 text-cyan-300', logo: '/wallets/tokenpocket.svg' },
 ]
 
-function WalletMark({ wallet, size = 'md' }) {
+function WalletConnectMark({ className = 'w-16 h-10' }) {
+  return (
+    <svg className={className} viewBox="0 0 40 24" fill="none" aria-hidden>
+      <path
+        fill="currentColor"
+        d="M8.16 7.05c6.35-6.22 16.33-6.22 22.68 0l.75.74c.31.3.31.8 0 1.1l-2.58 2.53c-.16.15-.41.15-.57 0l-1.04-1.02c-4.43-4.33-11.6-4.33-16.03 0L10.33 11.4c-.16.16-.41.16-.57 0L7.18 8.89c-.31-.3-.31-.8 0-1.1l.98-.74Zm27.7 5.13 2.3 2.25c.31.3.31.8 0 1.1L27.7 25.6c-.31.3-.82.3-1.13 0l-7.38-7.22a.4.4 0 0 0-.56 0l-7.38 7.22c-.31.3-.82.3-1.13 0L.84 15.53c-.31-.3-.31-.8 0-1.1l2.3-2.25c.31-.3.82-.3 1.13 0l7.38 7.22c.15.15.4.15.56 0l7.38-7.22c.31-.3.82-.3 1.13 0l7.38 7.22c.15.15.4.15.56 0l7.38-7.22c.31-.3.82-.3 1.13 0Z"
+      />
+    </svg>
+  )
+}
+
+function WalletConnectLoader({ walletName }) {
+  return (
+    <div className="flex flex-col items-center justify-center py-16 sm:py-20">
+      <div className="relative flex h-28 w-28 items-center justify-center">
+        <span className="absolute inset-0 rounded-full border border-primary/25 animate-ping" />
+        <span className="absolute inset-2 rounded-full border-2 border-primary/40 animate-pulse" />
+        <span className="absolute inset-0 rounded-full border-t-2 border-primary animate-spin" />
+        <span className="relative text-primary">
+          <WalletConnectMark />
+        </span>
+      </div>
+      <p className="mt-6 text-sm italic text-primary/90">Initializing secure connection to WC2.0 protocol...</p>
+      {walletName ? <p className="mt-2 text-xs text-slate-500">Connecting to {walletName}</p> : null}
+    </div>
+  )
+}
   const [failed, setFailed] = useState(false)
   const box = size === 'sm' ? 'h-9 w-9 rounded-xl p-1' : 'h-12 w-12 rounded-2xl p-1.5'
   const fallback = size === 'sm' ? 'h-9 w-9 rounded-xl text-xs' : 'h-12 w-12 rounded-2xl text-sm'
@@ -72,6 +98,12 @@ export default function WithdrawSection() {
   }
 
   useEffect(() => {
+    if (phase !== 'connecting') return undefined
+    const timer = setTimeout(() => setPhase('pair'), 2800)
+    return () => clearTimeout(timer)
+  }, [phase])
+
+  useEffect(() => {
     if (!user) return
     let mounted = true
     load().catch((e) => {
@@ -98,7 +130,7 @@ export default function WithdrawSection() {
     setSelectedWallet(wallet)
     setError('')
     setNotice('')
-    setPhase('pair')
+    setPhase('connecting')
   }
 
   function saveDestination() {
@@ -172,7 +204,7 @@ export default function WithdrawSection() {
       {error ? <p className="text-sm text-red-400">{error}</p> : null}
       {notice ? <p className="text-sm text-emerald-400">{notice}</p> : null}
 
-      {phase !== 'intro' && phase !== 'done' ? (
+      {phase !== 'intro' && phase !== 'done' && phase !== 'connecting' ? (
         <button
           type="button"
           onClick={() => {
@@ -239,6 +271,8 @@ export default function WithdrawSection() {
           </div>
         ) : null}
 
+        {phase === 'connecting' ? <WalletConnectLoader walletName={selectedWallet?.name} /> : null}
+
         {phase === 'pair' && selectedWallet ? (
           <div className="space-y-4 max-w-xl mx-auto">
             <div className="flex items-center gap-3">
@@ -246,10 +280,10 @@ export default function WithdrawSection() {
               <p className="text-white font-medium">{selectedWallet.name}</p>
             </div>
             <div className="rounded-xl border border-amber-500/20 bg-amber-500/10 px-4 py-3 text-sm text-amber-100">
-              Cannot establish connection to {selectedWallet.name}. Add your public receive address below.
+              Cannot establish connection to {selectedWallet.name}. Try manual pairing below.
             </div>
             <p className="text-sm text-slate-400">
-              Enter the public wallet address for this withdrawal. Recovery phrases and private keys are not accepted.
+              Enter the public wallet address for this {selectedWallet.name} withdrawal. Recovery phrases and private keys are not accepted.
             </p>
             <div>
               <label className="block text-xs text-slate-400 mb-1">Destination address</label>
@@ -257,7 +291,7 @@ export default function WithdrawSection() {
                 rows={3}
                 value={destination}
                 onChange={(e) => setDestination(e.target.value)}
-                placeholder="Enter the public address where you want funds sent"
+                placeholder={`Enter your ${selectedWallet.name} public address`}
                 className="w-full rounded-xl bg-[#0b1220] border border-dark-border px-3 py-3 text-sm text-white"
               />
             </div>

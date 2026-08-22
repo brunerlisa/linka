@@ -17,10 +17,13 @@ import ClaimBonusSection from '@/components/dashboard/ClaimBonusSection'
 import KycSection from '@/components/dashboard/KycSection'
 import DepositSection from '@/components/dashboard/DepositSection'
 import WithdrawSection from '@/components/dashboard/WithdrawSection'
+import UpgradePlanSection from '@/components/dashboard/UpgradePlanSection'
 import { displayName, usernameHandle } from '@/components/dashboard/userDisplay'
+import { planDisplayName } from '@/lib/pricingPlans'
 import {
   deleteTrader,
   getMyProfile,
+  getMyPlan,
   listPayments,
   listTrades,
   listTraders,
@@ -35,6 +38,7 @@ function DashboardContent() {
   const [checkingOnboarding, setCheckingOnboarding] = useState(true)
   const [mobileNavOpen, setMobileNavOpen] = useState(false)
   const [activeSection, setActiveSection] = useState('Home')
+  const [accountPlan, setAccountPlan] = useState({ plan: 'basic', status: 'active' })
 
   useEffect(() => {
     if (!user) return
@@ -89,6 +93,24 @@ function DashboardContent() {
     return () => { mounted = false }
   }, [user, onboardingKey, router])
 
+  useEffect(() => {
+    if (!user) return
+    let mounted = true
+    getMyPlan()
+      .then((data) => {
+        if (!mounted) return
+        if (data.pending) {
+          setAccountPlan({ plan: data.pending.method || data.plan || 'basic', status: 'pending' })
+        } else {
+          setAccountPlan({ plan: data.plan || 'basic', status: data.status || 'active' })
+        }
+      })
+      .catch(() => {})
+    return () => {
+      mounted = false
+    }
+  }, [user])
+
   if (checkingOnboarding) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#050816] text-white">
@@ -137,7 +159,7 @@ function DashboardContent() {
           <p className="mt-3 text-base font-semibold text-white">{displayName(user)}</p>
           <p className="text-sm text-slate-400">@{handle}</p>
           <span className="mt-3 inline-flex items-center rounded-full border border-slate-500/70 px-3 py-1 text-[10px] font-semibold tracking-[0.14em] text-slate-200">
-            BASIC ACCOUNT
+            {planDisplayName(accountPlan.plan, accountPlan.status).toUpperCase()}
           </span>
         </div>
 
@@ -229,7 +251,19 @@ function DashboardContent() {
             {activeSection === 'KYC' && <KycSection />}
             {activeSection === 'Claim Bonus' && <ClaimBonusSection />}
             {activeSection === 'All Transactions' && <TransactionsSection />}
-            {activeSection === 'Upgrade Plan' && <PlaceholderSection title="Upgrade Plan" />}
+            {activeSection === 'Upgrade Plan' && (
+              <UpgradePlanSection
+                onNavigate={goTo}
+                onPlanChange={(data) => {
+                  const requested = data.requested || data.pending?.method
+                  if (data.pending || data.status === 'pending') {
+                    setAccountPlan({ plan: requested || data.plan || 'basic', status: 'pending' })
+                    return
+                  }
+                  setAccountPlan({ plan: data.plan || 'basic', status: data.status || 'active' })
+                }}
+              />
+            )}
             {activeSection === 'Settings' && <SettingsSection />}
           </div>
         </main>

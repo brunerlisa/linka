@@ -1,5 +1,6 @@
 import { requireAuth, ownsRecord } from '@/lib/auth'
 import { supabaseAdmin } from '@/lib/supabase-server'
+import { saveUserPlan } from '@/lib/userPlan'
 
 const nowIso = () => new Date().toISOString()
 const normalizeEmail = (v) => String(v || '').trim().toLowerCase()
@@ -92,6 +93,14 @@ export async function PATCH(req, { params }) {
       .select()
       .single()
     if (error) return Response.json({ error: error.message }, { status: 500 })
+    if (payment.payment_type === 'plan_upgrade' && nextStatus === 'approved') {
+      await saveUserPlan(supabaseAdmin, {
+        email: payment.user_email,
+        clerkId: payment.user_clerk_id,
+        planId: payment.method,
+        status: 'active',
+      })
+    }
     return Response.json(data)
   } catch (e) {
     if (e.status === 401) return Response.json({ error: 'Unauthorized' }, { status: 401 })
