@@ -68,9 +68,12 @@ export const metadata = {
     images: [LOGO_SRC],
   },
   icons: {
-    icon: LOGO_SRC,
-    shortcut: LOGO_SRC,
-    apple: LOGO_SRC,
+    icon: [
+      { url: '/favicon.ico', sizes: 'any' },
+      { url: '/noblemirrorcapital.png', type: 'image/png', sizes: '32x32' },
+    ],
+    shortcut: '/favicon.ico',
+    apple: '/noblemirrorcapital.png',
   },
   verification: {
     google: googleVerification,
