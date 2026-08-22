@@ -42,7 +42,7 @@ function WalletMark({ wallet, size = 'md' }) {
 
   return (
     <span className={`inline-flex items-center justify-center overflow-hidden bg-white ${box}`}>
-      <img>
+      <img
         src={wallet.logo}
         alt=""
         className="h-full w-full object-contain"
