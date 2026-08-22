@@ -1,11 +1,14 @@
-'use client'
+﻿'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/components/AuthProvider'
 import ProtectedRoute from '@/components/ProtectedRoute'
-import { ChartErrorBoundary } from '@/components/ChartErrorBoundary'
+import { NavIcon } from '@/components/dashboard/icons'
+import UserDashboardHome, { UserAvatar } from '@/components/dashboard/UserDashboardHome'
+import PlaceTradeSection from '@/components/dashboard/PlaceTradeSection'
+import { displayName, usernameHandle } from '@/components/dashboard/userDisplay'
 import {
   createPaymentRequest,
   createWithdrawalRequest,
@@ -25,20 +28,7 @@ function DashboardContent() {
   const onboardingKey = `onboarding:${user?.email || user?.id || 'guest'}`
   const [checkingOnboarding, setCheckingOnboarding] = useState(true)
   const [mobileNavOpen, setMobileNavOpen] = useState(false)
-  const [activeSection, setActiveSection] = useState('Dashboard')
-  const [expandedMenus, setExpandedMenus] = useState({
-    Payments: true,
-    'Trade History': true,
-    'Market Tools': true,
-    More: true,
-  })
-
-  const toggleMenu = (menuLabel) => {
-    setExpandedMenus((prev) => ({
-      ...prev,
-      [menuLabel]: !prev[menuLabel],
-    }))
-  }
+  const [activeSection, setActiveSection] = useState('Home')
 
   useEffect(() => {
     if (!user) return
@@ -102,36 +92,27 @@ function DashboardContent() {
   }
 
   const sidebarItems = [
-    { label: 'Dashboard' },
-    {
-      label: 'Payments',
-      children: [{ label: 'Deposit' }, { label: 'Withdrawal' }],
-    },
-    { label: 'Copytrading' },
-    { label: 'Traders' },
-    {
-      label: 'Trade History',
-      children: [{ label: 'Copy Trade History' }, { label: 'Demo Trade History' }],
-    },
-    { label: 'All Transactions' },
-    {
-      label: 'Market Tools',
-      children: [{ label: 'Technical Insights' }, { label: 'Trading Courses' }, { label: 'Economic Calendar' }],
-    },
-    { label: 'Loyalty Status' },
-    {
-      label: 'More',
-      children: [
-        { label: 'Settings' },
-        { label: 'All Notifications' },
-        { label: 'Account Verification' },
-        { label: 'Login History' },
-      ],
-    },
+    { label: 'Home', icon: 'home' },
+    { label: 'Place Trade', icon: 'trade' },
+    { label: 'Markets', icon: 'markets' },
+    { label: 'Commodities', icon: 'commodities' },
+    { label: 'My Trades', icon: 'trades' },
+    { label: 'Copy Trader', icon: 'copy' },
+    { label: 'Deposit', icon: 'deposit' },
+    { label: 'Withdraw', icon: 'withdraw' },
+    { label: 'KYC', icon: 'kyc' },
+    { label: 'Claim Bonus', icon: 'bonus' },
+    { label: 'All Transactions', icon: 'history' },
+    { label: 'Upgrade Plan', icon: 'upgrade' },
   ]
+  const goTo = (label) => {
+    setActiveSection(label)
+    setMobileNavOpen(false)
+  }
+  const handle = usernameHandle(user)
 
   return (
-    <div className="min-h-screen bg-[#050816] text-slate-100 flex">
+    <div className="min-h-screen bg-dark text-slate-100 flex">
       {mobileNavOpen ? (
         <button
           type="button"
@@ -141,37 +122,56 @@ function DashboardContent() {
         />
       ) : null}
       <aside
-        className={`fixed lg:static inset-y-0 left-0 z-50 w-[min(16.5rem,88vw)] bg-[#050712] border-r border-[#111827] flex flex-col transform transition-transform duration-200 ${
+        className={`fixed lg:static inset-y-0 left-0 z-50 w-[min(17rem,88vw)] bg-[#070b16] border-r border-dark-border flex flex-col transform transition-transform duration-200 ${
           mobileNavOpen ? 'translate-x-0' : '-translate-x-full'
         } lg:translate-x-0`}
       >
-        <div className="h-14 px-5 flex items-center border-b border-[#111827]">
-          <div className="flex flex-col">
-            <span className="text-sm font-semibold tracking-wide">
-              <span className="text-primary">Noble Mirror Capital</span>
-            </span>
-          </div>
+        <div className="px-6 pt-8 pb-6 flex flex-col items-center text-center">
+          <UserAvatar user={user} size="lg" />
+          <p className="mt-3 text-base font-semibold text-white">{displayName(user)}</p>
+          <p className="text-sm text-slate-400">@{handle}</p>
+          <span className="mt-3 inline-flex items-center rounded-full border border-slate-500/70 px-3 py-1 text-[10px] font-semibold tracking-[0.14em] text-slate-200">
+            BASIC ACCOUNT
+          </span>
         </div>
 
-        <nav className="flex-1 py-4 text-sm">
-          <DashboardSidebarNav
-            items={sidebarItems}
-            active={activeSection}
-            expanded={expandedMenus}
-            onToggle={toggleMenu}
-            onSelect={(label) => {
-              setActiveSection(label)
-              setMobileNavOpen(false)
-            }}
-          />
+        <nav className="flex-1 overflow-y-auto px-3 pb-4 text-sm">
+          {sidebarItems.map((item) => {
+            const isActive = activeSection === item.label
+            return (
+              <button
+                key={item.label}
+                type="button"
+                onClick={() => goTo(item.label)}
+                className={`w-full flex items-center gap-3 rounded-xl px-3 py-2.5 mb-0.5 transition-colors ${
+                  isActive ? 'bg-primary/10 text-primary' : 'text-slate-300 hover:bg-white/5 hover:text-white'
+                }`}
+              >
+                <NavIcon name={item.icon} className="w-[18px] h-[18px]" />
+                <span>{item.label}</span>
+              </button>
+            )
+          })}
         </nav>
 
-        <div className="border-t border-[#111827] py-3 text-sm space-y-0.5">
+        <div className="border-t border-dark-border px-3 py-3 text-sm space-y-0.5">
+          <button
+            type="button"
+            onClick={() => goTo('Settings')}
+            className={`w-full flex items-center gap-3 rounded-xl px-3 py-2.5 ${
+              activeSection === 'Settings' ? 'bg-primary/10 text-primary' : 'text-slate-300 hover:bg-white/5 hover:text-white'
+            }`}
+          >
+            <NavIcon name="settings" className="w-[18px] h-[18px]" />
+            <span>Settings</span>
+          </button>
           {user?.role === 'admin' && (
-            <Link href="/admin" className="block px-5 py-2 text-amber-400 hover:bg-[#0b1020]">Admin Panel</Link>
+            <Link href="/admin" className="block px-3 py-2.5 text-amber-400 hover:bg-white/5 rounded-xl">
+              Admin Panel
+            </Link>
           )}
           <button
-            className="w-full px-5 py-2 text-left text-slate-300 hover:bg-[#0b1020]"
+            className="w-full px-3 py-2.5 text-left text-slate-400 hover:text-white hover:bg-white/5 rounded-xl"
             onClick={async () => {
               await signOut()
               router.push('/auth/sign-in')
@@ -182,313 +182,52 @@ function DashboardContent() {
         </div>
       </aside>
 
-      {/* Main area */}
       <div className="flex-1 flex flex-col min-w-0">
-        <header className="h-14 border-b border-[#111827] flex items-center justify-between px-4 sm:px-6 bg-[#050816]">
-          <div className="flex items-center gap-3 min-w-0">
-            <button
-              type="button"
-              className="lg:hidden p-2 -ml-1 rounded-lg text-slate-300 hover:bg-[#111827]"
-              aria-label="Open menu"
-              onClick={() => setMobileNavOpen(true)}
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
-            </button>
-            <button className="px-3 py-1.5 text-xs rounded-full bg-[#111827] text-slate-200 border border-[#1f2937]">
-              Copy referral link
-            </button>
-            <span className="hidden md:inline text-[11px] text-slate-400">
-              Invite friends and earn a share when they copy trade.
-            </span>
-          </div>
+        <header className="h-16 border-b border-dark-border flex items-center justify-between px-4 sm:px-6 bg-[#070b16]">
+          <button
+            type="button"
+            className="lg:hidden p-2 -ml-1 rounded-lg text-slate-300 hover:bg-white/5"
+            aria-label="Open menu"
+            onClick={() => setMobileNavOpen(true)}
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+          <div className="hidden lg:block" />
 
-          <div className="flex items-center gap-3">
-            <button className="px-3 py-1.5 text-xs rounded-full bg-[#111827] text-slate-200 border border-[#1f2937]">
-              Practice area
+          <div className="flex items-center gap-4 ml-auto">
+            <button type="button" onClick={() => goTo('Settings')} className="text-slate-300 hover:text-white" aria-label="Notifications">
+              <NavIcon name="bell" className="w-5 h-5" />
             </button>
-            <div className="flex items-center gap-2 text-xs">
-              <span className="hidden sm:inline text-slate-300">
-                {user?.email || 'User'}
-              </span>
-              <div className="w-8 h-8 rounded-full bg-primary/20 border border-primary/60 flex items-center justify-center text-[11px] font-semibold uppercase">
-                {(user?.email || 'U')[0]}
+            <div className="flex items-center gap-3">
+              <div className="hidden sm:block text-right leading-tight">
+                <p className="text-sm text-white">{handle}</p>
+                <p className="text-[10px] font-semibold tracking-[0.12em] text-slate-400">REAL ACCOUNT</p>
               </div>
+              <UserAvatar user={user} size="sm" />
             </div>
           </div>
         </header>
 
-        {/* Content */}
-        <main className="flex-1 overflow-y-auto bg-[#050816]">
-          <div className="px-6 pt-5 pb-10 space-y-6">
-            {activeSection === 'Dashboard' && (
-              <DashboardHome
-                onDepositClick={() => setActiveSection('Deposit')}
-                onKycClick={() => setActiveSection('Account Verification')}
-              />
-            )}
-
+        <main className="flex-1 overflow-y-auto bg-dark">
+          <div className="px-4 sm:px-6 lg:px-8 pt-6 pb-12">
+            {activeSection === 'Home' && <UserDashboardHome onNavigate={goTo} />}
+            {activeSection === 'Place Trade' && <PlaceTradeSection />}
+            {activeSection === 'Markets' && <PlaceholderSection title="Markets" />}
+            {activeSection === 'Commodities' && <PlaceholderSection title="Commodities" />}
+            {activeSection === 'My Trades' && <TradeHistorySection type="copy" />}
+            {activeSection === 'Copy Trader' && <TradersSection />}
             {activeSection === 'Deposit' && <PaymentsSection />}
-            {activeSection === 'Withdrawal' && <WithdrawalSection />}
-            {activeSection === 'Copytrading' && <CopytradingSection />}
-            {activeSection === 'Traders' && <TradersSection />}
-            {activeSection === 'Copy Trade History' && <TradeHistorySection type="copy" />}
-            {activeSection === 'Demo Trade History' && <TradeHistorySection type="demo" />}
+            {activeSection === 'Withdraw' && <WithdrawalSection />}
+            {activeSection === 'KYC' && <KycSection />}
+            {activeSection === 'Claim Bonus' && <PlaceholderSection title="Claim Bonus" />}
             {activeSection === 'All Transactions' && <AllTransactionsSection />}
-            {activeSection === 'Technical Insights' && <PlaceholderSection title="Technical Insights" />}
-            {activeSection === 'Trading Courses' && <PlaceholderSection title="Trading Courses" />}
-            {activeSection === 'Economic Calendar' && <PlaceholderSection title="Economic Calendar" />}
-            {activeSection === 'Loyalty Status' && <PlaceholderSection title="Loyalty Status" />}
+            {activeSection === 'Upgrade Plan' && <PlaceholderSection title="Upgrade Plan" />}
             {activeSection === 'Settings' && <SettingsSection />}
-            {activeSection === 'All Notifications' && <PlaceholderSection title="All Notifications" />}
-            {activeSection === 'Account Verification' && <KycSection />}
-            {activeSection === 'Login History' && <PlaceholderSection title="Login History" />}
           </div>
         </main>
       </div>
-    </div>
-  )
-}
-
-function DashboardSidebarNav({ items, active, expanded, onToggle, onSelect }) {
-  return (
-    <ul>
-      {items.map((item) => {
-        const hasChildren = Array.isArray(item.children) && item.children.length > 0
-        const isExpanded = !!expanded[item.label]
-        const isParentActive = hasChildren && item.children.some((child) => child.label === active)
-        const isActive = active === item.label || isParentActive
-
-        return (
-          <li key={item.label}>
-            <button
-              type="button"
-              onClick={() => {
-                if (hasChildren) {
-                  onToggle(item.label)
-                } else {
-                  onSelect(item.label)
-                }
-              }}
-              className={`w-full text-left px-5 py-2.5 text-sm transition-colors flex items-center justify-between ${
-                isActive ? 'bg-[#111827] text-slate-50 border-r-2 border-primary' : 'text-slate-300 hover:bg-[#0b1020]'
-              }`}
-            >
-              <span>{item.label}</span>
-              {hasChildren && <span className="text-xs text-slate-500">{isExpanded ? 'v' : '>'}</span>}
-            </button>
-
-            {hasChildren && isExpanded && (
-              <ul className="pb-1">
-                {item.children.map((child) => {
-                  const childActive = active === child.label
-                  return (
-                    <li key={child.label}>
-                      <button
-                        type="button"
-                        onClick={() => onSelect(child.label)}
-                        className={`w-full text-left px-10 py-1.5 text-sm transition-colors ${
-                          childActive
-                            ? 'text-slate-200 bg-[#0b1020] border-r-2 border-primary'
-                            : 'text-slate-500 hover:text-slate-300 hover:bg-[#0b1020]'
-                        }`}
-                      >
-                        {child.label}
-                      </button>
-                    </li>
-                  )
-                })}
-              </ul>
-            )}
-          </li>
-        )
-      })}
-    </ul>
-  )
-}
-
-function DashboardHome({ onDepositClick, onKycClick }) {
-  const chartSymbols = [
-    { label: 'Apple', value: 'NASDAQ:AAPL' },
-    { label: 'Google', value: 'NASDAQ:GOOGL' },
-    { label: 'Microsoft', value: 'NASDAQ:MSFT' },
-    { label: 'NVDA', value: 'NASDAQ:NVDA' },
-    { label: 'AMZN', value: 'NASDAQ:AMZN' },
-  ]
-  const chartIntervals = ['1D', '1W', '1M', '1Y']
-  const [selectedSymbol, setSelectedSymbol] = useState(chartSymbols[0].value)
-  const [selectedInterval, setSelectedInterval] = useState('1D')
-  const [featuredTraders, setFeaturedTraders] = useState([])
-  const sliderRef = useRef(null)
-
-  useEffect(() => {
-    let mounted = true
-    async function loadFeatured() {
-      const rows = await listTraders()
-      if (mounted) setFeaturedTraders((rows || []).slice(0, 18))
-    }
-    loadFeatured()
-    return () => {
-      mounted = false
-    }
-  }, [])
-
-  const slideTraders = (direction) => {
-    if (!sliderRef.current) return
-    const amount = 300
-    sliderRef.current.scrollBy({ left: direction === 'next' ? amount : -amount, behavior: 'smooth' })
-  }
-
-  return (
-    <>
-      <div className="space-y-2">
-        <InfoBanner>
-          Your balance is empty.{' '}
-          <button
-            type="button"
-            onClick={onDepositClick}
-            className="text-primary underline underline-offset-2"
-          >
-            Make a deposit
-          </button>{' '}
-          to start copying trades.
-        </InfoBanner>
-        <InfoBanner>
-          We need your KYC data for some actions.{' '}
-          <button
-            type="button"
-            onClick={onKycClick}
-            className="text-primary underline underline-offset-2"
-          >
-            Provide KYC data
-          </button>{' '}
-          when you&apos;re ready.
-        </InfoBanner>
-      </div>
-
-      <section className="grid grid-cols-1 xl:grid-cols-3 gap-4">
-        <div className="bg-[#050712] border border-[#111827] rounded-xl p-4 flex flex-col justify-between">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <p className="text-xs text-slate-400">Total balance</p>
-              <p className="text-2xl font-semibold text-white mt-1">$0</p>
-            </div>
-            <div className="w-10 h-10 rounded-full bg-primary/15 flex items-center justify-center text-primary text-xs font-semibold">
-              Copy
-            </div>
-          </div>
-
-          <div className="grid grid-cols-3 gap-3 text-xs text-slate-300 mb-4">
-            <SummaryPill label="Deposit" value="$0" />
-            <SummaryPill label="Interest" value="$0" />
-            <SummaryPill label="Trades" value="0" />
-          </div>
-
-          <div className="flex gap-3 text-xs">
-            <button
-              type="button"
-              onClick={onDepositClick}
-              className="flex-1 py-2 rounded-lg bg-primary hover:bg-primary-dark text-white font-medium"
-            >
-              Deposit
-            </button>
-            <button className="flex-1 py-2 rounded-lg border border-[#1f2937] text-slate-200 hover:bg-[#0b1020]">
-              Withdraw
-            </button>
-          </div>
-        </div>
-
-        <div className="xl:col-span-2 bg-[#050712] border border-[#111827] rounded-xl p-3">
-          <div className="flex items-center justify-between mb-2">
-            <p className="text-xs text-slate-400">Top traders (slide to view all)</p>
-            <div className="flex gap-2">
-              <button type="button" onClick={() => slideTraders('prev')} className="px-2 py-1 rounded bg-[#111827] text-slate-300 text-xs">{'<'}</button>
-              <button type="button" onClick={() => slideTraders('next')} className="px-2 py-1 rounded bg-[#111827] text-slate-300 text-xs">{'>'}</button>
-            </div>
-          </div>
-          <div ref={sliderRef} className="flex gap-3 overflow-x-auto pb-1 snap-x snap-mandatory">
-            {featuredTraders.length === 0 ? (
-              <div className="w-full rounded-lg border border-[#1f2937] bg-[#0b1020] px-4 py-6 text-xs text-slate-400">
-                No traders yet. Admin: go to{' '}
-                <Link href="/admin/traders" className="text-primary hover:underline">
-                  Admin → Traders
-                </Link>
-                {' '}and click &quot;Load Demo Traders&quot;.
-              </div>
-            ) : (
-              featuredTraders.map((trader) => (
-                <div key={trader.id} className="snap-start min-w-[260px] max-w-[260px]">
-                  <TraderCard
-                    name={trader.name || 'Trader'}
-                    risk={trader.risk || 'Low'}
-                    assetClass={trader.style || 'Mixed'}
-                    monthly={`+${Number(trader.monthly_profit ?? 0)}%`}
-                    yearly={`+${Number(trader.yearly_profit ?? 0)}%`}
-                    experience={`${Number(trader.experience_years ?? 0)} yrs`}
-                    fee={`${Number(trader.fee_percent ?? 10)}%`}
-                    avatarUrl={trader.avatar_url || ''}
-                    minCapital={Number(trader.min_capital ?? 3000)}
-                    copiers={Number(trader.copiers ?? 0)}
-                  />
-                </div>
-              ))
-            )}
-          </div>
-        </div>
-      </section>
-
-      <section className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <Panel title="Recent trades">
-          <EmptyState label="No trades found yet. Once you start copying, your trades will appear here." />
-        </Panel>
-        <Panel title="Recent transactions">
-          <EmptyState label="No transactions yet. Deposits and withdrawals will show here." />
-        </Panel>
-      </section>
-
-      <section className="bg-[#050712] border border-[#111827] rounded-xl p-4 space-y-4">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex flex-wrap items-center gap-3 text-xs">
-            {chartSymbols.map((symbol) => (
-              <AssetChip
-                key={symbol.value}
-                active={selectedSymbol === symbol.value}
-                onClick={() => setSelectedSymbol(symbol.value)}
-              >
-                {symbol.label}
-              </AssetChip>
-            ))}
-          </div>
-          <div className="flex gap-2 text-[11px] text-slate-400">
-            {chartIntervals.map((interval) => (
-              <button
-                key={interval}
-                type="button"
-                onClick={() => setSelectedInterval(interval)}
-                className={`px-2 py-1 rounded ${
-                  selectedInterval === interval ? 'bg-[#111827] text-slate-200' : 'hover:bg-[#111827]'
-                }`}
-              >
-                {interval}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <ChartErrorBoundary>
-          <LiveMarketChart symbol={selectedSymbol} interval={selectedInterval} />
-        </ChartErrorBoundary>
-      </section>
-    </>
-  )
-}
-
-function InfoBanner({ children }) {
-  return (
-    <div className="flex items-start gap-2 rounded-md bg-[#111827] border border-[#1f2937] px-3 py-2 text-xs text-slate-200">
-      <span className="mt-0.5 h-1.5 w-1.5 rounded-full bg-amber-400" />
-      <p>{children}</p>
     </div>
   )
 }
@@ -688,7 +427,7 @@ function WithdrawalSection() {
         status: 'pending',
         notes: `Withdrawal to ${destinationAddress.trim()}`,
       })
-      setNotice('Withdrawal request submitted. Processing typically takes 1–5 business days.')
+      setNotice('Withdrawal request submitted. Processing typically takes 1-5 business days.')
       setAmountUsd('')
       setDestinationAddress('')
       const payments = await listPayments()
@@ -782,9 +521,9 @@ function WithdrawalSection() {
               <div className="space-y-2 max-h-[280px] overflow-y-auto">
                 {withdrawals.slice(0, 10).map((w) => (
                   <div key={w.id} className="p-3 rounded-lg border border-[#1f2937] bg-[#060d1f] text-sm">
-                    <p className="text-white">${Number(w.amount_usd || 0).toLocaleString()} · {w.method}</p>
+                    <p className="text-white">${Number(w.amount_usd || 0).toLocaleString()} - {w.method}</p>
                     <p className="text-xs text-slate-400 mt-1">
-                      {w.status} · {w.created_at ? new Date(w.created_at).toLocaleDateString() : '-'}
+                      {w.status} - {w.created_at ? new Date(w.created_at).toLocaleDateString() : '-'}
                     </p>
                   </div>
                 ))}
@@ -969,20 +708,6 @@ function KycSection() {
   )
 }
 
-function CopytradingSection() {
-  return (
-    <section className="space-y-4">
-      <h2 className="text-lg font-semibold text-white">Copytrading</h2>
-      <p className="text-sm text-slate-300">
-        Here you&apos;ll later see curated strategies and traders based on your onboarding profile.
-      </p>
-      <Panel title="Featured traders">
-        <EmptyState label="Admin can configure featured traders in the Admin panel under 'More'." />
-      </Panel>
-    </section>
-  )
-}
-
 function TradersSection() {
   const [traders, setTraders] = useState([])
   const [loading, setLoading] = useState(true)
@@ -1163,7 +888,7 @@ function PlaceholderSection({ title }) {
     <section className="space-y-4">
       <h2 className="text-lg font-semibold text-white">{title}</h2>
       <Panel title={title}>
-        <EmptyState label="This section is a placeholder for future data and functionality." />
+        <EmptyState label="This page is ready for the exact layout. Send the screenshot and it will be built to match." />
       </Panel>
     </section>
   )
@@ -1194,15 +919,6 @@ function SettingsSection() {
   )
 }
 
-function SummaryPill({ label, value }) {
-  return (
-    <div className="rounded-lg bg-[#0b1020] border border-[#1f2937] px-3 py-2">
-      <p className="text-[11px] text-slate-400">{label}</p>
-      <p className="mt-1 text-sm font-semibold text-white">{value}</p>
-    </div>
-  )
-}
-
 function TraderAvatar({ name, avatarUrl, size = 'md' }) {
   const [imgError, setImgError] = useState(false)
   const showImg = avatarUrl && !imgError
@@ -1227,7 +943,7 @@ function TraderCard({ name, risk, assetClass, monthly, yearly, experience, fee, 
         <div>
           <p className="text-sm font-semibold text-white">{name}</p>
           <p className="text-[11px] text-slate-400">
-            {risk} • {assetClass}
+            {risk} - {assetClass}
           </p>
         </div>
       </div>
@@ -1276,110 +992,6 @@ function EmptyState({ label }) {
     <div className="h-24 flex flex-col items-start justify-center text-xs text-slate-400">
       <p>{label}</p>
     </div>
-  )
-}
-
-function LiveMarketChart({ symbol, interval }) {
-  const containerRef = useRef(null)
-  const [chartError, setChartError] = useState(false)
-  const [mounted, setMounted] = useState(false)
-
-  useEffect(() => {
-    const t = setTimeout(() => setMounted(true), 800)
-    return () => clearTimeout(t)
-  }, [])
-
-  useEffect(() => {
-    if (!mounted) return
-    const intervalMap = {
-      '1D': 'D',
-      '1W': 'W',
-      '1M': 'M',
-      '1Y': '12M',
-    }
-    const tvInterval = intervalMap[interval] || 'D'
-    const container = containerRef.current
-    if (!container) return
-
-    setChartError(false)
-    container.innerHTML = ''
-
-    // Official TradingView embed widget (no package install required).
-    const widgetHost = document.createElement('div')
-    widgetHost.className = 'tradingview-widget-container'
-    widgetHost.style.height = '100%'
-    widgetHost.style.width = '100%'
-
-    const widgetNode = document.createElement('div')
-    widgetNode.className = 'tradingview-widget-container__widget'
-    widgetNode.style.height = '100%'
-    widgetNode.style.width = '100%'
-    widgetHost.appendChild(widgetNode)
-
-    const script = document.createElement('script')
-    script.type = 'text/javascript'
-    script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js'
-    script.async = true
-    script.text = JSON.stringify({
-      autosize: true,
-      symbol,
-      interval: tvInterval,
-      timezone: 'Etc/UTC',
-      theme: 'dark',
-      style: '1',
-      locale: 'en',
-      hide_top_toolbar: true,
-      hide_legend: false,
-      allow_symbol_change: false,
-      save_image: false,
-      backgroundColor: '#050816',
-      gridColor: 'rgba(148,163,184,0.08)',
-      withdateranges: false,
-    })
-    widgetHost.appendChild(script)
-    container.appendChild(widgetHost)
-
-    const healthCheck = window.setTimeout(() => {
-      const iframeExists = !!container.querySelector('iframe')
-      if (!iframeExists) {
-        setChartError(true)
-      }
-    }, 5000)
-
-    return () => window.clearTimeout(healthCheck)
-  }, [symbol, interval, mounted])
-
-  if (!mounted) {
-    return (
-      <div className="relative h-64 rounded-lg border border-[#1f2937] overflow-hidden bg-[#050816] flex items-center justify-center text-xs text-slate-500">
-        Loading chart...
-      </div>
-    )
-  }
-  return (
-    <div className="relative h-64 rounded-lg border border-[#1f2937] overflow-hidden bg-[#050816]">
-      <div id="tv-market-chart" ref={containerRef} className="h-full w-full" />
-      {chartError && (
-        <div className="absolute inset-0 flex items-center justify-center text-xs text-slate-400 px-4 text-center bg-[#050816]">
-          Unable to load TradingView in this browser session. Refresh the page, disable strict ad/script blockers, or
-          open in a normal browser tab.
-        </div>
-      )}
-    </div>
-  )
-}
-
-function AssetChip({ children, active = false, onClick }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`px-3 py-1.5 rounded-full text-[11px] ${
-        active ? 'bg-[#111827] text-slate-100' : 'bg-transparent text-slate-400 hover:bg-[#111827]'
-      }`}
-    >
-      {children}
-    </button>
   )
 }
 
