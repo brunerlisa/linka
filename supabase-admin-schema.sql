@@ -1,5 +1,5 @@
 -- Noble Mirror Capital - Supabase DB Schema
--- Auth: Clerk (JWT). Supabase is DB/Storage/RLS only.
+-- Auth: Supabase Auth. This file is the original table setup.
 -- Run in Supabase SQL editor. Script is fully re-runnable.
 
 create extension if not exists "uuid-ossp";
@@ -8,7 +8,7 @@ create extension if not exists "uuid-ossp";
 -- TABLES
 -- =====================================================================
 
--- profiles: one row per Clerk user, synced by frontend on login
+-- profiles: one row per signed-in user, synced by the app on login
 create table if not exists public.profiles (
   clerk_user_id text primary key,
   email         text unique not null,
@@ -81,7 +81,7 @@ create table if not exists public.trade_updates (
 );
 
 -- =====================================================================
--- MIGRATION: add clerk_user_id / user_clerk_id to legacy tables if not already present
+-- MIGRATION: add user id columns to legacy tables if not already present
 -- =====================================================================
 alter table public.profiles      add column if not exists clerk_user_id text;
 alter table public.profiles      add column if not exists has_onboarded boolean not null default false;
@@ -132,11 +132,10 @@ alter table public.user_accounts   enable row level security;
 alter table public.trade_updates   enable row level security;
 
 -- =====================================================================
--- JWT HELPERS: read Clerk claims from token
--- Clerk JWT template must include: sub, email, app_role
+-- JWT HELPERS (historical). Prefer supabase-auth-migration.sql on live DB.
 -- =====================================================================
 
--- Returns the Clerk user id (sub claim)
+-- Returns the signed-in user id
 create or replace function public.jwt_clerk_id()
 returns text language sql stable as $$
   select coalesce(auth.jwt() ->> 'sub', '');
@@ -148,7 +147,7 @@ returns text language sql stable as $$
   select lower(coalesce(auth.jwt() ->> 'email', ''));
 $$;
 
--- Returns true if the caller has app_role = 'admin' in their Clerk token
+-- Returns true if the caller is an admin
 create or replace function public.is_admin()
 returns boolean language sql stable security definer set search_path = public as $$
   select lower(coalesce(auth.jwt() ->> 'app_role', '')) = 'admin';
@@ -261,27 +260,9 @@ create policy "trade_updates_write_admin" on public.trade_updates
   using (public.is_admin()) with check (public.is_admin());
 
 -- =====================================================================
--- REQUIRED CLERK DASHBOARD STEPS
+-- ADMIN ACCESS
 -- =====================================================================
--- 1) Create a JWT template named "supabase" with these claims:
---    {
---      "aud":       "authenticated",
---      "role":      "authenticated",
---      "sub":       "{{user.id}}",
---      "email":     "{{user.primary_email_address.email_address}}",
---      "app_role":  "{{user.public_metadata.role}}"
---    }
+-- Grant admin in SQL:
+--   update public.profiles set role = 'admin' where email = 'you@email.com';
 --
--- 2) To grant admin access to a user:
---    In Clerk dashboard -> Users -> select user -> public_metadata:
---    { "role": "admin" }
---
--- 3) Normal users need no public_metadata (defaults to "user").
---
--- =====================================================================
--- REQUIRED SUPABASE DASHBOARD STEP
--- =====================================================================
--- Go to Supabase > Authentication > Third-party Auth
--- Add Clerk as a third-party provider using your Clerk JWKS URL:
---   https://clerk.perfect-weevil-52.accounts.dev/.well-known/jwks.json
--- (Replace the domain with your actual Clerk frontend API domain)
+-- Or set ADMIN_EMAILS in Vercel environment variables.

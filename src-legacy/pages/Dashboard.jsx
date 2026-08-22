@@ -959,7 +959,7 @@ function AdminSection() {
       <section className="space-y-3">
         <h2 className="text-lg font-semibold text-white">Admin Control</h2>
         <p className="text-sm text-slate-300">
-          This area is restricted. Set your Clerk `public_metadata.role` to `admin`.
+          This area is restricted. Admin access is required.
         </p>
       </section>
     )
@@ -1152,7 +1152,7 @@ function AdminSection() {
             <div className="bg-[#050712] border border-[#111827] rounded-xl p-4">
               <h3 className="text-sm font-semibold text-white mb-2">Signed-up Users</h3>
               <p className="text-xs text-slate-400 mb-3">
-              Users come from the `profiles` table (auto-created when a user signs in with Clerk after running the SQL schema).
+              Users come from the `profiles` table (auto-created when a user signs in after running the SQL schema).
               </p>
               <div className="space-y-2 max-h-[560px] overflow-y-auto pr-1">
                 {users.length === 0 && (

@@ -1,6 +1,5 @@
--- Switch RLS helpers from Clerk JWTs to native Supabase Auth.
--- Run once in the Supabase SQL editor. Column names stay the same
--- (clerk_user_id / user_clerk_id now store the Supabase user UUID).
+-- Keep RLS user IDs aligned with native Supabase Auth.
+-- Run once in the Supabase SQL editor. Existing id columns store the Supabase user UUID.
 
 create or replace function public.jwt_clerk_id()
 returns text language sql stable as $$
