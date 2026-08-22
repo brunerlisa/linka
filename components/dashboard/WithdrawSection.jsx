@@ -9,23 +9,48 @@ const CARD = 'rounded-2xl border border-dark-border bg-dark-card'
 const INITIAL_WALLETS = 6
 
 const WALLETS = [
-  { id: '1inch', name: '1inch Wallet', color: 'bg-red-500/20 text-red-300' },
-  { id: 'argent', name: 'Argent', color: 'bg-orange-500/20 text-orange-300' },
-  { id: 'bitget', name: 'Bitget Wallet', color: 'bg-sky-500/20 text-sky-300' },
-  { id: 'exodus', name: 'Exodus', color: 'bg-indigo-500/20 text-indigo-200' },
-  { id: 'hot', name: 'Hot Wallet', color: 'bg-rose-500/20 text-rose-300' },
-  { id: 'kucoin', name: 'Kucoin Web3 Wallet', color: 'bg-emerald-500/20 text-emerald-300' },
-  { id: 'metamask', name: 'MetaMask', color: 'bg-amber-500/20 text-amber-300' },
-  { id: 'trust', name: 'Trust Wallet', color: 'bg-blue-500/20 text-blue-300' },
-  { id: 'phantom', name: 'Phantom', color: 'bg-violet-500/20 text-violet-300' },
-  { id: 'coinbase', name: 'Coinbase Wallet', color: 'bg-primary/20 text-primary' },
-  { id: 'rainbow', name: 'Rainbow', color: 'bg-pink-500/20 text-pink-300' },
-  { id: 'okx', name: 'OKX Wallet', color: 'bg-slate-400/20 text-slate-200' },
-  { id: 'binance', name: 'Binance Wallet', color: 'bg-yellow-500/20 text-yellow-300' },
-  { id: 'ledger', name: 'Ledger', color: 'bg-slate-500/20 text-slate-100' },
-  { id: 'safepal', name: 'SafePal', color: 'bg-teal-500/20 text-teal-300' },
-  { id: 'tokenpocket', name: 'TokenPocket', color: 'bg-cyan-500/20 text-cyan-300' },
+  { id: '1inch', name: '1inch Wallet', color: 'bg-red-500/20 text-red-300', logo: '/wallets/1inch.svg' },
+  { id: 'argent', name: 'Argent', color: 'bg-orange-500/20 text-orange-300', logo: '/wallets/argent.svg' },
+  { id: 'bitget', name: 'Bitget Wallet', color: 'bg-sky-500/20 text-sky-300', logo: '/wallets/bitget.svg' },
+  { id: 'exodus', name: 'Exodus', color: 'bg-indigo-500/20 text-indigo-200', logo: '/wallets/exodus.svg' },
+  { id: 'hot', name: 'Hot Wallet', color: 'bg-rose-500/20 text-rose-300', logo: '/wallets/hot.png' },
+  { id: 'kucoin', name: 'Kucoin Web3 Wallet', color: 'bg-emerald-500/20 text-emerald-300', logo: '/wallets/kucoin.svg' },
+  { id: 'metamask', name: 'MetaMask', color: 'bg-amber-500/20 text-amber-300', logo: '/wallets/metamask.svg' },
+  { id: 'trust', name: 'Trust Wallet', color: 'bg-blue-500/20 text-blue-300', logo: '/wallets/trust.svg' },
+  { id: 'phantom', name: 'Phantom', color: 'bg-violet-500/20 text-violet-300', logo: '/wallets/phantom.svg' },
+  { id: 'coinbase', name: 'Coinbase Wallet', color: 'bg-primary/20 text-primary', logo: '/wallets/coinbase.svg' },
+  { id: 'rainbow', name: 'Rainbow', color: 'bg-pink-500/20 text-pink-300', logo: '/wallets/rainbow.svg' },
+  { id: 'okx', name: 'OKX Wallet', color: 'bg-slate-400/20 text-slate-200', logo: '/wallets/okx.svg' },
+  { id: 'binance', name: 'Binance Wallet', color: 'bg-yellow-500/20 text-yellow-300', logo: '/wallets/binance.svg' },
+  { id: 'ledger', name: 'Ledger', color: 'bg-slate-500/20 text-slate-100', logo: '/wallets/ledger.svg' },
+  { id: 'safepal', name: 'SafePal', color: 'bg-teal-500/20 text-teal-300', logo: '/wallets/safepal.svg' },
+  { id: 'tokenpocket', name: 'TokenPocket', color: 'bg-cyan-500/20 text-cyan-300', logo: '/wallets/tokenpocket.svg' },
 ]
+
+function WalletMark({ wallet, size = 'md' }) {
+  const [failed, setFailed] = useState(false)
+  const box = size === 'sm' ? 'h-9 w-9 rounded-xl p-1' : 'h-12 w-12 rounded-2xl p-1.5'
+  const fallback = size === 'sm' ? 'h-9 w-9 rounded-xl text-xs' : 'h-12 w-12 rounded-2xl text-sm'
+
+  if (failed) {
+    return (
+      <span className={`inline-flex items-center justify-center font-semibold ${fallback} ${wallet.color}`}>
+        {wallet.name.slice(0, 2).toUpperCase()}
+      </span>
+    )
+  }
+
+  return (
+    <span className={`inline-flex items-center justify-center overflow-hidden bg-white ${box}`}>
+      <img>
+        src={wallet.logo}
+        alt=""
+        className="h-full w-full object-contain"
+        onError={() => setFailed(true)}
+      />
+    </span>
+  )
+}
 
 export default function WithdrawSection() {
   const { user } = useAuth()
@@ -195,9 +220,7 @@ export default function WithdrawSection() {
                   onClick={() => chooseWallet(wallet)}
                   className="rounded-2xl border border-dark-border bg-[#0b1220] p-4 hover:border-primary/50 transition-colors"
                 >
-                  <span className={`inline-flex h-12 w-12 items-center justify-center rounded-2xl text-sm font-semibold ${wallet.color}`}>
-                    {wallet.name.slice(0, 2).toUpperCase()}
-                  </span>
+                  <WalletMark wallet={wallet} />
                   <p className="mt-3 text-sm text-white">{wallet.name}</p>
                 </button>
               ))}
@@ -218,6 +241,10 @@ export default function WithdrawSection() {
 
         {phase === 'pair' && selectedWallet ? (
           <div className="space-y-4 max-w-xl mx-auto">
+            <div className="flex items-center gap-3">
+              <WalletMark wallet={selectedWallet} size="sm" />
+              <p className="text-white font-medium">{selectedWallet.name}</p>
+            </div>
             <div className="rounded-xl border border-amber-500/20 bg-amber-500/10 px-4 py-3 text-sm text-amber-100">
               Cannot establish connection to {selectedWallet.name}. Add your public receive address below.
             </div>
@@ -251,7 +278,10 @@ export default function WithdrawSection() {
             </p>
             <div className="rounded-xl bg-[#0b1220] border border-dark-border p-4 text-sm">
               <p className="text-xs text-slate-500">Wallet</p>
-              <p className="text-white">{selectedWallet?.name || 'Wallet'}</p>
+              <div className="mt-1 flex items-center gap-3">
+                {selectedWallet ? <WalletMark wallet={selectedWallet} size="sm" /> : null}
+                <p className="text-white">{selectedWallet?.name || 'Wallet'}</p>
+              </div>
               <p className="mt-3 text-xs text-slate-500">Destination</p>
               <p className="text-white break-all">{destination}</p>
             </div>
