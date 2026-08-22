@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useAuth } from '@/components/AuthProvider'
 import ProtectedRoute from '@/components/ProtectedRoute'
 import { syncProfile, getMyProfile } from '@/lib/tradingAdminApi'
+import { LanguageSwitcher } from '@/components/SiteTranslator'
 
 const TOTAL_STEPS = 8
 
@@ -111,7 +112,10 @@ function OnboardingContent() {
     const investorType = investmentGoal === 'Balanced growth' ? 'Balanced Growth Investor' : investmentGoal === 'Slow and steady growth' ? 'Conservative Growth Investor' : investmentGoal === 'High risk / high return' ? 'Aggressive Growth Investor' : 'Opportunistic Trader'
     const riskLevel = riskTolerance === 'Low risk (stable traders)' ? 'Low' : riskTolerance === 'High risk (aggressive traders)' ? 'High' : 'Medium'
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#050816] text-white px-4">
+      <div className="relative min-h-screen flex items-center justify-center bg-[#050816] text-white px-4">
+        <div className="absolute top-4 right-4">
+          <LanguageSwitcher />
+        </div>
         <div className="w-full max-w-xl bg-[#070a1b] rounded-xl p-8 shadow-xl space-y-5">
           <h2 className="text-2xl font-semibold">Your investor profile</h2>
           <p className="text-sm text-slate-300">Here&apos;s how we&apos;ll tailor Noble Mirror Capital for you based on your answers.</p>
@@ -142,7 +146,10 @@ function OnboardingContent() {
   const countries = ['Afghanistan','Albania','Algeria','Argentina','Australia','Austria','Belgium','Brazil','Canada','China','Colombia','Egypt','France','Germany','India','Indonesia','Ireland','Italy','Japan','Kenya','Malaysia','Mexico','Netherlands','Nigeria','Pakistan','Philippines','Poland','Russia','Saudi Arabia','South Africa','South Korea','Spain','Turkey','Uganda','United Kingdom','United States','Vietnam','Zimbabwe','Other']
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#050816] text-white px-4">
+    <div className="relative min-h-screen flex items-center justify-center bg-[#050816] text-white px-4">
+      <div className="absolute top-4 right-4">
+        <LanguageSwitcher />
+      </div>
       <div className="w-full max-w-xl bg-[#070a1b] rounded-xl p-8 shadow-xl">
         <p className="text-xs text-slate-400 mb-1">Step {step + 1} of {TOTAL_STEPS}</p>
         <h2 className="text-2xl font-semibold mb-2">Let&apos;s set up your copy trading profile</h2>

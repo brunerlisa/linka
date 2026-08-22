@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
+import { LanguageSwitcher } from '@/components/SiteTranslator'
 
 const inputClass =
   'w-full min-h-12 rounded-md bg-[#0f172a] border border-slate-700 px-3 py-3 text-base text-white placeholder:text-slate-500 focus:outline-none focus:border-primary'
@@ -41,7 +42,10 @@ export default function ForgotPasswordForm() {
   }
 
   return (
-    <div className="min-h-screen bg-[#050816] text-white flex items-center justify-center px-4 py-8">
+    <div className="relative min-h-screen bg-[#050816] text-white flex items-center justify-center px-4 py-8">
+      <div className="absolute top-4 right-4">
+        <LanguageSwitcher />
+      </div>
       <div className="max-w-6xl w-full grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-12 rounded-2xl">
         <div className="hidden md:flex flex-col justify-center px-10 bg-gradient-to-b from-[#050816] to-[#02010a] rounded-2xl border border-slate-900">
           <h1 className="text-3xl font-semibold mb-4 tracking-tight text-[#00aeef]">Noble Mirror Capital</h1>

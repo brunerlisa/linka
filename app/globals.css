@@ -175,3 +175,26 @@ main iframe,
 .copy-line-1 { animation: copy-rotate-1 8s ease-in-out infinite; }
 .copy-line-2 { animation: copy-rotate-2 8s ease-in-out infinite; }
 .copy-line-3 { animation: copy-rotate-3 8s ease-in-out infinite; }
+
+/* Google Translate: keep the engine, hide the default top banner */
+.site-translate-engine {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+.goog-te-banner-frame,
+.goog-te-balloon-frame {
+  display: none !important;
+}
+body {
+  top: 0 !important;
+}
+.goog-te-gadget,
+.goog-te-gadget-simple {
+  display: none !important;
+}
+.goog-logo-link,
+.goog-te-gadget span {
+  display: none !important;
+}

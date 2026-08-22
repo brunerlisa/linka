@@ -20,6 +20,7 @@ import WithdrawSection from '@/components/dashboard/WithdrawSection'
 import UpgradePlanSection from '@/components/dashboard/UpgradePlanSection'
 import { displayName, usernameHandle } from '@/components/dashboard/userDisplay'
 import { planDisplayName } from '@/lib/pricingPlans'
+import { LanguageSwitcher } from '@/components/SiteTranslator'
 import {
   deleteTrader,
   getMyProfile,
@@ -224,7 +225,8 @@ function DashboardContent() {
           </button>
           <div className="hidden lg:block" />
 
-          <div className="flex items-center gap-4 ml-auto">
+          <div className="flex items-center gap-3 sm:gap-4 ml-auto">
+            <LanguageSwitcher />
             <button type="button" onClick={() => goTo('Settings')} className="text-slate-300 hover:text-white" aria-label="Notifications">
               <NavIcon name="bell" className="w-5 h-5" />
             </button>

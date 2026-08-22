@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useAuth } from '@/components/AuthProvider'
+import { LanguageSwitcher } from '@/components/SiteTranslator'
 
 export default function AdminLayout({ children }) {
   const { user, isAdmin, loading, signOut } = useAuth()
@@ -66,6 +67,9 @@ export default function AdminLayout({ children }) {
           </Link>
           <span className="text-[10px] px-2 py-0.5 rounded bg-amber-500/20 text-amber-400">ADMIN</span>
         </div>
+        <div className="hidden lg:block px-4 py-3 border-b border-[#111827]">
+          <LanguageSwitcher />
+        </div>
         <nav className="flex-1 py-4 text-sm space-y-0.5">
           <Link href="/admin" onClick={() => setMobileNavOpen(false)} className="block px-5 py-2.5 text-white bg-[#111827] border-r-2 border-primary">Dashboard</Link>
           <Link href="/admin/control" onClick={() => setMobileNavOpen(false)} className="block px-5 py-2.5 text-slate-300 hover:bg-[#0b1020] hover:text-white">Control Center</Link>
@@ -102,6 +106,9 @@ export default function AdminLayout({ children }) {
             </svg>
           </button>
           <span className="ml-2 text-sm font-semibold text-primary">Admin</span>
+          <div className="ml-auto">
+            <LanguageSwitcher />
+          </div>
         </div>
         {children}
       </main>

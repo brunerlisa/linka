@@ -4,6 +4,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { useAuth } from '@/components/AuthProvider'
+import { LanguageSwitcher } from '@/components/SiteTranslator'
 
 const navLinks = [
   { to: '/', label: 'Home' },
@@ -51,7 +52,8 @@ export default function Header() {
             ))}
           </nav>
 
-          <div className="hidden md:flex items-center gap-2">
+          <div className="hidden md:flex items-center gap-3">
+            <LanguageSwitcher />
             {user ? (
               <>
                 <Link href="/dashboard" className="px-4 py-2 text-sm font-medium text-slate-300 hover:text-white transition-colors">
@@ -82,6 +84,7 @@ export default function Header() {
           </div>
 
           <div className="flex md:hidden items-center gap-2 shrink-0">
+            <LanguageSwitcher />
             {!user && (
               <Link
                 href="/auth/sign-up"

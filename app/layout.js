@@ -1,5 +1,6 @@
 import { Outfit } from 'next/font/google'
 import { AuthProvider } from '@/components/AuthProvider'
+import SiteTranslateEngine from '@/components/SiteTranslator'
 import './globals.css'
 
 const outfit = Outfit({
@@ -95,7 +96,10 @@ export default function RootLayout({ children }) {
         className="min-h-screen bg-dark text-slate-100 font-sans antialiased overflow-x-hidden"
         suppressHydrationWarning
       >
-        <AuthProvider>{children}</AuthProvider>
+        <AuthProvider>
+          <SiteTranslateEngine />
+          {children}
+        </AuthProvider>
       </body>
     </html>
   )
