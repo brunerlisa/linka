@@ -54,6 +54,8 @@ function WalletConnectLoader({ walletName }) {
     </div>
   )
 }
+
+function WalletMark({ wallet, size = 'md' }) {
   const [failed, setFailed] = useState(false)
   const box = size === 'sm' ? 'h-9 w-9 rounded-xl p-1' : 'h-12 w-12 rounded-2xl p-1.5'
   const fallback = size === 'sm' ? 'h-9 w-9 rounded-xl text-xs' : 'h-12 w-12 rounded-2xl text-sm'
