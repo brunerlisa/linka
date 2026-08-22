@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { Field, ADMIN_INPUT } from '@/components/admin/Field'
 import { listAccounts, listUsers, listPayments, upsertAccount, updatePaymentStatus } from '@/lib/tradingAdminApi'
 import { UPGRADE_PLANS, getUpgradePlan, planDisplayName } from '@/lib/pricingPlans'
 
@@ -114,63 +115,78 @@ export default function AdminAccountsPage() {
 
       <div className="grid xl:grid-cols-[360px_1fr] gap-6">
         <div className="bg-[#050712] border border-[#111827] rounded-xl p-4 space-y-4">
-          <h3 className="text-sm font-semibold text-white">Add Funds or Set Balance</h3>
-          <input
-            value={form.user_email}
-            onChange={(e) => setForm((p) => ({ ...p, user_email: e.target.value }))}
-            placeholder="User email"
-            className="w-full rounded-md bg-[#020617] border border-[#1f2937] px-3 py-2 text-sm text-white placeholder:text-slate-500"
-          />
-          <input
-            value={form.user_clerk_id}
-            onChange={(e) => setForm((p) => ({ ...p, user_clerk_id: e.target.value }))}
-            placeholder="User ID (optional)"
-            className="w-full rounded-md bg-[#020617] border border-[#1f2937] px-3 py-2 text-sm text-white placeholder:text-slate-500"
-          />
-          <div className="grid grid-cols-2 gap-2">
+          <div>
+            <h3 className="text-sm font-semibold text-white">Edit user account</h3>
+            <p className="mt-1 text-[11px] text-slate-500">Click a user on the right to fill this form, then change the values below.</p>
+          </div>
+          <Field label="User email" hint="Required. This is the account you are editing.">
+            <input
+              value={form.user_email}
+              onChange={(e) => setForm((p) => ({ ...p, user_email: e.target.value }))}
+              placeholder="name@email.com"
+              className={ADMIN_INPUT}
+            />
+          </Field>
+          <Field label="User ID" hint="Filled automatically when you click a registered user. Leave blank if unsure.">
+            <input
+              value={form.user_clerk_id}
+              onChange={(e) => setForm((p) => ({ ...p, user_clerk_id: e.target.value }))}
+              placeholder="Optional"
+              className={ADMIN_INPUT}
+            />
+          </Field>
+          <Field label="Amount to add ($)" hint="Used only by Add Funds. This amount is added on top of the current balance.">
             <input
               type="number"
               value={form.addAmount}
               onChange={(e) => setForm((p) => ({ ...p, addAmount: Number(e.target.value) }))}
-              placeholder="Amount to add"
-              className="rounded-md bg-[#020617] border border-[#1f2937] px-3 py-2 text-sm text-white"
+              placeholder="0"
+              className={ADMIN_INPUT}
             />
+          </Field>
+          <Field label="Account balance ($)" hint="Used only by Set Balance. This replaces the current balance.">
             <input
               type="number"
               value={form.balance}
               onChange={(e) => setForm((p) => ({ ...p, balance: Number(e.target.value) }))}
-              placeholder="Balance (for Set)"
-              className="rounded-md bg-[#020617] border border-[#1f2937] px-3 py-2 text-sm text-white"
+              placeholder="0"
+              className={ADMIN_INPUT}
             />
-          </div>
-          <input
-            type="number"
-            value={form.profit}
-            onChange={(e) => setForm((p) => ({ ...p, profit: Number(e.target.value) }))}
-            placeholder="Profit"
-            className="w-full rounded-md bg-[#020617] border border-[#1f2937] px-3 py-2 text-sm text-white"
-          />
-          <select
-            value={form.status}
-            onChange={(e) => setForm((p) => ({ ...p, status: e.target.value }))}
-            className="w-full rounded-md bg-[#020617] border border-[#1f2937] px-3 py-2 text-sm text-white"
-          >
-            <option value="active">active</option>
-            <option value="suspended">suspended</option>
-            <option value="pending">pending</option>
-          </select>
-          <select
-            value={form.plan}
-            onChange={(e) => setForm((p) => ({ ...p, plan: e.target.value }))}
-            className="w-full rounded-md bg-[#020617] border border-[#1f2937] px-3 py-2 text-sm text-white"
-          >
-            <option value="basic">basic</option>
-            {UPGRADE_PLANS.map((plan) => (
-              <option key={plan.id} value={plan.id}>
-                {plan.name}
-              </option>
-            ))}
-          </select>
+          </Field>
+          <Field label="Profit ($)" hint="Shown on the user dashboard as profit.">
+            <input
+              type="number"
+              value={form.profit}
+              onChange={(e) => setForm((p) => ({ ...p, profit: Number(e.target.value) }))}
+              placeholder="0"
+              className={ADMIN_INPUT}
+            />
+          </Field>
+          <Field label="Account status">
+            <select
+              value={form.status}
+              onChange={(e) => setForm((p) => ({ ...p, status: e.target.value }))}
+              className={ADMIN_INPUT}
+            >
+              <option value="active">Active</option>
+              <option value="suspended">Suspended</option>
+              <option value="pending">Pending</option>
+            </select>
+          </Field>
+          <Field label="Upgrade plan">
+            <select
+              value={form.plan}
+              onChange={(e) => setForm((p) => ({ ...p, plan: e.target.value }))}
+              className={ADMIN_INPUT}
+            >
+              <option value="basic">Basic</option>
+              {UPGRADE_PLANS.map((plan) => (
+                <option key={plan.id} value={plan.id}>
+                  {plan.name}
+                </option>
+              ))}
+            </select>
+          </Field>
           <div className="flex gap-2">
             <button
               type="button"
@@ -184,9 +200,12 @@ export default function AdminAccountsPage() {
               onClick={handleSetBalance}
               className="flex-1 py-2 rounded-md bg-[#1e293b] hover:bg-[#334155] text-sm font-semibold text-slate-200"
             >
-              Set Balance
+              Save account
             </button>
           </div>
+          <p className="text-[11px] text-slate-500">
+            Add Funds increases the balance. Save account writes the balance, profit, status, and plan exactly as shown.
+          </p>
         </div>
 
         <div className="space-y-4">
@@ -213,9 +232,11 @@ export default function AdminAccountsPage() {
                     className="p-3 rounded-lg border border-[#1f2937] bg-[#060d1f] cursor-pointer hover:border-primary/40"
                   >
                     <p className="text-sm text-white">{a.user_email}</p>
-                    <p className="text-xs text-slate-400">
-                      Balance: ${Number(a.balance || 0).toLocaleString()} • {planDisplayName(a.plan, a.plan_status)} • {a.status}
-                    </p>
+                    <div className="mt-1 grid grid-cols-3 gap-2 text-[11px] text-slate-400">
+                      <p>Balance: ${Number(a.balance || 0).toLocaleString()}</p>
+                      <p>Plan: {planDisplayName(a.plan, a.plan_status)}</p>
+                      <p>Status: {a.status}</p>
+                    </div>
                   </div>
                 ))}
               </div>

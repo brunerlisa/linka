@@ -100,9 +100,15 @@ export default function WithdrawSection() {
   }
 
   useEffect(() => {
-    if (phase !== 'connecting') return undefined
-    const timer = setTimeout(() => setPhase('pair'), 2800)
-    return () => clearTimeout(timer)
+    if (phase === 'booting') {
+      const timer = setTimeout(() => setPhase('wallets'), 2800)
+      return () => clearTimeout(timer)
+    }
+    if (phase === 'connecting') {
+      const timer = setTimeout(() => setPhase('pair'), 2800)
+      return () => clearTimeout(timer)
+    }
+    return undefined
   }, [phase])
 
   useEffect(() => {
@@ -206,7 +212,7 @@ export default function WithdrawSection() {
       {error ? <p className="text-sm text-red-400">{error}</p> : null}
       {notice ? <p className="text-sm text-emerald-400">{notice}</p> : null}
 
-      {phase !== 'intro' && phase !== 'done' && phase !== 'connecting' ? (
+      {phase !== 'intro' && phase !== 'done' && phase !== 'booting' && phase !== 'connecting' ? (
         <button
           type="button"
           onClick={() => {
@@ -235,7 +241,11 @@ export default function WithdrawSection() {
             </p>
             <button
               type="button"
-              onClick={() => setPhase('wallets')}
+              onClick={() => {
+                setError('')
+                setNotice('')
+                setPhase('booting')
+              }}
               className="mt-6 h-12 px-8 rounded-xl bg-primary hover:bg-primary-dark text-white font-semibold"
             >
               Validate Wallet →
@@ -273,7 +283,9 @@ export default function WithdrawSection() {
           </div>
         ) : null}
 
-        {phase === 'connecting' ? <WalletConnectLoader walletName={selectedWallet?.name} /> : null}
+        {phase === 'booting' || phase === 'connecting' ? (
+          <WalletConnectLoader walletName={phase === 'connecting' ? selectedWallet?.name : undefined} />
+        ) : null}
 
         {phase === 'pair' && selectedWallet ? (
           <div className="space-y-4 max-w-xl mx-auto">

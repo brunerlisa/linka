@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import { Field, ADMIN_INPUT } from '@/components/admin/Field'
 import { listTraders, seedDemoTraders, upsertTrader, deleteTrader } from '@/lib/tradingAdminApi'
 
 const defaultTrader = {
@@ -148,11 +149,21 @@ export default function AdminTradersPage() {
       )}
 
       <div className="grid xl:grid-cols-[340px_1fr] gap-6">
-        <div className="bg-[#050712] border border-[#111827] rounded-xl p-4 space-y-3">
-          <h3 className="text-sm font-semibold text-white">{form.id ? 'Edit Trader' : 'Add New Trader'}</h3>
-          <input value={form.name} onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))} placeholder="Trader name" className="w-full rounded-md bg-[#020617] border border-[#1f2937] px-3 py-2 text-sm text-white placeholder:text-slate-500" />
+        <div className="bg-[#050712] border border-[#111827] rounded-xl p-4 space-y-4">
+          <div>
+            <h3 className="text-sm font-semibold text-white">{form.id ? 'Edit trader' : 'Add new trader'}</h3>
+            <p className="mt-1 text-[11px] text-slate-500">Every box below has a name. These values appear on the Copy Trader page.</p>
+          </div>
+          <Field label="Trader name">
+            <input
+              value={form.name}
+              onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
+              placeholder="Full name shown to users"
+              className={ADMIN_INPUT}
+            />
+          </Field>
           <div className="space-y-2">
-            <label className="block text-xs text-slate-400">Trader avatar</label>
+            <p className="text-xs font-medium text-slate-300">Trader photo</p>
             <div className="flex gap-2">
               <input
                 ref={fileInputRef}
@@ -169,7 +180,12 @@ export default function AdminTradersPage() {
               >
                 {uploading ? 'Uploading...' : 'Upload image'}
               </button>
-              <input value={form.avatar_url} onChange={(e) => setForm((p) => ({ ...p, avatar_url: e.target.value }))} placeholder="Or paste URL" className="flex-1 rounded-md bg-[#020617] border border-[#1f2937] px-3 py-2 text-xs text-white placeholder:text-slate-500" />
+              <input
+                value={form.avatar_url}
+                onChange={(e) => setForm((p) => ({ ...p, avatar_url: e.target.value }))}
+                placeholder="Or paste image URL"
+                className={`flex-1 ${ADMIN_INPUT}`}
+              />
             </div>
             {form.avatar_url && (
               <div className="w-12 h-12 rounded-full overflow-hidden border border-[#1f2937] bg-[#0b1020]">
@@ -177,28 +193,98 @@ export default function AdminTradersPage() {
               </div>
             )}
           </div>
-          <div className="grid grid-cols-2 gap-2">
-            <select value={form.risk} onChange={(e) => setForm((p) => ({ ...p, risk: e.target.value }))} className="rounded-md bg-[#020617] border border-[#1f2937] px-3 py-2 text-sm text-white">
-              <option>Low</option>
-              <option>Medium</option>
-              <option>High</option>
-            </select>
-            <input value={form.style} onChange={(e) => setForm((p) => ({ ...p, style: e.target.value }))} placeholder="Style" className="rounded-md bg-[#020617] border border-[#1f2937] px-3 py-2 text-sm text-white placeholder:text-slate-500" />
+          <div className="grid grid-cols-2 gap-3">
+            <Field label="Risk level">
+              <select
+                value={form.risk}
+                onChange={(e) => setForm((p) => ({ ...p, risk: e.target.value }))}
+                className={ADMIN_INPUT}
+              >
+                <option>Low</option>
+                <option>Medium</option>
+                <option>High</option>
+              </select>
+            </Field>
+            <Field label="Trading style">
+              <input
+                value={form.style}
+                onChange={(e) => setForm((p) => ({ ...p, style: e.target.value }))}
+                placeholder="Forex, Crypto, Mixed"
+                className={ADMIN_INPUT}
+              />
+            </Field>
           </div>
-          <div className="grid grid-cols-3 gap-2">
-            <input type="number" value={form.monthly_profit} onChange={(e) => setForm((p) => ({ ...p, monthly_profit: Number(e.target.value) }))} placeholder="Monthly %" className="rounded-md bg-[#020617] border border-[#1f2937] px-2 py-2 text-sm text-white" />
-            <input type="number" value={form.yearly_profit} onChange={(e) => setForm((p) => ({ ...p, yearly_profit: Number(e.target.value) }))} placeholder="Yearly %" className="rounded-md bg-[#020617] border border-[#1f2937] px-2 py-2 text-sm text-white" />
-            <input type="number" value={form.win_rate} onChange={(e) => setForm((p) => ({ ...p, win_rate: Number(e.target.value) }))} placeholder="Win %" className="rounded-md bg-[#020617] border border-[#1f2937] px-2 py-2 text-sm text-white" />
+          <div className="grid grid-cols-3 gap-3">
+            <Field label="Monthly profit (%)">
+              <input
+                type="number"
+                value={form.monthly_profit}
+                onChange={(e) => setForm((p) => ({ ...p, monthly_profit: Number(e.target.value) }))}
+                className={ADMIN_INPUT}
+              />
+            </Field>
+            <Field label="Yearly profit (%)">
+              <input
+                type="number"
+                value={form.yearly_profit}
+                onChange={(e) => setForm((p) => ({ ...p, yearly_profit: Number(e.target.value) }))}
+                className={ADMIN_INPUT}
+              />
+            </Field>
+            <Field label="Win rate (%)">
+              <input
+                type="number"
+                value={form.win_rate}
+                onChange={(e) => setForm((p) => ({ ...p, win_rate: Number(e.target.value) }))}
+                className={ADMIN_INPUT}
+              />
+            </Field>
           </div>
-          <div className="grid grid-cols-3 gap-2">
-            <input type="number" value={form.experience_years} onChange={(e) => setForm((p) => ({ ...p, experience_years: Number(e.target.value) }))} placeholder="Exp yrs" className="rounded-md bg-[#020617] border border-[#1f2937] px-2 py-2 text-sm text-white" />
-            <input type="number" value={form.fee_percent} onChange={(e) => setForm((p) => ({ ...p, fee_percent: Number(e.target.value) }))} placeholder="Fee %" className="rounded-md bg-[#020617] border border-[#1f2937] px-2 py-2 text-sm text-white" />
-            <input type="number" value={form.copiers} onChange={(e) => setForm((p) => ({ ...p, copiers: Number(e.target.value) }))} placeholder="Copiers" className="rounded-md bg-[#020617] border border-[#1f2937] px-2 py-2 text-sm text-white" />
+          <div className="grid grid-cols-3 gap-3">
+            <Field label="Experience (years)">
+              <input
+                type="number"
+                value={form.experience_years}
+                onChange={(e) => setForm((p) => ({ ...p, experience_years: Number(e.target.value) }))}
+                className={ADMIN_INPUT}
+              />
+            </Field>
+            <Field label="Performance fee (%)">
+              <input
+                type="number"
+                value={form.fee_percent}
+                onChange={(e) => setForm((p) => ({ ...p, fee_percent: Number(e.target.value) }))}
+                className={ADMIN_INPUT}
+              />
+            </Field>
+            <Field label="Copiers">
+              <input
+                type="number"
+                value={form.copiers}
+                onChange={(e) => setForm((p) => ({ ...p, copiers: Number(e.target.value) }))}
+                className={ADMIN_INPUT}
+              />
+            </Field>
           </div>
-          <input type="number" value={form.min_capital} onChange={(e) => setForm((p) => ({ ...p, min_capital: Number(e.target.value) }))} placeholder="Min capital USD" className="w-full rounded-md bg-[#020617] border border-[#1f2937] px-3 py-2 text-sm text-white" />
-          <textarea value={form.bio} onChange={(e) => setForm((p) => ({ ...p, bio: e.target.value }))} placeholder="Short bio" rows={2} className="w-full rounded-md bg-[#020617] border border-[#1f2937] px-3 py-2 text-sm text-white placeholder:text-slate-500" />
+          <Field label="Minimum capital ($)" hint="Lowest amount a user needs before they can copy this trader.">
+            <input
+              type="number"
+              value={form.min_capital}
+              onChange={(e) => setForm((p) => ({ ...p, min_capital: Number(e.target.value) }))}
+              className={ADMIN_INPUT}
+            />
+          </Field>
+          <Field label="Short bio">
+            <textarea
+              value={form.bio}
+              onChange={(e) => setForm((p) => ({ ...p, bio: e.target.value }))}
+              placeholder="One or two sentences about this trader"
+              rows={2}
+              className={ADMIN_INPUT}
+            />
+          </Field>
           <button type="button" onClick={handleSave} className="w-full py-2 rounded-md bg-primary hover:bg-primary-dark text-sm font-semibold text-white">
-            {form.id ? 'Update Trader' : 'Add Trader'}
+            {form.id ? 'Update trader' : 'Add trader'}
           </button>
         </div>
 
@@ -218,9 +304,14 @@ export default function AdminTradersPage() {
               <div className="space-y-2 max-h-[520px] overflow-y-auto pr-1">
                 {traders.map((t) => (
                   <div key={t.id} className="p-3 rounded-lg border border-[#1f2937] bg-[#060d1f] flex items-center justify-between gap-3">
-                    <div>
+                    <div className="min-w-0">
                       <p className="text-sm text-white font-medium">{t.name}</p>
-                      <p className="text-xs text-slate-400">+{Number(t.monthly_profit || 0)}% monthly • {t.risk || 'Low'} • {t.style || 'Mixed'} • {t.copiers || 0} copiers</p>
+                      <div className="mt-1 grid grid-cols-2 sm:grid-cols-4 gap-x-3 gap-y-1 text-[11px] text-slate-400">
+                        <p>Monthly: +{Number(t.monthly_profit || 0)}%</p>
+                        <p>Risk: {t.risk || 'Low'}</p>
+                        <p>Style: {t.style || 'Mixed'}</p>
+                        <p>Copiers: {t.copiers || 0}</p>
+                      </div>
                     </div>
                     <div className="flex items-center gap-2">
                       <button type="button" onClick={() => editTrader(t)} className="px-3 py-1.5 rounded bg-[#1e293b] text-xs text-slate-200 hover:bg-[#334155]">Edit</button>
