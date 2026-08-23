@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useAuth } from '@/components/AuthProvider'
 import { formatDate, formatUsd } from '@/components/dashboard/userDisplay'
 import { createWithdrawalRequest, listAccounts, listPayments } from '@/lib/tradingAdminApi'
+import SectionBack from '@/components/dashboard/SectionBack'
 
 const CARD = 'rounded-2xl border border-dark-border bg-dark-card'
 const INITIAL_WALLETS = 6
@@ -80,7 +81,7 @@ function WalletMark({ wallet, size = 'md' }) {
   )
 }
 
-export default function WithdrawSection() {
+export default function WithdrawSection({ onBack }) {
   const { user } = useAuth()
   const [phase, setPhase] = useState('intro')
   const [showAllWallets, setShowAllWallets] = useState(false)
@@ -212,20 +213,15 @@ export default function WithdrawSection() {
       {error ? <p className="text-sm text-red-400">{error}</p> : null}
       {notice ? <p className="text-sm text-emerald-400">{notice}</p> : null}
 
-      {phase !== 'intro' && phase !== 'done' && phase !== 'booting' && phase !== 'connecting' ? (
-        <button
-          type="button"
-          onClick={() => {
-            setError('')
-            if (phase === 'wallets') setPhase('intro')
-            else if (phase === 'pair') setPhase('wallets')
-            else setPhase('pair')
-          }}
-          className="text-sm text-slate-300 hover:text-white"
-        >
-          ← Back
-        </button>
-      ) : null}
+      <SectionBack
+        onClick={() => {
+          setError('')
+          if (phase === 'wallets' || phase === 'booting') setPhase('intro')
+          else if (phase === 'pair' || phase === 'connecting') setPhase('wallets')
+          else if (phase === 'withdraw' || phase === 'done') setPhase('pair')
+          else onBack?.()
+        }}
+      />
 
       <section className={`${CARD} p-5 sm:p-8`}>
         {phase === 'intro' ? (

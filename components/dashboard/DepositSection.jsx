@@ -12,11 +12,12 @@ import {
   walletQrUrl,
 } from '@/lib/depositMethods'
 import { createPaymentRequest, listDepositWallets } from '@/lib/tradingAdminApi'
+import SectionBack from '@/components/dashboard/SectionBack'
 
 const CARD = 'rounded-2xl border border-dark-border bg-dark-card'
 const STEPS = ['Amount', 'Method', 'Pay', 'Confirm']
 
-export default function DepositSection() {
+export default function DepositSection({ onBack }) {
   const { user } = useAuth()
   const [step, setStep] = useState(1)
   const [amount, setAmount] = useState('')
@@ -124,18 +125,16 @@ export default function DepositSection() {
       <Stepper step={step} />
       {error ? <p className="text-sm text-red-400">{error}</p> : null}
 
-      {step > 1 && step < 4 ? (
-        <button
-          type="button"
-          onClick={() => {
-            setError('')
+      <SectionBack
+        onClick={() => {
+          setError('')
+          if (step > 1 && step < 4) {
             setStep((prev) => prev - 1)
-          }}
-          className="text-sm text-slate-300 hover:text-white"
-        >
-          ← Back
-        </button>
-      ) : null}
+            return
+          }
+          onBack?.()
+        }}
+      />
 
       {step === 1 ? (
         <section className={`${CARD} p-5 sm:p-8 max-w-xl`}>

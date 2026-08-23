@@ -4,10 +4,11 @@ import { useEffect, useMemo, useState } from 'react'
 import { useAuth } from '@/components/AuthProvider'
 import { formatDate, formatUsd } from '@/components/dashboard/userDisplay'
 import { claimBonus, listPayments } from '@/lib/tradingAdminApi'
+import SectionBack from '@/components/dashboard/SectionBack'
 
 const CARD = 'rounded-2xl border border-dark-border bg-dark-card'
 
-export default function ClaimBonusSection() {
+export default function ClaimBonusSection({ onBack }) {
   const { user } = useAuth()
   const [payments, setPayments] = useState([])
   const [loading, setLoading] = useState(true)
@@ -71,6 +72,7 @@ export default function ClaimBonusSection() {
 
   return (
     <div className="space-y-5">
+      <SectionBack onClick={onBack} />
       <h1 className="text-2xl sm:text-3xl font-semibold text-white tracking-tight">Claim Bonus</h1>
       {error ? <p className="text-sm text-red-400">{error}</p> : null}
       {notice ? <p className="text-sm text-emerald-400">{notice}</p> : null}

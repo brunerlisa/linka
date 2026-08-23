@@ -5,10 +5,11 @@ import { useAuth } from '@/components/AuthProvider'
 import { formatDate, formatUsd } from '@/components/dashboard/userDisplay'
 import { cancelUserTrade, listTrades } from '@/lib/tradingAdminApi'
 import { getTradeStatus, isCopySubscription, isUserPlacedTrade, parseTradeNotes } from '@/lib/userTrade'
+import SectionBack from '@/components/dashboard/SectionBack'
 
 const CARD = 'rounded-2xl border border-dark-border bg-dark-card'
 
-export default function MyTradesSection() {
+export default function MyTradesSection({ onBack }) {
   const { user } = useAuth()
   const [tab, setTab] = useState('open')
   const [trades, setTrades] = useState([])
@@ -63,6 +64,7 @@ export default function MyTradesSection() {
 
   return (
     <div className="space-y-5">
+      <SectionBack onClick={onBack} />
       <h1 className="text-2xl sm:text-3xl font-semibold text-white tracking-tight">My Trades</h1>
 
       <section className={`${CARD} p-5 sm:p-6 min-h-[360px]`}>

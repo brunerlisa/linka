@@ -12,6 +12,7 @@ import {
   qualifiesForPlan,
 } from '@/lib/pricingPlans'
 import { getMyPlan, selectPlan } from '@/lib/tradingAdminApi'
+import SectionBack from '@/components/dashboard/SectionBack'
 
 const CARD = 'rounded-2xl border border-dark-border bg-dark-card'
 
@@ -43,7 +44,7 @@ function FeatureMark({ value }) {
   )
 }
 
-export default function UpgradePlanSection({ onNavigate, onPlanChange }) {
+export default function UpgradePlanSection({ onBack, onNavigate, onPlanChange }) {
   const { user } = useAuth()
   const [planId, setPlanId] = useState(BASIC_PLAN_ID)
   const [planStatus, setPlanStatus] = useState('active')
@@ -108,6 +109,7 @@ export default function UpgradePlanSection({ onNavigate, onPlanChange }) {
 
   return (
     <div className="space-y-6">
+      <SectionBack onClick={onBack} />
       <div>
         <h1 className="text-2xl sm:text-3xl font-semibold text-white tracking-tight">Upgrade Plan</h1>
         <p className="mt-2 text-sm text-slate-400 max-w-2xl">

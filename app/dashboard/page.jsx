@@ -33,6 +33,7 @@ import {
   upsertTrader,
 } from '@/lib/tradingAdminApi'
 import { isExistingAccount, readLocalOnboarded, writeLocalOnboarded } from '@/lib/onboarding'
+import SectionBack from '@/components/dashboard/SectionBack'
 
 function DashboardContent() {
   const { user, signOut, markOnboarded } = useAuth()
@@ -40,6 +41,7 @@ function DashboardContent() {
   const [checkingOnboarding, setCheckingOnboarding] = useState(true)
   const [mobileNavOpen, setMobileNavOpen] = useState(false)
   const [activeSection, setActiveSection] = useState('Home')
+  const [sectionHistory, setSectionHistory] = useState([])
   const [accountPlan, setAccountPlan] = useState({ plan: 'basic', status: 'active' })
 
   useEffect(() => {
@@ -119,9 +121,24 @@ function DashboardContent() {
     { label: 'Upgrade Plan', icon: 'upgrade' },
   ]
   const goTo = (label) => {
+    if (label !== activeSection) {
+      setSectionHistory((prev) => [...prev.slice(-8), activeSection])
+    }
     setActiveSection(label)
     setMobileNavOpen(false)
   }
+  const goBack = () => {
+    const previous = sectionHistory[sectionHistory.length - 1] || 'Home'
+    setSectionHistory((prev) => prev.slice(0, -1))
+    setActiveSection(previous)
+    setMobileNavOpen(false)
+  }
+
+  useEffect(() => {
+    const main = document.querySelector('main')
+    if (main) main.scrollTo({ top: 0 })
+  }, [activeSection])
+
   const handle = usernameHandle(user)
 
   return (
@@ -227,18 +244,19 @@ function DashboardContent() {
         <main className="flex-1 overflow-y-auto bg-dark">
           <div className="px-4 sm:px-6 lg:px-8 pt-6 pb-12">
             {activeSection === 'Home' && <UserDashboardHome onNavigate={goTo} />}
-            {activeSection === 'Place Trade' && <PlaceTradeSection />}
-            {activeSection === 'Markets' && <MarketsSection />}
-            {activeSection === 'Commodities' && <CommoditiesSection />}
-            {activeSection === 'My Trades' && <MyTradesSection />}
-            {activeSection === 'Copy Trader' && <CopyTraderSection />}
-            {activeSection === 'Deposit' && <DepositSection />}
-            {activeSection === 'Withdraw' && <WithdrawSection />}
-            {activeSection === 'KYC' && <KycSection />}
-            {activeSection === 'Claim Bonus' && <ClaimBonusSection />}
-            {activeSection === 'All Transactions' && <TransactionsSection />}
+            {activeSection === 'Place Trade' && <PlaceTradeSection onBack={goBack} />}
+            {activeSection === 'Markets' && <MarketsSection onBack={goBack} />}
+            {activeSection === 'Commodities' && <CommoditiesSection onBack={goBack} />}
+            {activeSection === 'My Trades' && <MyTradesSection onBack={goBack} />}
+            {activeSection === 'Copy Trader' && <CopyTraderSection onBack={goBack} />}
+            {activeSection === 'Deposit' && <DepositSection onBack={goBack} />}
+            {activeSection === 'Withdraw' && <WithdrawSection onBack={goBack} />}
+            {activeSection === 'KYC' && <KycSection onBack={goBack} />}
+            {activeSection === 'Claim Bonus' && <ClaimBonusSection onBack={goBack} />}
+            {activeSection === 'All Transactions' && <TransactionsSection onBack={goBack} />}
             {activeSection === 'Upgrade Plan' && (
               <UpgradePlanSection
+                onBack={goBack}
                 onNavigate={goTo}
                 onPlanChange={(data) => {
                   const requested = data.requested || data.pending?.method
@@ -250,7 +268,7 @@ function DashboardContent() {
                 }}
               />
             )}
-            {activeSection === 'Settings' && <SettingsSection />}
+            {activeSection === 'Settings' && <SettingsSection onBack={goBack} />}
           </div>
         </main>
       </div>
@@ -564,10 +582,11 @@ function PlaceholderSection({ title }) {
   )
 }
 
-function SettingsSection() {
+function SettingsSection({ onBack }) {
   const { isAdmin } = useAuth()
   return (
     <section className="space-y-4">
+      <SectionBack onClick={onBack} />
       <h2 className="text-lg font-semibold text-white">Settings</h2>
       {isAdmin && (
         <Panel title="Admin tools">

@@ -13,10 +13,11 @@ import {
   stopCopyTrader,
 } from '@/lib/tradingAdminApi'
 import { isCopySubscription, parseTradeNotes } from '@/lib/userTrade'
+import SectionBack from '@/components/dashboard/SectionBack'
 
 const CARD = 'rounded-2xl border border-dark-border bg-dark-card'
 
-export default function CopyTraderSection() {
+export default function CopyTraderSection({ onBack }) {
   const { user } = useAuth()
   const [tab, setTab] = useState('all')
   const [query, setQuery] = useState('')
@@ -144,6 +145,7 @@ export default function CopyTraderSection() {
 
   return (
     <div className="space-y-6">
+      <SectionBack onClick={onBack} />
       <div>
         <h1 className="text-2xl sm:text-3xl font-semibold text-white tracking-tight">Copy Trader</h1>
         <p className="mt-1 text-sm text-slate-400">

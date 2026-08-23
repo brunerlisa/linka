@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react'
 import TradingViewChart from '@/components/dashboard/TradingViewChart'
 import TradingViewEmbed from '@/components/dashboard/TradingViewEmbed'
 import { toTvSymbol } from '@/lib/userTrade'
+import SectionBack from '@/components/dashboard/SectionBack'
 
 const WATCHLIST = [
   { label: 'AAPL', symbol: 'NASDAQ:AAPL' },
@@ -42,7 +43,7 @@ const DARK_CHART_COLORS = {
   symbolActiveColor: 'rgba(0, 174, 239, 0.16)',
 }
 
-export default function MarketsSection() {
+export default function MarketsSection({ onBack }) {
   const [symbol, setSymbol] = useState('NASDAQ:AAPL')
   const [customSymbol, setCustomSymbol] = useState('')
 
@@ -56,6 +57,7 @@ export default function MarketsSection() {
 
   return (
     <div className="space-y-5">
+      <SectionBack onClick={onBack} />
       <div>
         <h1 className="text-2xl font-semibold text-white">Markets</h1>
         <p className="mt-1 text-sm text-slate-400">Live prices, movers, and the economic calendar.</p>

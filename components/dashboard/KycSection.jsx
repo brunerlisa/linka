@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useAuth } from '@/components/AuthProvider'
 import { formatDate } from '@/components/dashboard/userDisplay'
 import { getMyProfile, syncProfile, uploadKycDocument } from '@/lib/tradingAdminApi'
+import SectionBack from '@/components/dashboard/SectionBack'
 
 const CARD = 'rounded-2xl border border-dark-border bg-dark-card'
 const INPUT = 'w-full h-10 rounded-lg bg-[#0b1220] border border-dark-border px-3 text-sm text-white disabled:opacity-50'
@@ -33,7 +34,7 @@ function statusMeta(status) {
   return { label: 'Not submitted', className: 'bg-slate-500/15 text-slate-300 border-slate-500/20' }
 }
 
-export default function KycSection() {
+export default function KycSection({ onBack }) {
   const { user } = useAuth()
   const [status, setStatus] = useState('not_submitted')
   const [submittedAt, setSubmittedAt] = useState('')
@@ -146,6 +147,7 @@ export default function KycSection() {
 
   return (
     <div className="space-y-5">
+      <SectionBack onClick={onBack} />
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-2xl sm:text-3xl font-semibold text-white tracking-tight">KYC verification</h1>
         <span className={`inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold ${badge.className}`}>

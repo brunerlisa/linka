@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import TradingViewChart from '@/components/dashboard/TradingViewChart'
 import TradingViewEmbed from '@/components/dashboard/TradingViewEmbed'
+import SectionBack from '@/components/dashboard/SectionBack'
 
 const COMMODITIES = [
   { label: 'Gold', symbol: 'TVC:GOLD' },
@@ -15,11 +16,12 @@ const COMMODITIES = [
   { label: 'Corn', symbol: 'CBOT:ZC1!' },
 ]
 
-export default function CommoditiesSection() {
+export default function CommoditiesSection({ onBack }) {
   const [symbol, setSymbol] = useState('TVC:GOLD')
 
   return (
     <div className="space-y-5">
+      <SectionBack onClick={onBack} />
       <div>
         <h1 className="text-2xl font-semibold text-white">Commodities</h1>
         <p className="mt-1 text-sm text-slate-400">

@@ -6,6 +6,7 @@ import TradingViewChart from '@/components/dashboard/TradingViewChart'
 import { formatDate, formatUsd } from '@/components/dashboard/userDisplay'
 import { isUserPlacedTrade, parseTradeNotes, toTvSymbol } from '@/lib/userTrade'
 import { cancelUserTrade, listAccounts, listTrades, placeUserTrade } from '@/lib/tradingAdminApi'
+import SectionBack from '@/components/dashboard/SectionBack'
 
 const CARD = 'rounded-2xl border border-dark-border bg-dark-card'
 const FIELD =
@@ -24,7 +25,7 @@ const TIME_OPTIONS = [
 
 const LEVERAGE_OPTIONS = ['1x', '5x', '10x', '25x', '50x', '100x']
 
-export default function PlaceTradeSection() {
+export default function PlaceTradeSection({ onBack }) {
   const { user } = useAuth()
   const [asset, setAsset] = useState('AAPL')
   const [chartAsset, setChartAsset] = useState('AAPL')
@@ -104,6 +105,7 @@ export default function PlaceTradeSection() {
 
   return (
     <div className="space-y-6">
+      <SectionBack onClick={onBack} />
       <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_340px] gap-4">
         <TradingViewChart symbol={chartSymbol} />
 
