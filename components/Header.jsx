@@ -19,9 +19,9 @@ export default function Header() {
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-dark/95 backdrop-blur-md border-b border-dark-border min-w-0 max-w-full overflow-x-clip pt-[env(safe-area-inset-top)]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-14 md:h-16 gap-2">
-          <Link href="/" className="flex items-center gap-2 shrink-0 min-w-0">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 min-w-0">
+        <div className="flex items-center justify-between h-14 md:h-16 gap-1.5 sm:gap-2 min-w-0">
+          <Link href="/" className="flex items-center gap-1.5 sm:gap-2 min-w-0 flex-1">
             <Image
               src="/noblemirrorcapital.png"
               alt="Noble Mirror Capital"
@@ -83,19 +83,19 @@ export default function Header() {
             )}
           </div>
 
-          <div className="flex md:hidden items-center gap-2 shrink-0">
-            <LanguageSwitcher />
+          <div className="flex md:hidden items-center gap-1.5 shrink-0">
+            <LanguageSwitcher compact />
             {!user && (
               <Link
-                href="/auth/sign-up"
-                className="px-3 py-2 rounded-lg bg-primary text-white text-sm font-semibold"
+                href="/auth/sign-in"
+                className="shrink-0 px-2.5 py-1.5 rounded-lg bg-primary text-white text-xs font-semibold whitespace-nowrap"
               >
-                Sign up
+                Sign in
               </Link>
             )}
             <button
               type="button"
-              className="p-2.5 -mr-1 text-slate-300 hover:text-white"
+              className="shrink-0 p-2 -mr-0.5 text-slate-300 hover:text-white"
               onClick={() => setMobileOpen(!mobileOpen)}
               aria-label="Toggle menu"
               aria-expanded={mobileOpen}
@@ -147,13 +147,22 @@ export default function Header() {
                     )}
                   </>
                 ) : (
-                  <Link
-                    href="/auth/sign-in"
-                    className="w-full py-3 text-center text-slate-200 rounded-lg text-base bg-dark-card border border-dark-border"
-                    onClick={() => setMobileOpen(false)}
-                  >
-                    Login
-                  </Link>
+                  <>
+                    <Link
+                      href="/auth/sign-in"
+                      className="w-full py-3 text-center text-slate-200 rounded-lg text-base bg-dark-card border border-dark-border"
+                      onClick={() => setMobileOpen(false)}
+                    >
+                      Sign in
+                    </Link>
+                    <Link
+                      href="/auth/sign-up"
+                      className="w-full py-3 text-center bg-primary text-white rounded-lg text-base font-medium"
+                      onClick={() => setMobileOpen(false)}
+                    >
+                      Sign up
+                    </Link>
+                  </>
                 )}
               </div>
             </nav>

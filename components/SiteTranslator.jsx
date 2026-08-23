@@ -50,7 +50,35 @@ function resolveInitialLang() {
   return detected
 }
 
-export function LanguageSwitcher({ className = '' }) {
+function hideGoogleTranslateChrome() {
+  const selectors = [
+    '.goog-te-banner-frame',
+    'iframe.goog-te-banner-frame',
+    'iframe.skiptranslate',
+    'body > .skiptranslate',
+    '.VIpgJd-ZVi9od-ORHb',
+    '.VIpgJd-ZVi9od-ORHb-OEVmcd',
+    '.VIpgJd-yAWNEb-L7lbkb',
+    'iframe[class*="VIpgJd"]',
+    '[class*="VIpgJd-ZVi9od-ORHb"]',
+    '#goog-gt-tt',
+    '.goog-te-spinner-pos',
+  ]
+  selectors.forEach((selector) => {
+    document.querySelectorAll(selector).forEach((node) => {
+      if (node.id === 'google_translate_element' || node.classList?.contains('site-translate-engine')) return
+      node.style.setProperty('display', 'none', 'important')
+      node.style.setProperty('visibility', 'hidden', 'important')
+      node.style.setProperty('height', '0', 'important')
+    })
+  })
+  document.documentElement.style.setProperty('top', '0', 'important')
+  document.documentElement.style.setProperty('margin-top', '0', 'important')
+  document.body?.style.setProperty('top', '0', 'important')
+  document.body?.style.setProperty('margin-top', '0', 'important')
+}
+
+export function LanguageSwitcher({ className = '', compact = false }) {
   const [lang, setLang] = useState('en')
 
   useEffect(() => {
@@ -73,9 +101,9 @@ export function LanguageSwitcher({ className = '' }) {
   }
 
   return (
-    <label className={`notranslate inline-flex items-center gap-2 ${className}`}>
+    <label className={`notranslate inline-flex items-center shrink-0 ${compact ? 'gap-1' : 'gap-2'} ${className}`}>
       <span className="sr-only">Language</span>
-      <svg className="w-4 h-4 text-slate-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+      <svg className={`${compact ? 'w-3.5 h-3.5' : 'w-4 h-4'} text-slate-300 shrink-0`} fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
         <path
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -86,7 +114,11 @@ export function LanguageSwitcher({ className = '' }) {
       <select
         value={lang}
         onChange={(e) => onPick(e.target.value)}
-        className="max-w-[9.5rem] h-9 rounded-lg bg-[#0b1220] border border-dark-border px-2 text-xs text-white"
+        className={
+          compact
+            ? 'w-[5.4rem] max-w-[5.4rem] h-8 rounded-md bg-[#0b1220] border border-dark-border px-1.5 text-[11px] text-white'
+            : 'max-w-[9.5rem] h-9 rounded-lg bg-[#0b1220] border border-dark-border px-2 text-xs text-white'
+        }
         aria-label="Translate this site"
       >
         {SITE_LANGUAGES.map((item) => (
@@ -122,8 +154,12 @@ export default function SiteTranslateEngine() {
       setTranslateCookie(code)
       if (!applyGoogleCombo(code)) window.location.reload()
     }
+    hideGoogleTranslateChrome()
+    const observer = new MutationObserver(hideGoogleTranslateChrome)
+    observer.observe(document.documentElement, { childList: true, subtree: true })
     window.addEventListener('nmc:apply-lang', onApply)
     return () => {
+      observer.disconnect()
       window.removeEventListener('nmc:apply-lang', onApply)
     }
   }, [])

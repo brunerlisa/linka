@@ -229,7 +229,7 @@ function DashboardContent() {
           <div className="hidden lg:block" />
 
           <div className="flex items-center gap-3 sm:gap-4 ml-auto">
-            <LanguageSwitcher />
+            <LanguageSwitcher compact />
             <button type="button" onClick={() => goTo('Settings')} className="text-slate-300 hover:text-white" aria-label="Notifications">
               <NavIcon name="bell" className="w-5 h-5" />
             </button>
