@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { LanguageSwitcher } from '@/components/SiteTranslator'
+import PasswordInput from '@/components/PasswordInput'
 
 const inputClass =
   'w-full min-h-12 rounded-md bg-[#0f172a] border border-slate-700 px-3 py-3 text-base text-white placeholder:text-slate-500 focus:outline-none focus:border-primary'
@@ -12,7 +12,6 @@ const buttonClass =
   'w-full min-h-12 py-3 rounded-md bg-primary hover:bg-primary-dark text-base font-semibold disabled:opacity-70'
 
 export default function ResetPasswordForm() {
-  const router = useRouter()
   const [password, setPassword] = useState('')
   const [confirm, setConfirm] = useState('')
   const [error, setError] = useState('')
@@ -70,8 +69,7 @@ export default function ResetPasswordForm() {
     try {
       const { error: updateError } = await supabase.auth.updateUser({ password })
       if (updateError) throw updateError
-      router.replace('/dashboard')
-      router.refresh()
+      window.location.assign('/dashboard')
     } catch (err) {
       setError(err?.message || 'Could not update password.')
       setLoading(false)
@@ -99,8 +97,7 @@ export default function ResetPasswordForm() {
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label className="block text-sm text-slate-200 mb-1.5">New password</label>
-                <input
-                  type="password"
+                <PasswordInput
                   className={inputClass}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -113,8 +110,7 @@ export default function ResetPasswordForm() {
               </div>
               <div>
                 <label className="block text-sm text-slate-200 mb-1.5">Confirm password</label>
-                <input
-                  type="password"
+                <PasswordInput
                   className={inputClass}
                   value={confirm}
                   onChange={(e) => setConfirm(e.target.value)}

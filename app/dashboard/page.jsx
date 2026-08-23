@@ -18,6 +18,7 @@ import KycSection from '@/components/dashboard/KycSection'
 import DepositSection from '@/components/dashboard/DepositSection'
 import WithdrawSection from '@/components/dashboard/WithdrawSection'
 import UpgradePlanSection from '@/components/dashboard/UpgradePlanSection'
+import SettingsSection from '@/components/dashboard/SettingsSection'
 import { displayName, usernameHandle } from '@/components/dashboard/userDisplay'
 import { planDisplayName } from '@/lib/pricingPlans'
 import { LanguageSwitcher } from '@/components/SiteTranslator'
@@ -33,7 +34,6 @@ import {
   upsertTrader,
 } from '@/lib/tradingAdminApi'
 import { isExistingAccount, readLocalOnboarded, writeLocalOnboarded } from '@/lib/onboarding'
-import SectionBack from '@/components/dashboard/SectionBack'
 
 function DashboardContent() {
   const { user, signOut, markOnboarded } = useAuth()
@@ -206,7 +206,6 @@ function DashboardContent() {
             className="w-full px-3 py-2.5 text-left text-slate-400 hover:text-white hover:bg-white/5 rounded-xl"
             onClick={async () => {
               await signOut()
-              router.push('/auth/sign-in')
             }}
           >
             Sign out
@@ -584,31 +583,6 @@ function PlaceholderSection({ title }) {
   )
 }
 
-function SettingsSection({ onBack }) {
-  const { isAdmin } = useAuth()
-  return (
-    <section className="space-y-4">
-      <SectionBack onClick={onBack} />
-      <h2 className="text-lg font-semibold text-white">Settings</h2>
-      {isAdmin && (
-        <Panel title="Admin tools">
-          <p className="text-sm text-slate-300 mb-3">
-            Manage traders, payment approvals, user balances, and profit updates in the admin Control Center.
-          </p>
-          <Link
-            href="/admin/control"
-            className="inline-flex px-4 py-2 rounded-lg bg-primary hover:bg-primary-dark text-sm font-semibold text-white"
-          >
-            Open Control Center
-          </Link>
-        </Panel>
-      )}
-      <Panel title="Account">
-        <EmptyState label="Account preferences and notifications will appear here." />
-      </Panel>
-    </section>
-  )
-}
 
 function TraderAvatar({ name, avatarUrl, size = 'md' }) {
   const [imgError, setImgError] = useState(false)

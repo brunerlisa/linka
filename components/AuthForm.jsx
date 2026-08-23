@@ -2,9 +2,9 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { LanguageSwitcher } from '@/components/SiteTranslator'
+import PasswordInput from '@/components/PasswordInput'
 
 const inputClass =
   'w-full min-h-12 rounded-md bg-[#0f172a] border border-slate-700 px-3 py-3 text-base text-white placeholder:text-slate-500 focus:outline-none focus:border-primary'
@@ -13,7 +13,6 @@ const buttonClass =
 
 export default function AuthForm({ mode }) {
   const isSignUp = mode === 'sign-up'
-  const router = useRouter()
   const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -45,13 +44,16 @@ export default function AuthForm({ mode }) {
         if (!res.ok) throw new Error(payload.error || 'Sign up failed')
       }
 
-      const { error: signInError } = await supabase.auth.signInWithPassword({
+      const { data, error: signInError } = await supabase.auth.signInWithPassword({
         email: email.trim(),
         password,
       })
       if (signInError) throw signInError
-      router.replace(isSignUp ? '/onboarding' : '/dashboard')
-      router.refresh()
+      if (!data?.session) {
+        const { data: sessionData } = await supabase.auth.getSession()
+        if (!sessionData?.session) throw new Error('Signed in, but the session did not start. Try again.')
+      }
+      window.location.assign(isSignUp ? '/onboarding' : '/dashboard')
     } catch (err) {
       setError(err?.message || 'Authentication failed.')
       setLoading(false)
@@ -112,8 +114,7 @@ export default function AuthForm({ mode }) {
                     </Link>
                   ) : null}
                 </div>
-                <input
-                  type="password"
+                <PasswordInput
                   className={inputClass}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}

@@ -7,12 +7,12 @@ import { useAuth } from '@/components/AuthProvider'
 import { LanguageSwitcher } from '@/components/SiteTranslator'
 
 export default function AdminLayout({ children }) {
-  const { user, isAdmin, loading, signOut } = useAuth()
+  const { user, isAdmin, loading, signingOut, signOut } = useAuth()
   const router = useRouter()
   const [mobileNavOpen, setMobileNavOpen] = useState(false)
 
   useEffect(() => {
-    if (loading) return
+    if (loading || signingOut) return
     if (!user) {
       router.replace('/auth/sign-in')
       return
@@ -21,7 +21,7 @@ export default function AdminLayout({ children }) {
       const t = setTimeout(() => router.replace('/dashboard'), 4000)
       return () => clearTimeout(t)
     }
-  }, [user, isAdmin, loading, router])
+  }, [user, isAdmin, loading, signingOut, router])
 
   if (loading || !user || !isAdmin) {
     return (
@@ -86,7 +86,6 @@ export default function AdminLayout({ children }) {
             className="w-full px-5 py-2 text-left text-slate-300 hover:bg-[#0b1020]"
             onClick={async () => {
               await signOut()
-              router.push('/auth/sign-in')
             }}
           >
             Sign out

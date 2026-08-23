@@ -5,13 +5,13 @@ import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 
 export default function ProtectedRoute({ children }) {
-  const { user, loading } = useAuth()
+  const { user, loading, signingOut } = useAuth()
   const router = useRouter()
 
   useEffect(() => {
-    if (loading) return
+    if (loading || signingOut) return
     if (!user) router.replace('/auth/sign-in')
-  }, [user, loading, router])
+  }, [user, loading, signingOut, router])
 
   if (loading) return null
   if (!user) return null

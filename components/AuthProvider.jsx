@@ -11,6 +11,7 @@ const AuthContext = createContext({
   signOut: async () => {},
   markOnboarded: () => {},
   loading: true,
+  signingOut: false,
 })
 
 function toAppUser(authUser, profile) {
@@ -27,6 +28,7 @@ function toAppUser(authUser, profile) {
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [signingOut, setSigningOut] = useState(false)
 
   useEffect(() => {
     const supabase = createClient()
@@ -46,6 +48,12 @@ export function AuthProvider({ children }) {
         return
       }
 
+      const nextUser = toAppUser(authUser, null)
+      if (mounted) {
+        setUser(nextUser)
+        setLoading(false)
+      }
+
       let profile = null
       try {
         profile = await getMyProfile()
@@ -53,16 +61,14 @@ export function AuthProvider({ children }) {
         profile = null
       }
 
-      const nextUser = toAppUser(authUser, profile)
-      if (mounted) {
-        setUser(nextUser)
-        setLoading(false)
+      if (mounted && profile) {
+        setUser(toAppUser(authUser, profile))
       }
 
       if (shouldSync) {
         syncProfile({
           email: nextUser.email,
-          full_name: nextUser.fullName,
+          full_name: profile?.full_name || nextUser.fullName,
         })
           .then((updated) => {
             if (!mounted || !updated) return
@@ -104,9 +110,11 @@ export function AuthProvider({ children }) {
   }, [])
 
   const signOut = async () => {
+    setSigningOut(true)
     const supabase = createClient()
     if (supabase) await supabase.auth.signOut()
     setUser(null)
+    window.location.assign('/')
   }
 
   const profile = user
@@ -120,6 +128,7 @@ export function AuthProvider({ children }) {
         profile,
         isAdmin: user?.role === 'admin',
         loading,
+        signingOut,
         signOut,
         markOnboarded,
       }}
