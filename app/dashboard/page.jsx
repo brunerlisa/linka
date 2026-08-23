@@ -98,6 +98,26 @@ function DashboardContent() {
     }
   }, [user])
 
+  useEffect(() => {
+    if (checkingOnboarding) return
+    const main = document.querySelector('main')
+    if (main) main.scrollTo({ top: 0 })
+  }, [activeSection, checkingOnboarding])
+
+  const goTo = (label) => {
+    if (label !== activeSection) {
+      setSectionHistory((prev) => [...prev.slice(-8), activeSection])
+    }
+    setActiveSection(label)
+    setMobileNavOpen(false)
+  }
+  const goBack = () => {
+    const previous = sectionHistory[sectionHistory.length - 1] || 'Home'
+    setSectionHistory((prev) => prev.slice(0, -1))
+    setActiveSection(previous)
+    setMobileNavOpen(false)
+  }
+
   if (checkingOnboarding) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#050816] text-white">
@@ -120,24 +140,6 @@ function DashboardContent() {
     { label: 'All Transactions', icon: 'history' },
     { label: 'Upgrade Plan', icon: 'upgrade' },
   ]
-  const goTo = (label) => {
-    if (label !== activeSection) {
-      setSectionHistory((prev) => [...prev.slice(-8), activeSection])
-    }
-    setActiveSection(label)
-    setMobileNavOpen(false)
-  }
-  const goBack = () => {
-    const previous = sectionHistory[sectionHistory.length - 1] || 'Home'
-    setSectionHistory((prev) => prev.slice(0, -1))
-    setActiveSection(previous)
-    setMobileNavOpen(false)
-  }
-
-  useEffect(() => {
-    const main = document.querySelector('main')
-    if (main) main.scrollTo({ top: 0 })
-  }, [activeSection])
 
   const handle = usernameHandle(user)
 
