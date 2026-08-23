@@ -29,13 +29,14 @@ import {
   listTrades,
   listTraders,
   seedDemoTraders,
+  syncProfile,
   upsertTrader,
 } from '@/lib/tradingAdminApi'
+import { isExistingAccount, readLocalOnboarded, writeLocalOnboarded } from '@/lib/onboarding'
 
 function DashboardContent() {
-  const { user, signOut } = useAuth()
+  const { user, signOut, markOnboarded } = useAuth()
   const router = useRouter()
-  const onboardingKey = `onboarding:${user?.email || user?.id || 'guest'}`
   const [checkingOnboarding, setCheckingOnboarding] = useState(true)
   const [mobileNavOpen, setMobileNavOpen] = useState(false)
   const [activeSection, setActiveSection] = useState('Home')
@@ -44,55 +45,38 @@ function DashboardContent() {
   useEffect(() => {
     if (!user) return
     let mounted = true
-    const hasLocalOnboarding = () => {
-      try {
-        const saved = localStorage.getItem(onboardingKey)
-        const parsed = saved ? JSON.parse(saved) : null
-        return Boolean(parsed?.has_onboarded)
-      } catch {
-        return false
-      }
-    }
 
     async function check() {
-      if (user?.hasOnboarded) {
-        if (mounted) setCheckingOnboarding(false)
-        return
-      }
-
-      if (hasLocalOnboarding()) {
+      if (user.hasOnboarded || readLocalOnboarded(user)) {
+        if (user.hasOnboarded && !readLocalOnboarded(user)) writeLocalOnboarded(user)
         if (mounted) setCheckingOnboarding(false)
         return
       }
 
       try {
         const profile = await getMyProfile()
-        if (mounted && profile?.has_onboarded) {
-          localStorage.setItem(
-            onboardingKey,
-            JSON.stringify({
-              user_id: user.id,
+        if (mounted && (profile?.has_onboarded || isExistingAccount(profile))) {
+          writeLocalOnboarded(user)
+          markOnboarded()
+          if (!profile?.has_onboarded) {
+            syncProfile({
               email: user.email,
+              full_name: user.fullName || '',
               has_onboarded: true,
-              updated_at: new Date().toISOString(),
-            })
-          )
+            }).catch(() => {})
+          }
           setCheckingOnboarding(false)
           return
         }
         if (mounted) router.replace('/onboarding')
       } catch {
-        // If profile check fails, keep users who already completed onboarding out of a redirect loop.
-        if (mounted && hasLocalOnboarding()) {
-          setCheckingOnboarding(false)
-          return
-        }
-        if (mounted) router.replace('/onboarding')
+        // A registered session should not be forced through onboarding again if the profile check fails.
+        if (mounted) setCheckingOnboarding(false)
       }
     }
     check()
     return () => { mounted = false }
-  }, [user, onboardingKey, router])
+  }, [user, router, markOnboarded])
 
   useEffect(() => {
     if (!user) return

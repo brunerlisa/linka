@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useCallback, useContext, useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { getMyProfile, syncProfile } from '@/lib/tradingAdminApi'
 
@@ -9,6 +9,7 @@ const AuthContext = createContext({
   profile: null,
   isAdmin: false,
   signOut: async () => {},
+  markOnboarded: () => {},
   loading: true,
 })
 
@@ -95,6 +96,13 @@ export function AuthProvider({ children }) {
     }
   }, [])
 
+  const markOnboarded = useCallback(() => {
+    setUser((prev) => {
+      if (!prev || prev.hasOnboarded) return prev
+      return { ...prev, hasOnboarded: true }
+    })
+  }, [])
+
   const signOut = async () => {
     const supabase = createClient()
     if (supabase) await supabase.auth.signOut()
@@ -113,6 +121,7 @@ export function AuthProvider({ children }) {
         isAdmin: user?.role === 'admin',
         loading,
         signOut,
+        markOnboarded,
       }}
     >
       {children}
