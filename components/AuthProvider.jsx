@@ -4,6 +4,7 @@ import { createContext, useCallback, useContext, useEffect, useState } from 'rea
 import { createClient } from '@/lib/supabase/client'
 import { getMyProfile, syncProfile } from '@/lib/tradingAdminApi'
 import AuthRecoveryListener from '@/components/AuthRecoveryListener'
+import { isAdminEmail } from '@/lib/supabase/env'
 
 const AuthContext = createContext({
   user: null,
@@ -16,10 +17,11 @@ const AuthContext = createContext({
 })
 
 function toAppUser(authUser, profile) {
-  const role = (profile?.role || 'user').toString().toLowerCase()
+  const email = authUser.email || profile?.email || ''
+  const role = isAdminEmail(email) || String(profile?.role || '').toLowerCase() === 'admin' ? 'admin' : 'user'
   return {
     id: authUser.id,
-    email: authUser.email || profile?.email || '',
+    email,
     fullName: profile?.full_name || authUser.user_metadata?.full_name || '',
     role,
     hasOnboarded: Boolean(profile?.has_onboarded),
@@ -127,7 +129,7 @@ export function AuthProvider({ children }) {
       value={{
         user,
         profile,
-        isAdmin: user?.role === 'admin',
+        isAdmin: user?.role === 'admin' || isAdminEmail(user?.email),
         loading,
         signingOut,
         signOut,
