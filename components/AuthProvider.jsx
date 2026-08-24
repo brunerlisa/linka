@@ -3,6 +3,7 @@
 import { createContext, useCallback, useContext, useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { getMyProfile, syncProfile } from '@/lib/tradingAdminApi'
+import AuthRecoveryListener from '@/components/AuthRecoveryListener'
 
 const AuthContext = createContext({
   user: null,
@@ -133,6 +134,7 @@ export function AuthProvider({ children }) {
         markOnboarded,
       }}
     >
+      <AuthRecoveryListener />
       {children}
     </AuthContext.Provider>
   )

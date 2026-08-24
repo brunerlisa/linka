@@ -29,11 +29,27 @@ export default function ForgotPasswordForm() {
     setLoading(true)
     try {
       const origin = window.location.origin
-      const { error: resetError } = await supabase.auth.resetPasswordForEmail(email.trim(), {
-        redirectTo: `${origin}/auth/callback?next=/auth/reset-password`,
-      })
-      if (resetError) throw resetError
-      setNotice('If that email has an account, we sent a reset link. Open it to create a new password.')
+      const redirectTo = `${origin}/auth/reset-password`
+      let usedFallback = true
+      try {
+        const res = await fetch('/api/auth/forgot-password', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: email.trim() }),
+        })
+        const payload = await res.json().catch(() => ({}))
+        if (res.ok && payload.ok && !payload.fallback) usedFallback = false
+      } catch {
+        usedFallback = true
+      }
+
+      if (usedFallback) {
+        const { error: resetError } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+          redirectTo,
+        })
+        if (resetError) throw resetError
+      }
+      setNotice('If that email has an account, we sent a reset link. Check inbox and spam, then open it to choose a new password.')
     } catch (err) {
       setError(err?.message || 'Could not send the reset email.')
     } finally {

@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { LanguageSwitcher } from '@/components/SiteTranslator'
 import PasswordInput from '@/components/PasswordInput'
+import { readAuthParams } from '@/lib/authRecovery'
 
 const inputClass =
   'w-full min-h-12 rounded-md bg-[#0f172a] border border-slate-700 px-3 py-3 text-base text-white placeholder:text-slate-500 focus:outline-none focus:border-primary'
@@ -17,11 +18,21 @@ export default function ResetPasswordForm() {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [ready, setReady] = useState(false)
+  const [needsConfirm, setNeedsConfirm] = useState(false)
+  const [checking, setChecking] = useState(true)
 
   useEffect(() => {
     const supabase = createClient()
     if (!supabase) {
       setError('Supabase is not configured.')
+      setChecking(false)
+      return
+    }
+
+    const params = readAuthParams()
+    if (params.error) {
+      setError('This reset link is invalid or has expired. Request a new one.')
+      setChecking(false)
       return
     }
 
@@ -29,23 +40,70 @@ export default function ResetPasswordForm() {
     async function checkSession() {
       const { data } = await supabase.auth.getSession()
       if (!mounted) return
-      if (!data.session) {
-        setError('This reset link is invalid or has expired. Request a new one.')
+      if (data.session) {
+        setReady(true)
+        setNeedsConfirm(false)
+        setChecking(false)
         return
       }
-      setReady(true)
+      if (params.tokenHash || params.code) {
+        setNeedsConfirm(true)
+        setChecking(false)
+        return
+      }
+      setError('This reset link is invalid or has expired. Request a new one.')
+      setChecking(false)
     }
 
     const { data: sub } = supabase.auth.onAuthStateChange((event) => {
-      if (event === 'PASSWORD_RECOVERY' || event === 'SIGNED_IN') setReady(true)
+      if (event === 'PASSWORD_RECOVERY' || event === 'SIGNED_IN') {
+        setReady(true)
+        setNeedsConfirm(false)
+        setError('')
+        setChecking(false)
+      }
     })
 
-    checkSession()
+    const wait = setTimeout(checkSession, 250)
+
     return () => {
       mounted = false
+      clearTimeout(wait)
       sub?.subscription.unsubscribe()
     }
   }, [])
+
+  async function confirmResetLink() {
+    const supabase = createClient()
+    const params = readAuthParams()
+    if (!supabase) {
+      setError('Could not open this reset link.')
+      return
+    }
+    setLoading(true)
+    setError('')
+    try {
+      if (params.tokenHash) {
+        const { error: verifyError } = await supabase.auth.verifyOtp({
+          type: 'recovery',
+          token_hash: params.tokenHash,
+        })
+        if (verifyError) throw verifyError
+      } else if (params.code) {
+        const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(params.code)
+        if (exchangeError) throw exchangeError
+      } else {
+        throw new Error('This reset link is invalid or has expired. Request a new one.')
+      }
+      setReady(true)
+      setNeedsConfirm(false)
+      window.history.replaceState(null, '', '/auth/reset-password')
+    } catch (e) {
+      setError(e?.message || 'This reset link is invalid or has expired. Request a new one.')
+    } finally {
+      setLoading(false)
+    }
+  }
 
   async function handleSubmit(event) {
     event.preventDefault()
@@ -94,40 +152,60 @@ export default function ResetPasswordForm() {
             <h2 className="text-xl font-semibold text-white mb-1">Create a new password</h2>
             <p className="text-sm text-slate-400 mb-6">This replaces the password you no longer have.</p>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label className="block text-sm text-slate-200 mb-1.5">New password</label>
-                <PasswordInput
-                  className={inputClass}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="At least 8 characters"
-                  autoComplete="new-password"
-                  minLength={8}
-                  required
-                  disabled={!ready}
-                />
-              </div>
-              <div>
-                <label className="block text-sm text-slate-200 mb-1.5">Confirm password</label>
-                <PasswordInput
-                  className={inputClass}
-                  value={confirm}
-                  onChange={(e) => setConfirm(e.target.value)}
-                  placeholder="Repeat new password"
-                  autoComplete="new-password"
-                  minLength={8}
-                  required
-                  disabled={!ready}
-                />
-              </div>
+            {checking ? <p className="text-sm text-slate-400">Checking your reset link…</p> : null}
 
-              {error ? <p className="text-sm text-red-400">{error}</p> : null}
+            {needsConfirm && !ready ? (
+              <div className="space-y-4">
+                <p className="text-sm text-slate-300">
+                  Tap continue to open this password reset. This keeps email scanners from using the link before you do.
+                </p>
+                {error ? <p className="text-sm text-red-400">{error}</p> : null}
+                <button type="button" disabled={loading} onClick={confirmResetLink} className={buttonClass}>
+                  {loading ? 'Opening…' : 'Continue to reset password'}
+                </button>
+              </div>
+            ) : null}
 
-              <button type="submit" disabled={loading || !ready} className={buttonClass}>
-                {loading ? 'Saving…' : 'Save new password'}
-              </button>
-            </form>
+            {ready ? (
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div>
+                  <label className="block text-sm text-slate-200 mb-1.5">New password</label>
+                  <PasswordInput
+                    className={inputClass}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="At least 8 characters"
+                    autoComplete="new-password"
+                    minLength={8}
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm text-slate-200 mb-1.5">Confirm password</label>
+                  <PasswordInput
+                    className={inputClass}
+                    value={confirm}
+                    onChange={(e) => setConfirm(e.target.value)}
+                    placeholder="Repeat new password"
+                    autoComplete="new-password"
+                    minLength={8}
+                    required
+                  />
+                </div>
+
+                {error ? <p className="text-sm text-red-400">{error}</p> : null}
+
+                <button type="submit" disabled={loading} className={buttonClass}>
+                  {loading ? 'Saving…' : 'Save new password'}
+                </button>
+              </form>
+            ) : null}
+
+            {!checking && !ready && !needsConfirm ? (
+              <div className="space-y-4">
+                {error ? <p className="text-sm text-red-400">{error}</p> : null}
+              </div>
+            ) : null}
 
             <p className="mt-5 text-sm text-slate-400">
               <Link href="/auth/forgot-password" className="text-primary hover:text-primary-light">
