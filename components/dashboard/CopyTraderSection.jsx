@@ -106,7 +106,7 @@ export default function CopyTraderSection({ onBack, onNavigate }) {
   }
 
   function goDeposit(trader) {
-    rememberPendingCopy(trader, balance)
+    rememberPendingCopy(trader)
     onNavigate?.('Deposit')
   }
 
@@ -119,22 +119,13 @@ export default function CopyTraderSection({ onBack, onNavigate }) {
     setNotice('')
     setBusyId(trader.id)
     try {
-      const created = await startCopyTrader({
+      await startCopyTrader({
         trader_id: trader.id,
         trader_name: trader.name,
         fee: trader.fee_percent,
         monthly_profit: trader.monthly_profit,
-        min_capital: trader.min_capital,
       })
-      const status = parseTradeNotes(created?.notes).status
-      if (status === 'pending_deposit') {
-        goDeposit(trader)
-        setNotice(`Deposit to copy ${trader.name}. Copy starts after an admin approves enough funds.`)
-      } else {
-        setNotice(`You are now copying ${trader.name}.`)
-        setTab('copies')
-      }
-      await load()
+      goDeposit(trader)
     } catch (e) {
       setError(e?.message || 'Could not start copy.')
     } finally {
@@ -246,7 +237,7 @@ export default function CopyTraderSection({ onBack, onNavigate }) {
           </p>
           <p className="mt-1 text-sm text-slate-400">
             {tab === 'copies'
-              ? 'Copy a trader from All Traders. If your balance is below the minimum, deposit first and wait for approval.'
+              ? 'Copy a trader from All Traders, then deposit funds to start copying.'
               : 'Check back later for new traders to copy.'}
           </p>
           {tab === 'all' && user?.role === 'admin' ? (
@@ -267,7 +258,6 @@ export default function CopyTraderSection({ onBack, onNavigate }) {
           {filtered.map((trader) => {
             const copying = Boolean(copyRecordFor(trader))
             const pending = Boolean(pendingRecordFor(trader))
-            const minCapital = Number(trader.min_capital || 0)
             return (
               <article key={trader.id} className={`${CARD} p-5 flex flex-col`}>
                 <div className="flex items-start justify-between gap-3">
@@ -292,10 +282,10 @@ export default function CopyTraderSection({ onBack, onNavigate }) {
                 </div>
                 <p className="mt-3 text-xs text-slate-400 line-clamp-2">{trader.bio || 'Professional trader'}</p>
                 <p className="mt-3 text-xs text-slate-400">
-                  Min. ${minCapital.toLocaleString()} · {Number(trader.copiers || 0)} copiers · Fee {Number(trader.fee_percent || 0)}%
+                  {Number(trader.copiers || 0)} copiers · Fee {Number(trader.fee_percent || 0)}%
                 </p>
                 {pending ? (
-                  <p className="mt-2 text-xs text-amber-300">Waiting for an approved deposit of at least ${minCapital.toLocaleString()}.</p>
+                  <p className="mt-2 text-xs text-amber-300">Deposit funds to start copying {trader.name}.</p>
                 ) : null}
                 <button
                   type="button"

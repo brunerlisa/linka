@@ -14,7 +14,6 @@ const defaultTrader = {
   win_rate: 90,
   experience_years: 8,
   fee_percent: 10,
-  min_capital: 10000,
   copiers: 0,
   status: 'ACTIVE',
   bio: '',
@@ -129,7 +128,6 @@ export default function AdminTradersPage() {
       win_rate: Number(t.win_rate ?? 0),
       experience_years: Number(t.experience_years ?? 0),
       fee_percent: Number(t.fee_percent ?? 10),
-      min_capital: Number(t.min_capital ?? 10000),
       copiers: Number(t.copiers ?? 0),
       status: t.status || 'ACTIVE',
       bio: t.bio || '',
@@ -266,14 +264,6 @@ export default function AdminTradersPage() {
               />
             </Field>
           </div>
-          <Field label="Minimum capital ($)" hint="Lowest amount a user needs before they can copy this trader.">
-            <input
-              type="number"
-              value={form.min_capital}
-              onChange={(e) => setForm((p) => ({ ...p, min_capital: Number(e.target.value) }))}
-              className={ADMIN_INPUT}
-            />
-          </Field>
           <Field label="Short bio">
             <textarea
               value={form.bio}

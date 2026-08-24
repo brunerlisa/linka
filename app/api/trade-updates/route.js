@@ -46,19 +46,6 @@ export async function POST(req) {
         return Response.json(already)
       }
 
-      const { data: trader } = traderId
-        ? await supabaseAdmin.from('traders').select('min_capital, copiers').eq('id', traderId).maybeSingle()
-        : { data: null }
-      const { data: account } = await supabaseAdmin
-        .from('user_accounts')
-        .select('balance')
-        .eq('user_email', normalizeEmail(user.email))
-        .maybeSingle()
-      const minCapital = Number(trader?.min_capital ?? body.min_capital ?? 0)
-      const balance = Number(account?.balance || 0)
-      const funded = balance >= minCapital
-      const status = funded ? 'active' : 'pending_deposit'
-
       const payload = {
         user_email: normalizeEmail(user.email),
         user_clerk_id: user.userId,
@@ -71,20 +58,13 @@ export async function POST(req) {
           trader_name: traderName,
           fee: Number(body.fee || 0),
           monthly_profit: Number(body.monthly_profit || 0),
-          min_capital: minCapital,
-          status,
+          status: 'pending_deposit',
         }),
         created_at: nowIso(),
         updated_at: nowIso(),
       }
       const { data, error } = await supabaseAdmin.from('trade_updates').insert(payload).select().single()
       if (error) return Response.json({ error: error.message }, { status: 500 })
-      if (funded && traderId && trader) {
-        await supabaseAdmin
-          .from('traders')
-          .update({ copiers: Number(trader.copiers || 0) + 1, updated_at: nowIso() })
-          .eq('id', traderId)
-      }
       return Response.json(data)
     }
 

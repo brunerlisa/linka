@@ -63,7 +63,6 @@ export default function AdminControlCenter() {
     win_rate: 90,
     experience_years: 8,
     fee_percent: 10,
-    min_capital: 10000,
     copiers: 0,
     status: 'ACTIVE',
     bio: '',
@@ -147,7 +146,6 @@ export default function AdminControlCenter() {
       win_rate: 90,
       experience_years: 8,
       fee_percent: 10,
-      min_capital: 10000,
       copiers: 0,
       status: 'ACTIVE',
       bio: '',
@@ -167,7 +165,6 @@ export default function AdminControlCenter() {
       win_rate: Number(trader.win_rate ?? 0),
       experience_years: Number(trader.experience_years ?? 0),
       fee_percent: Number(trader.fee_percent ?? 10),
-      min_capital: Number(trader.min_capital ?? 10000),
       copiers: Number(trader.copiers ?? 0),
       status: trader.status || 'ACTIVE',
       bio: trader.bio || '',
@@ -342,7 +339,6 @@ export default function AdminControlCenter() {
                   <input type="number" value={traderForm.fee_percent} onChange={(e) => setTraderForm((p) => ({ ...p, fee_percent: Number(e.target.value) }))} placeholder="Fee %" className="rounded-md bg-[#020617] border border-[#1f2937] px-2 py-2 text-xs" />
                   <input type="number" value={traderForm.copiers} onChange={(e) => setTraderForm((p) => ({ ...p, copiers: Number(e.target.value) }))} placeholder="Copiers" className="rounded-md bg-[#020617] border border-[#1f2937] px-2 py-2 text-xs" />
                 </div>
-                <input type="number" value={traderForm.min_capital} onChange={(e) => setTraderForm((p) => ({ ...p, min_capital: Number(e.target.value) }))} placeholder="Min capital USD" className="w-full rounded-md bg-[#020617] border border-[#1f2937] px-3 py-2 text-xs" />
                 <textarea value={traderForm.bio} onChange={(e) => setTraderForm((p) => ({ ...p, bio: e.target.value }))} placeholder="Short bio" rows={3} className="w-full rounded-md bg-[#020617] border border-[#1f2937] px-3 py-2 text-xs" />
                 <button type="button" onClick={saveTrader} className="w-full py-2 rounded-md bg-primary hover:bg-primary-dark text-xs font-semibold text-white">
                   {traderForm.id ? 'Update Trader' : 'Add Trader'}

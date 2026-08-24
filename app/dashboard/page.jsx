@@ -430,7 +430,6 @@ function TradersSection() {
     winRate: Number(t.win_rate ?? 0),
     exp: Number(t.experience_years ?? t.experience ?? 0),
     fee: Number(t.fee_percent ?? t.fee ?? 10),
-    capital: Number(t.min_capital ?? 10000),
     copiers: Number(t.copiers ?? t.followers ?? 0),
     status: (t.status || 'ACTIVE').toUpperCase(),
     bio: t.bio || t.description || 'Professional trader',
@@ -558,7 +557,7 @@ function TradersSection() {
 
               <div className="mt-3 flex items-center justify-between">
                 <p className="text-xs text-slate-300">
-                  ${trader.capital.toLocaleString()} <span className="text-slate-500 ml-2">{trader.copiers} copiers</span>
+                  {trader.copiers} copiers
                 </p>
                 <button className="px-4 py-1.5 rounded-lg bg-[#334155] hover:bg-[#475569] text-sm text-white font-semibold">
                   Copy
@@ -600,7 +599,7 @@ function TraderAvatar({ name, avatarUrl, size = 'md' }) {
   )
 }
 
-function TraderCard({ name, risk, assetClass, monthly, yearly, experience, fee, avatarUrl = '', minCapital = 3000, copiers = 0 }) {
+function TraderCard({ name, risk, assetClass, monthly, yearly, experience, fee, avatarUrl = '', copiers = 0 }) {
   return (
     <div className="bg-[#050712] border border-[#111827] rounded-xl p-4 flex flex-col justify-between">
       <div className="flex items-center gap-3 mb-3">
@@ -630,7 +629,6 @@ function TraderCard({ name, risk, assetClass, monthly, yearly, experience, fee, 
 
       <div className="flex items-center justify-between text-[11px] text-slate-300 mb-3">
         <p>Performance fee: {fee}</p>
-        <p className="text-slate-400">Min. capital: ${Number(minCapital).toLocaleString()}</p>
       </div>
       <p className="text-[11px] text-slate-500 mb-2">{copiers} copiers</p>
 

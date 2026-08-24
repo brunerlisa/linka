@@ -35,11 +35,6 @@ export default function DepositSection({ onBack }) {
   }, [])
 
   useEffect(() => {
-    if (!copyIntent?.needed || amount) return
-    setAmount(String(copyIntent.needed))
-  }, [copyIntent, amount])
-
-  useEffect(() => {
     let mounted = true
     listDepositWallets()
       .then((rows) => {
@@ -138,9 +133,8 @@ export default function DepositSection({ onBack }) {
       <h1 className="text-2xl sm:text-3xl font-semibold text-white tracking-tight">Deposit</h1>
       {copyIntent?.name ? (
         <p className="text-sm text-amber-200">
-          Deposit at least {formatUsd(copyIntent.needed || copyIntent.min_capital || MIN_DEPOSIT_USD)} to copy{' '}
-          <span className="font-semibold text-white">{copyIntent.name}</span>. Copy starts after an admin
-          approves the deposit and your balance meets the trader minimum.
+          Deposit funds to start copying{' '}
+          <span className="font-semibold text-white">{copyIntent.name}</span>.
         </p>
       ) : null}
       <Stepper step={step} />
