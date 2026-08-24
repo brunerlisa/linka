@@ -18,7 +18,7 @@ export default function Header() {
   const { user, isAdmin } = useAuth()
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-dark/95 backdrop-blur-md border-b border-dark-border min-w-0 max-w-full overflow-x-clip pt-[env(safe-area-inset-top)]">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-dark/95 md:backdrop-blur-md border-b border-dark-border min-w-0 max-w-full overflow-x-clip pt-[env(safe-area-inset-top)]">
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 min-w-0">
         <div className="flex items-center justify-between h-14 md:h-16 gap-1.5 sm:gap-2 min-w-0">
           <Link href="/" className="flex items-center gap-1.5 sm:gap-2 min-w-0 flex-1">

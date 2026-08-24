@@ -45,7 +45,7 @@ export default function AdminLayout({ children }) {
   }
 
   return (
-    <div className="min-h-screen bg-[#050816] text-slate-100 flex">
+    <div className="h-dvh max-h-dvh bg-[#050816] text-slate-100 flex overflow-hidden">
       {mobileNavOpen ? (
         <button
           type="button"
@@ -90,7 +90,7 @@ export default function AdminLayout({ children }) {
           </button>
         </div>
       </aside>
-      <main className="flex-1 overflow-y-auto min-w-0">
+      <main className="flex-1 min-h-0 overflow-y-auto overflow-x-clip overscroll-y-contain min-w-0">
         <div className="lg:hidden h-14 border-b border-[#111827] flex items-center px-4">
           <button
             type="button"

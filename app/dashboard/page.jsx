@@ -144,7 +144,7 @@ function DashboardContent() {
   const handle = usernameHandle(user)
 
   return (
-    <div className="min-h-screen bg-dark text-slate-100 flex">
+    <div className="h-dvh max-h-dvh bg-dark text-slate-100 flex overflow-hidden">
       {mobileNavOpen ? (
         <button
           type="button"
@@ -213,8 +213,8 @@ function DashboardContent() {
         </div>
       </aside>
 
-      <div className="flex-1 flex flex-col min-w-0">
-        <header className="h-16 border-b border-dark-border flex items-center justify-between px-4 sm:px-6 bg-[#070b16]">
+      <div className="flex-1 flex flex-col min-w-0 min-h-0">
+        <header className="h-16 shrink-0 border-b border-dark-border flex items-center justify-between px-4 sm:px-6 bg-[#070b16]">
           <button
             type="button"
             className="lg:hidden p-2 -ml-1 rounded-lg text-slate-300 hover:bg-white/5"
@@ -242,7 +242,7 @@ function DashboardContent() {
           </div>
         </header>
 
-        <main className="flex-1 overflow-y-auto bg-dark">
+        <main className="flex-1 min-h-0 overflow-y-auto overflow-x-clip overscroll-y-contain bg-dark">
           <div className="px-4 sm:px-6 lg:px-8 pt-6 pb-12">
             {activeSection === 'Home' && <UserDashboardHome onNavigate={goTo} />}
             {activeSection === 'Place Trade' && <PlaceTradeSection onBack={goBack} />}

@@ -71,7 +71,7 @@ export default function StockTicker() {
   return (
     <div
       className="relative lg:absolute lg:bottom-0 lg:left-0 lg:right-0 z-[5] min-w-0 max-w-full
-        h-12 lg:h-[56px] w-full overflow-hidden
+        h-12 lg:h-[56px] w-full overflow-hidden touch-pan-x overscroll-contain
         border-y lg:border-y-0 border-dark-border lg:border-t
         bg-dark/90 lg:bg-dark/80"
     >

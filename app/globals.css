@@ -11,20 +11,32 @@
 }
 
 html {
-  overflow-x: hidden;
-  scrollbar-gutter: stable;
+  overflow-x: clip;
   overscroll-behavior-x: none;
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
+  -webkit-overflow-scrolling: touch;
 }
 
 body {
   @apply bg-dark text-slate-100 font-sans antialiased;
-  overflow-x: hidden;
+  overflow-x: clip;
   max-width: 100%;
   overscroll-behavior-x: none;
   padding-left: env(safe-area-inset-left);
   padding-right: env(safe-area-inset-right);
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (min-width: 1024px) {
+  html {
+    scrollbar-gutter: stable;
+  }
+}
+
+.overscroll-y-contain,
+[class*="overflow-y-auto"] {
+  -webkit-overflow-scrolling: touch;
 }
 
 button,
@@ -146,6 +158,33 @@ main iframe,
 .animate-device-float { animation: device-float 3.6s ease-in-out infinite; }
 .animate-coin-stack { animation: coin-stack 2.6s ease-in-out infinite; }
 .animate-coin-stack-delayed { animation: coin-stack-delayed 3s ease-in-out infinite; }
+
+@media (max-width: 1023px) {
+  .animate-float,
+  .animate-float-slow,
+  .animate-float-delayed,
+  .animate-podium-left,
+  .animate-podium-center,
+  .animate-podium-right,
+  .animate-device-float,
+  .animate-coin-stack,
+  .animate-coin-stack-delayed,
+  .animate-base-glow,
+  .oval-bg {
+    animation: none !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
 
 @keyframes oval-pulse {
   0%, 100% { opacity: 0.15; transform: translate(-50%, -50%) scale(1); }

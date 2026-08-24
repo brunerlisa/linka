@@ -83,7 +83,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={`${outfit.variable} overflow-x-hidden`}>
+    <html lang="en" className={`${outfit.variable} overflow-x-clip`}>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -93,7 +93,7 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body
-        className="min-h-screen bg-dark text-slate-100 font-sans antialiased overflow-x-hidden"
+        className="min-h-dvh bg-dark text-slate-100 font-sans antialiased overflow-x-clip"
         suppressHydrationWarning
       >
         <AuthProvider>
