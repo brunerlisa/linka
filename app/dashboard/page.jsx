@@ -249,7 +249,7 @@ function DashboardContent() {
             {activeSection === 'Markets' && <MarketsSection onBack={goBack} />}
             {activeSection === 'Commodities' && <CommoditiesSection onBack={goBack} />}
             {activeSection === 'My Trades' && <MyTradesSection onBack={goBack} />}
-            {activeSection === 'Copy Trader' && <CopyTraderSection onBack={goBack} />}
+            {activeSection === 'Copy Trader' && <CopyTraderSection onBack={goBack} onNavigate={goTo} />}
             {activeSection === 'Deposit' && <DepositSection onBack={goBack} />}
             {activeSection === 'Withdraw' && <WithdrawSection onBack={goBack} />}
             {activeSection === 'KYC' && <KycSection onBack={goBack} />}

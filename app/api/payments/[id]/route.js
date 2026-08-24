@@ -1,6 +1,7 @@
 import { requireAuth, ownsRecord } from '@/lib/auth'
 import { supabaseAdmin } from '@/lib/supabase-server'
 import { saveUserPlan } from '@/lib/userPlan'
+import { activatePendingCopySubscriptions } from '@/lib/activatePendingCopies'
 
 const nowIso = () => new Date().toISOString()
 const normalizeEmail = (v) => String(v || '').trim().toLowerCase()
@@ -93,6 +94,20 @@ export async function PATCH(req, { params }) {
       .select()
       .single()
     if (error) return Response.json({ error: error.message }, { status: 500 })
+    const wasApproved = String(payment.status || '').toLowerCase() === 'approved'
+    const isDeposit = !payment.payment_type || payment.payment_type === 'deposit'
+    if (isDeposit && nextStatus === 'approved' && !wasApproved) {
+      try {
+        await creditAccount(payment.user_email, payment.user_clerk_id, payment.amount_usd)
+        await activatePendingCopySubscriptions(payment.user_email)
+      } catch (creditError) {
+        await supabaseAdmin
+          .from('payments')
+          .update({ status: payment.status || 'pending', updated_at: nowIso() })
+          .eq('id', id)
+        return Response.json({ error: creditError.message || 'Could not credit deposit' }, { status: 500 })
+      }
+    }
     if (payment.payment_type === 'plan_upgrade' && nextStatus === 'approved') {
       await saveUserPlan(supabaseAdmin, {
         email: payment.user_email,

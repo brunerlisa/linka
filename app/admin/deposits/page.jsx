@@ -3,21 +3,17 @@
 import { useState, useEffect } from 'react'
 import {
   listPayments,
-  listAccounts,
   updatePaymentStatus,
-  upsertAccount,
 } from '@/lib/tradingAdminApi'
 
 export default function AdminDepositsPage() {
   const [payments, setPayments] = useState([])
-  const [accounts, setAccounts] = useState([])
   const [loading, setLoading] = useState(true)
   const [notice, setNotice] = useState('')
 
   const load = async () => {
-    const [p, a] = await Promise.all([listPayments(), listAccounts()])
+    const p = await listPayments()
     setPayments((p || []).filter((row) => (row.payment_type || 'deposit') === 'deposit'))
-    setAccounts(a || [])
     setLoading(false)
   }
 
@@ -29,21 +25,7 @@ export default function AdminDepositsPage() {
     setNotice('')
     try {
       await updatePaymentStatus(payment.id, 'approved')
-      const existing = accounts.find(
-        (ac) =>
-          (ac.user_email || '').toLowerCase() === (payment.user_email || '').toLowerCase() ||
-          (ac.user_clerk_id || '') === (payment.user_clerk_id || '')
-      )
-      const currentBalance = Number(existing?.balance || 0)
       const amount = Number(payment.amount_usd || 0)
-      await upsertAccount({
-        ...existing,
-        user_email: (payment.user_email || '').trim().toLowerCase(),
-        user_clerk_id: payment.user_clerk_id || existing?.user_clerk_id || '',
-        balance: currentBalance + amount,
-        profit: Number(existing?.profit || 0),
-        status: existing?.status || 'active',
-      })
       setNotice(`Approved $${amount.toLocaleString()} for ${payment.user_email}. Account credited.`)
       load()
     } catch (e) {

@@ -34,17 +34,30 @@ export async function POST(req) {
         .select('*')
         .eq('user_email', normalizeEmail(user.email))
         .eq('trader_name', traderName)
-      const alreadyCopying = (existing || []).some((row) => {
+      const already = (existing || []).find((row) => {
         try {
           const notes = JSON.parse(row.notes || '{}')
-          return notes.kind === 'copy_subscription' && notes.status === 'active'
+          return notes.kind === 'copy_subscription' && (notes.status === 'active' || notes.status === 'pending_deposit')
         } catch {
           return false
         }
       })
-      if (alreadyCopying) {
-        return Response.json({ error: 'You are already copying this trader.' }, { status: 400 })
+      if (already) {
+        return Response.json(already)
       }
+
+      const { data: trader } = traderId
+        ? await supabaseAdmin.from('traders').select('min_capital, copiers').eq('id', traderId).maybeSingle()
+        : { data: null }
+      const { data: account } = await supabaseAdmin
+        .from('user_accounts')
+        .select('balance')
+        .eq('user_email', normalizeEmail(user.email))
+        .maybeSingle()
+      const minCapital = Number(trader?.min_capital ?? body.min_capital ?? 0)
+      const balance = Number(account?.balance || 0)
+      const funded = balance >= minCapital
+      const status = funded ? 'active' : 'pending_deposit'
 
       const payload = {
         user_email: normalizeEmail(user.email),
@@ -58,21 +71,19 @@ export async function POST(req) {
           trader_name: traderName,
           fee: Number(body.fee || 0),
           monthly_profit: Number(body.monthly_profit || 0),
-          status: 'active',
+          min_capital: minCapital,
+          status,
         }),
         created_at: nowIso(),
         updated_at: nowIso(),
       }
       const { data, error } = await supabaseAdmin.from('trade_updates').insert(payload).select().single()
       if (error) return Response.json({ error: error.message }, { status: 500 })
-      if (traderId) {
-        const { data: trader } = await supabaseAdmin.from('traders').select('copiers').eq('id', traderId).maybeSingle()
-        if (trader) {
-          await supabaseAdmin
-            .from('traders')
-            .update({ copiers: Number(trader.copiers || 0) + 1, updated_at: nowIso() })
-            .eq('id', traderId)
-        }
+      if (funded && traderId && trader) {
+        await supabaseAdmin
+          .from('traders')
+          .update({ copiers: Number(trader.copiers || 0) + 1, updated_at: nowIso() })
+          .eq('id', traderId)
       }
       return Response.json(data)
     }

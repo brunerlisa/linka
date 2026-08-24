@@ -184,20 +184,6 @@ export default function AdminControlCenter() {
 
   const changePaymentStatus = async (payment, status) => {
     await updatePaymentStatus(payment.id, status)
-    if (status === 'approved') {
-      const existing = accounts.find(
-        (a) => (a.user_email || '').toLowerCase() === (payment.user_email || '').toLowerCase()
-      )
-      const currentBalance = Number(existing?.balance || 0)
-      const amount = Number(payment.amount_usd || 0)
-      await upsertAccount({
-        ...existing,
-        user_email: payment.user_email,
-        balance: currentBalance + amount,
-        profit: Number(existing?.profit || 0),
-        status: existing?.status || 'active',
-      })
-    }
     setNotice(`Payment ${status}.`)
     setNoticeError(false)
     loadAdminData()

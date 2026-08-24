@@ -12,6 +12,7 @@ import {
   walletQrUrl,
 } from '@/lib/depositMethods'
 import { createPaymentRequest, listDepositWallets } from '@/lib/tradingAdminApi'
+import { readPendingCopy, clearPendingCopy } from '@/lib/pendingCopy'
 import SectionBack from '@/components/dashboard/SectionBack'
 
 const CARD = 'rounded-2xl border border-dark-border bg-dark-card'
@@ -27,6 +28,16 @@ export default function DepositSection({ onBack }) {
   const [copied, setCopied] = useState(false)
   const [error, setError] = useState('')
   const [qrFailed, setQrFailed] = useState(false)
+  const [copyIntent, setCopyIntent] = useState(null)
+
+  useEffect(() => {
+    setCopyIntent(readPendingCopy())
+  }, [])
+
+  useEffect(() => {
+    if (!copyIntent?.needed || amount) return
+    setAmount(String(copyIntent.needed))
+  }, [copyIntent, amount])
 
   useEffect(() => {
     let mounted = true
@@ -99,10 +110,13 @@ export default function DepositSection({ onBack }) {
           `Network: ${wallet?.network || method.network}`,
           address ? `Address: ${address}` : '',
           `Amount entered: ${formatUsd(parsedAmount)}`,
+          copyIntent?.name ? `Copy trader: ${copyIntent.name}` : '',
         ]
           .filter(Boolean)
           .join(' • '),
       })
+      clearPendingCopy()
+      setCopyIntent(null)
       setStep(4)
     } catch (e) {
       setError(e?.message || 'Could not submit deposit request.')
@@ -122,6 +136,13 @@ export default function DepositSection({ onBack }) {
   return (
     <div className="space-y-5">
       <h1 className="text-2xl sm:text-3xl font-semibold text-white tracking-tight">Deposit</h1>
+      {copyIntent?.name ? (
+        <p className="text-sm text-amber-200">
+          Deposit at least {formatUsd(copyIntent.needed || copyIntent.min_capital || MIN_DEPOSIT_USD)} to copy{' '}
+          <span className="font-semibold text-white">{copyIntent.name}</span>. Copy starts after an admin
+          approves the deposit and your balance meets the trader minimum.
+        </p>
+      ) : null}
       <Stepper step={step} />
       {error ? <p className="text-sm text-red-400">{error}</p> : null}
 

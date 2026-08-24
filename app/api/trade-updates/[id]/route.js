@@ -26,7 +26,7 @@ export async function PATCH(req, { params }) {
 
     const notes = parseTradeNotes(trade.notes)
     if (notes.kind === 'copy_subscription') {
-      if (notes.status && notes.status !== 'active') {
+      if (notes.status && notes.status !== 'active' && notes.status !== 'pending_deposit') {
         return Response.json({ error: 'This copy is already stopped' }, { status: 400 })
       }
       const nextNotes = JSON.stringify({ ...notes, kind: 'copy_subscription', status: 'stopped' })
