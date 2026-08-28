@@ -11,7 +11,7 @@ export async function GET(req) {
       const { data, error } = await supabaseAdmin.from('profiles').select('*').eq('clerk_user_id', user.userId).single()
       if (error && error.code !== 'PGRST116') return Response.json({ error: error.message }, { status: 500 })
       return Response.json({
-        ...(data || { has_onboarded: false }),
+        ...(data || {}),
         role: user.isAdmin ? 'admin' : (data?.role || 'user'),
         email: data?.email || user.email,
         full_name: data?.full_name || user.fullName,
@@ -46,12 +46,6 @@ export async function POST(req) {
     }
     if (user.isAdmin || parseAdminEmails().includes(email)) {
       payload.role = 'admin'
-    }
-    if (body.has_onboarded === true || body.has_onboarded === 'true') {
-      payload.has_onboarded = true
-    }
-    if (body.onboarding_json != null && typeof body.onboarding_json === 'string') {
-      payload.onboarding_json = body.onboarding_json
     }
     if (body.preferences_json != null && typeof body.preferences_json === 'string') {
       payload.preferences_json = body.preferences_json

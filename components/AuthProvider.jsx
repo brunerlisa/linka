@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useCallback, useContext, useEffect, useState } from 'react'
+import { createContext, useContext, useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { getMyProfile, syncProfile } from '@/lib/tradingAdminApi'
 import AuthRecoveryListener from '@/components/AuthRecoveryListener'
@@ -11,7 +11,6 @@ const AuthContext = createContext({
   profile: null,
   isAdmin: false,
   signOut: async () => {},
-  markOnboarded: () => {},
   loading: true,
   signingOut: false,
 })
@@ -24,7 +23,6 @@ function toAppUser(authUser, profile) {
     email,
     fullName: profile?.full_name || authUser.user_metadata?.full_name || '',
     role,
-    hasOnboarded: Boolean(profile?.has_onboarded),
   }
 }
 
@@ -80,7 +78,6 @@ export function AuthProvider({ children }) {
                 ? {
                     ...prev,
                     role: String(updated.role || prev.role).toLowerCase(),
-                    hasOnboarded: Boolean(updated.has_onboarded || prev.hasOnboarded),
                     fullName: updated.full_name || prev.fullName,
                   }
                 : prev
@@ -105,13 +102,6 @@ export function AuthProvider({ children }) {
     }
   }, [])
 
-  const markOnboarded = useCallback(() => {
-    setUser((prev) => {
-      if (!prev || prev.hasOnboarded) return prev
-      return { ...prev, hasOnboarded: true }
-    })
-  }, [])
-
   const signOut = async () => {
     setSigningOut(true)
     const supabase = createClient()
@@ -133,7 +123,6 @@ export function AuthProvider({ children }) {
         loading,
         signingOut,
         signOut,
-        markOnboarded,
       }}
     >
       <AuthRecoveryListener />

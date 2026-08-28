@@ -19,7 +19,6 @@ import {
 export default function Dashboard() {
   const { user, signOut } = useAuth()
   const navigate = useNavigate()
-  const onboardingKey = `onboarding:${user?.email || user?.id || 'guest'}`
   const [activeSection, setActiveSection] = useState('Dashboard')
   const [expandedMenus, setExpandedMenus] = useState({
     Payments: true,
@@ -34,19 +33,6 @@ export default function Dashboard() {
       [menuLabel]: !prev[menuLabel],
     }))
   }
-
-  useEffect(() => {
-    if (!user) return
-    try {
-      const saved = localStorage.getItem(onboardingKey)
-      const parsed = saved ? JSON.parse(saved) : null
-      if (!parsed?.has_onboarded) {
-        navigate('/onboarding', { replace: true })
-      }
-    } catch {
-      navigate('/onboarding', { replace: true })
-    }
-  }, [user, onboardingKey, navigate])
 
   const sidebarItems = [
     { label: 'Dashboard' },
@@ -597,7 +583,7 @@ function CopytradingSection() {
     <section className="space-y-4">
       <h2 className="text-lg font-semibold text-white">Copytrading</h2>
       <p className="text-sm text-slate-300">
-        Here you&apos;ll later see curated strategies and traders based on your onboarding profile.
+        Here you&apos;ll later see curated strategies and traders.
       </p>
       <Panel title="Featured traders">
         <EmptyState label="Admin can configure featured traders in the Admin panel under 'More'." />

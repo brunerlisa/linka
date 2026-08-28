@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 
-const PROTECTED_PREFIXES = ['/dashboard', '/onboarding', '/admin']
+const PROTECTED_PREFIXES = ['/dashboard', '/admin']
 
 function isProtectedPath(pathname) {
   return PROTECTED_PREFIXES.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`))

@@ -41,7 +41,7 @@ const faqs = [
   {
     id: 8,
     question: 'What languages are supported?',
-    answer: 'Noble Mirror Capital supports 12 languages across the platform, including English, Spanish, French, German, Portuguese, Italian, and others. You can switch languages in your account settings or during onboarding.',
+    answer: 'Noble Mirror Capital supports 12 languages across the platform, including English, Spanish, French, German, Portuguese, Italian, and others. You can switch languages in your account settings.',
   },
   {
     id: 9,

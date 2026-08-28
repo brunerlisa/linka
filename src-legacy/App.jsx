@@ -5,7 +5,6 @@ import Home from './pages/Home'
 import About from './pages/About'
 import Platform from './pages/Platform'
 import Auth from './pages/Auth'
-import Onboarding from './pages/Onboarding'
 import Dashboard from './pages/Dashboard'
 import ProtectedRoute from './components/ProtectedRoute'
 import { AuthProvider } from './context/AuthContext'
@@ -14,7 +13,6 @@ function Layout({ children }) {
   const location = useLocation()
   const isBareRoute =
     location.pathname === '/auth' ||
-    location.pathname === '/onboarding' ||
     location.pathname.startsWith('/dashboard')
 
   if (isBareRoute) {
@@ -40,14 +38,6 @@ function App() {
             <Route path="/about" element={<About />} />
             <Route path="/platform" element={<Platform />} />
             <Route path="/auth" element={<Auth />} />
-            <Route
-              path="/onboarding"
-              element={
-                <ProtectedRoute>
-                  <Onboarding />
-                </ProtectedRoute>
-              }
-            />
             <Route
               path="/dashboard"
               element={

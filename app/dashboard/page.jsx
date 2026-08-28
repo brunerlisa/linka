@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import { useAuth } from '@/components/AuthProvider'
 import ProtectedRoute from '@/components/ProtectedRoute'
 import { NavIcon } from '@/components/dashboard/icons'
@@ -24,61 +23,20 @@ import { planDisplayName } from '@/lib/pricingPlans'
 import { LanguageSwitcher } from '@/components/SiteTranslator'
 import {
   deleteTrader,
-  getMyProfile,
   getMyPlan,
   listPayments,
   listTrades,
   listTraders,
   seedDemoTraders,
-  syncProfile,
   upsertTrader,
 } from '@/lib/tradingAdminApi'
-import { isExistingAccount, readLocalOnboarded, writeLocalOnboarded } from '@/lib/onboarding'
 
 function DashboardContent() {
-  const { user, signOut, markOnboarded } = useAuth()
-  const router = useRouter()
-  const [checkingOnboarding, setCheckingOnboarding] = useState(true)
+  const { user, signOut } = useAuth()
   const [mobileNavOpen, setMobileNavOpen] = useState(false)
   const [activeSection, setActiveSection] = useState('Home')
   const [sectionHistory, setSectionHistory] = useState([])
   const [accountPlan, setAccountPlan] = useState({ plan: 'basic', status: 'active' })
-
-  useEffect(() => {
-    if (!user) return
-    let mounted = true
-
-    async function check() {
-      if (user.hasOnboarded || readLocalOnboarded(user)) {
-        if (user.hasOnboarded && !readLocalOnboarded(user)) writeLocalOnboarded(user)
-        if (mounted) setCheckingOnboarding(false)
-        return
-      }
-
-      try {
-        const profile = await getMyProfile()
-        if (mounted && (profile?.has_onboarded || isExistingAccount(profile))) {
-          writeLocalOnboarded(user)
-          markOnboarded()
-          if (!profile?.has_onboarded) {
-            syncProfile({
-              email: user.email,
-              full_name: user.fullName || '',
-              has_onboarded: true,
-            }).catch(() => {})
-          }
-          setCheckingOnboarding(false)
-          return
-        }
-        if (mounted) router.replace('/onboarding')
-      } catch {
-        // A registered session should not be forced through onboarding again if the profile check fails.
-        if (mounted) setCheckingOnboarding(false)
-      }
-    }
-    check()
-    return () => { mounted = false }
-  }, [user, router, markOnboarded])
 
   useEffect(() => {
     if (!user) return
@@ -99,10 +57,9 @@ function DashboardContent() {
   }, [user])
 
   useEffect(() => {
-    if (checkingOnboarding) return
     const main = document.querySelector('main')
     if (main) main.scrollTo({ top: 0 })
-  }, [activeSection, checkingOnboarding])
+  }, [activeSection])
 
   const goTo = (label) => {
     if (label !== activeSection) {
@@ -116,14 +73,6 @@ function DashboardContent() {
     setSectionHistory((prev) => prev.slice(0, -1))
     setActiveSection(previous)
     setMobileNavOpen(false)
-  }
-
-  if (checkingOnboarding) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-[#050816] text-white">
-        <p className="text-sm text-slate-400">Loading...</p>
-      </div>
-    )
   }
 
   const sidebarItems = [

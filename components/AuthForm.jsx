@@ -53,7 +53,7 @@ export default function AuthForm({ mode }) {
         const { data: sessionData } = await supabase.auth.getSession()
         if (!sessionData?.session) throw new Error('Signed in, but the session did not start. Try again.')
       }
-      window.location.assign(isSignUp ? '/onboarding' : '/dashboard')
+      window.location.assign('/dashboard')
     } catch (err) {
       setError(err?.message || 'Authentication failed.')
       setLoading(false)

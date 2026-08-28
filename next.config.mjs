@@ -16,8 +16,12 @@ const nextConfig = {
       { source: '/dashboard/:path*', headers: noIndexHeaders },
       { source: '/admin', headers: noIndexHeaders },
       { source: '/admin/:path*', headers: noIndexHeaders },
-      { source: '/onboarding', headers: noIndexHeaders },
-      { source: '/onboarding/:path*', headers: noIndexHeaders },
+    ]
+  },
+  async redirects() {
+    return [
+      { source: '/onboarding', destination: '/dashboard', permanent: true },
+      { source: '/onboarding/:path*', destination: '/dashboard', permanent: true },
     ]
   },
 }
